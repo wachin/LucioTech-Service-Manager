@@ -1,8 +1,52 @@
+# Entorno virtual
 .venv/
+venv/
+
+# Python: cachés y artefactos de compilación
 __pycache__/
-*.pyc
-.pytest_cache/
+*.py[cod]
 *.egg-info/
 build/
 dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Datos locales de la aplicación (nunca versionar datos reales)
 *.sqlite3
+*.sqlite
+*.db
+attachments/
+backups/
+logs/
+*.log
+
+# Empaquetado (Debian, AppImage, Nuitka)
+*.deb
+*.AppImage
+*.build/
+*.dist/
+*.onefile-build/
+packaging/**/build/
+packaging/**/dist/
+
+# Secretos y configuración local
+.env
+.env.*
+
+# Editor Kate: copias de seguridad, swap y configuración personal
+*~
+.*.kate-swp
+*.kate-swp
+.kateproject
+.kateconfig
+
+# Editores e IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
