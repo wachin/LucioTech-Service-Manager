@@ -39,6 +39,8 @@ PYTHONPATH=src python -m luciotech.main
 
 Al arrancar, la aplicación crea la base de datos si no existe y aplica las migraciones.
 
+La ventana principal se abre maximizada y se adapta al tamaño de la pantalla. Si la reduces, el tamaño mínimo es de 800×560 píxeles; los formularios tienen barras de desplazamiento para ver todos sus campos.
+
 ## Probar la interfaz gráfica
 
 ### Usar una base de datos de prueba

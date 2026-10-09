@@ -1,7 +1,8 @@
-"""Ventana principal con pestañas Inicio, Clientes y Equipos (§6, §9 y §17)."""
+"""Ventana principal con pestañas Inicio, Órdenes, Clientes y Equipos (§6, §9 y §17)."""
 
 from __future__ import annotations
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QKeySequence, QShortcut
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QWidget
 from sqlalchemy.orm import Session, sessionmaker
@@ -12,6 +13,9 @@ from luciotech.ui.pages.equipment_page import EquipmentPage
 from luciotech.ui.pages.home_page import HomePage
 from luciotech.ui.pages.orders_page import OrdersPage
 
+MIN_WIDTH = 800
+MIN_HEIGHT = 560
+
 
 class MainWindow(QMainWindow):
     def __init__(
@@ -19,7 +23,8 @@ class MainWindow(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle(APP_CONFIG.app_name)
-        self.resize(1200, 720)
+        self.setMinimumSize(MIN_WIDTH, MIN_HEIGHT)
+        self.setWindowState(self.windowState() | Qt.WindowState.WindowMaximized)
 
         self._home = HomePage(session_factory)
         self._customers = CustomersPage(session_factory)
