@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luciotech-service-manager"
+version = "0.1.0"
+description = "Gestión de recepción, diagnóstico, reparación y entrega de equipos tecnológicos."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = [
+    "PyQt6==6.9.0",
+    "SQLAlchemy==2.0.40",
+    "alembic==1.13.2",
+    "reportlab==4.3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pytest-qt",
+]
+
+[project.scripts]
+luciotech-service-manager = "luciotech.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

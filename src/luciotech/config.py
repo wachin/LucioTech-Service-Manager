@@ -1,0 +1,30 @@
+"""Configuración centralizada de la aplicación (§1 y §2 del ROADMAP).
+
+Cambiar el nombre, el app_id o la versión se hace únicamente aquí.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class AppConfig:
+    """Valores fijos de identidad de la aplicación."""
+
+    app_name: str
+    app_id: str
+    organization_name: str
+    application_version: str
+    executable_name: str
+
+
+APP_CONFIG = AppConfig(
+    app_name="LucioTech Service Manager",
+    app_id="luciotech-service-manager",
+    organization_name="Ing. Lucio",
+    application_version="0.1.0",
+    executable_name="luciotech-service-manager",
+)
+
+APP_VERSION: str = APP_CONFIG.application_version
