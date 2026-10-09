@@ -8,11 +8,12 @@ from decimal import Decimal, InvalidOperation
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from luciotech.config import DEFAULT_TAX_ENABLED, DEFAULT_TAX_PERCENT
+from luciotech.config import DEFAULT_EQUIPMENT_TYPES, DEFAULT_TAX_ENABLED, DEFAULT_TAX_PERCENT
 from luciotech.database.models import Configuration
 
 KEY_TAX_PERCENT = "impuesto_porcentaje"
 KEY_TAX_ENABLED = "impuesto_activo"
+KEY_EQUIPMENT_TYPES = "tipos_equipo"
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,15 @@ def set_value(session: Session, clave: str, valor: str) -> None:
     else:
         row.valor = valor
     session.flush()
+
+
+def equipment_types(session: Session) -> list[str]:
+    """Tipos de equipo: uno por línea en la configuración, o los valores por defecto."""
+    raw = get_value(session, KEY_EQUIPMENT_TYPES)
+    if raw is None:
+        return list(DEFAULT_EQUIPMENT_TYPES)
+    items = [line.strip() for line in raw.splitlines() if line.strip()]
+    return items or list(DEFAULT_EQUIPMENT_TYPES)
 
 
 def tax_settings(session: Session) -> TaxSettings:

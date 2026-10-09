@@ -1,0 +1,45 @@
+"""Textos visibles para errores de validación y nombres de campos."""
+
+from __future__ import annotations
+
+from PyQt6.QtCore import QCoreApplication
+
+_CONTEXT = "LucioTech"
+
+_ERROR_TEXTS = {
+    "required": "Campo obligatorio.",
+    "cedula.length": "La cédula debe tener 10 dígitos.",
+    "cedula.not_digits": "La cédula solo puede contener números.",
+    "cedula.province": "Código de provincia no válido (01 a 24, o 30).",
+    "cedula.third_digit": "El tercer dígito debe estar entre 0 y 5 para personas naturales.",
+    "cedula.check_digit": "La cédula no es válida (dígito verificador).",
+    "phone.invalid_chars": "El teléfono solo puede tener números, espacios, +, - y paréntesis.",
+    "phone.length": "El teléfono debe tener entre 7 y 15 dígitos.",
+    "email.invalid": "Correo electrónico no válido.",
+    "invalid_type": "Seleccione un tipo de equipo de la lista.",
+    "not_found": "El cliente seleccionado ya no existe.",
+}
+
+_FIELD_LABELS = {
+    "nombre_completo": "Nombre completo",
+    "numero_identificacion": "Cédula, RUC o identificación",
+    "telefono_principal": "Teléfono principal",
+    "telefono_secundario": "Teléfono secundario",
+    "correo_electronico": "Correo electrónico",
+    "cliente_id": "Cliente",
+    "tipo_equipo": "Tipo de equipo",
+}
+
+
+def error_text(code: str) -> str:
+    source = _ERROR_TEXTS.get(code)
+    if source is None:
+        return code
+    return QCoreApplication.translate(_CONTEXT, source)
+
+
+def field_label(field: str) -> str:
+    source = _FIELD_LABELS.get(field)
+    if source is None:
+        return field
+    return QCoreApplication.translate(_CONTEXT, source)

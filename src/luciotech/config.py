@@ -32,3 +32,17 @@ APP_VERSION: str = APP_CONFIG.application_version
 
 DEFAULT_TAX_PERCENT = Decimal("15")
 DEFAULT_TAX_ENABLED = True
+DEFAULT_CURRENCY = "USD"
+
+DEFAULT_EQUIPMENT_TYPES: tuple[str, ...] = (
+    "Laptop",
+    "Computadora de escritorio",
+    "Impresora",
+    "Cámara de seguridad",
+    "DVR",
+    "NVR",
+    "Monitor",
+    "Router",
+    "Fuente de poder",
+    "Otro",
+)

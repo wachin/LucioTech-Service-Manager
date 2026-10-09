@@ -49,6 +49,10 @@ class CustomerRepository(Repository[Customer]):
 class EquipmentRepository(Repository[Equipment]):
     model = Equipment
 
+    def list_all(self) -> list[Equipment]:
+        statement = select(Equipment).order_by(Equipment.id)
+        return list(self._session.scalars(statement))
+
 
 class ServiceOrderRepository(Repository[ServiceOrder]):
     model = ServiceOrder
