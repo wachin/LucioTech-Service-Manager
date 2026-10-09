@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 
 OTHER = "Otro"
 
@@ -39,9 +39,23 @@ def suggested_accessories(tipo_equipo: str) -> tuple[str, ...]:
     return ACCESSORIES_BY_TYPE.get(tipo_equipo, (OTHER,))
 
 
-def build_accessories_text(selected: Iterable[str], manual: str | None) -> str | None:
-    """Une los accesorios marcados y el texto libre en una sola línea, o None si no hay ninguno."""
-    items = [item.strip() for item in selected if item.strip()]
+def build_accessories_text(
+    selected: Iterable[str],
+    manual: str | None,
+    details: Mapping[str, str] | None = None,
+) -> str | None:
+    """Une los accesorios marcados (con su detalle, p. ej. 'Batería (Dell XPS 13)') y el texto libre.
+
+    Devuelve None si no hay ningún accesorio ni texto libre.
+    """
+    details = details or {}
+    items: list[str] = []
+    for name in selected:
+        cleaned = name.strip()
+        if not cleaned:
+            continue
+        detail = (details.get(cleaned) or "").strip()
+        items.append(f"{cleaned} ({detail})" if detail else cleaned)
     extra = (manual or "").strip()
     if extra:
         items.append(extra)

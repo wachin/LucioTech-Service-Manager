@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
 
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtCore import Qt, QDateTime
 from PyQt6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -13,12 +13,14 @@ from PyQt6.QtWidgets import (
     QDialogButtonBox,
     QDoubleSpinBox,
     QFormLayout,
+    QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QMessageBox,
     QPlainTextEdit,
+    QScrollArea,
     QVBoxLayout,
     QWidget,
 )
@@ -52,7 +54,8 @@ class ReceptionDialog(QDialog):
         self._session_factory = session_factory
         self.saved_order_number: str | None = None
         self.setWindowTitle(self.tr("Nueva recepción"))
-        self.setMinimumWidth(640)
+        self.setMinimumSize(900, 600)
+        self.setWindowState(self.windowState() | Qt.WindowState.WindowMaximized)
 
         self._customer_combo = QComboBox()
         self._new_name = QLineEdit()
@@ -82,9 +85,10 @@ class ReceptionDialog(QDialog):
         self._intake_notes = QPlainTextEdit()
         self._intake_notes.setFixedHeight(50)
         self._manual_accessories = QLineEdit()
-        self._accessory_checks: list[QCheckBox] = []
-        self._accessories_box = QHBoxLayout()
-        self._accessories_box.setSpacing(12)
+        self._accessory_checks: dict[str, QCheckBox] = {}
+        self._accessory_details: dict[str, QLineEdit] = {}
+        self._accessories_grid = QGridLayout()
+        self._accessories_grid.setColumnStretch(2, 1)
 
         self._entry = QDateTimeEdit(QDateTime.currentDateTime())
         self._entry.setDisplayFormat("dd/MM/yyyy HH:mm")
@@ -107,8 +111,8 @@ class ReceptionDialog(QDialog):
         self._error_label = QLabel()
         self._error_label.setWordWrap(True)
 
-        customer_row = QFormLayout()
-        customer_row.addRow(field_label("cliente") + " *", self._customer_combo)
+        customer_form = QFormLayout()
+        customer_form.addRow(field_label("cliente") + " *", self._customer_combo)
 
         equipment_form = QFormLayout()
         equipment_form.addRow(field_label("tipo_equipo") + " *", self._type)
@@ -122,12 +126,6 @@ class ReceptionDialog(QDialog):
         equipment_form.addRow(self.tr("Estado físico"), self._physical_state)
         equipment_form.addRow(self.tr("Observaciones de ingreso"), self._intake_notes)
 
-        accessories_group = QGroupBox(self.tr("Accesorios recibidos"))
-        accessories_layout = QVBoxLayout(accessories_group)
-        accessories_layout.addLayout(self._accessories_box)
-        accessories_layout.addWidget(QLabel(self.tr("Otros accesorios:")))
-        accessories_layout.addWidget(self._manual_accessories)
-
         order_form = QFormLayout()
         order_form.addRow(self.tr("Número de orden"), self._number_label)
         order_form.addRow(self.tr("Fecha y hora de ingreso"), self._entry)
@@ -137,6 +135,33 @@ class ReceptionDialog(QDialog):
         order_form.addRow(self.tr("Costo inicial de diagnóstico"), self._diagnosis_cost)
         order_form.addRow(self.tr("Anticipo recibido"), self._deposit)
 
+        accessories_group = QGroupBox(self.tr("Accesorios recibidos"))
+        accessories_layout = QVBoxLayout(accessories_group)
+        accessories_layout.addLayout(self._accessories_grid)
+        accessories_layout.addWidget(QLabel(self.tr("Otros accesorios:")))
+        accessories_layout.addWidget(self._manual_accessories)
+
+        left_column = QVBoxLayout()
+        left_column.addWidget(_section(self.tr("Cliente"), customer_form))
+        left_column.addWidget(self._new_group)
+        left_column.addWidget(_section(self.tr("Equipo"), equipment_form))
+        left_column.addStretch(1)
+
+        right_column = QVBoxLayout()
+        right_column.addWidget(_section(self.tr("Recepción"), order_form))
+        right_column.addWidget(accessories_group)
+        right_column.addStretch(1)
+
+        columns = QHBoxLayout()
+        columns.addLayout(left_column, 1)
+        columns.addLayout(right_column, 1)
+
+        scroll_body = QWidget()
+        scroll_body.setLayout(columns)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(scroll_body)
+
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
         )
@@ -144,11 +169,7 @@ class ReceptionDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
-        layout.addLayout(customer_row)
-        layout.addWidget(self._new_group)
-        layout.addLayout(equipment_form)
-        layout.addWidget(accessories_group)
-        layout.addLayout(order_form)
+        layout.addWidget(scroll, 1)
         layout.addWidget(self._warning_label)
         layout.addWidget(self._error_label)
         layout.addWidget(buttons)
@@ -171,20 +192,27 @@ class ReceptionDialog(QDialog):
         self._on_customer_changed()
 
     def _rebuild_accessories(self, tipo: str) -> None:
-        for check in self._accessory_checks:
-            self._accessories_box.removeWidget(check)
-            check.deleteLater()
-        self._accessory_checks = []
-        for name in suggested_accessories(tipo):
+        while self._accessories_grid.count():
+            item = self._accessories_grid.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+        self._accessory_checks = {}
+        self._accessory_details = {}
+        for row, name in enumerate(suggested_accessories(tipo)):
             check = QCheckBox(name)
-            self._accessory_checks.append(check)
-            self._accessories_box.addWidget(check)
-        self._accessories_box.addStretch(1)
+            detail = QLineEdit()
+            detail.setPlaceholderText(self.tr("Modelo o detalle"))
+            detail.setEnabled(False)
+            check.toggled.connect(detail.setEnabled)
+            self._accessory_checks[name] = check
+            self._accessory_details[name] = detail
+            self._accessories_grid.addWidget(check, row, 0)
+            self._accessories_grid.addWidget(detail, row, 1, 1, 2)
 
     def _on_customer_changed(self) -> None:
         is_new = self._customer_combo.currentData() == NEW_CUSTOMER_KEY
         self._new_group.setVisible(is_new)
-        self.adjustSize()
 
     def _refresh_number(self) -> None:
         year = self._entry.dateTime().toPyDateTime().year
@@ -206,7 +234,8 @@ class ReceptionDialog(QDialog):
             if is_new
             else None
         )
-        selected = [check.text() for check in self._accessory_checks if check.isChecked()]
+        selected = [name for name, check in self._accessory_checks.items() if check.isChecked()]
+        details = {name: self._accessory_details[name].text() for name in selected}
         equipment = EquipmentData(
             cliente_id=None,
             tipo_equipo=self._type.currentText(),
@@ -216,7 +245,9 @@ class ReceptionDialog(QDialog):
             color=self._color.text(),
             sistema_operativo=self._os.text(),
             contrasena_equipo=self._password.text(),
-            accesorios_recibidos=build_accessories_text(selected, self._manual_accessories.text()),
+            accesorios_recibidos=build_accessories_text(
+                selected, self._manual_accessories.text(), details
+            ),
             estado_fisico=self._physical_state.toPlainText(),
             problema_reportado_cliente=self._problem.toPlainText(),
             observaciones_ingreso=self._intake_notes.toPlainText(),
@@ -290,3 +321,9 @@ def _decimal(value: float) -> Decimal:
 
 def _customer_label(customer: Customer) -> str:
     return f"{customer.nombre_completo} ({customer.telefono_principal or '-'})"
+
+
+def _section(title: str, content: QFormLayout) -> QGroupBox:
+    box = QGroupBox(title)
+    box.setLayout(content)
+    return box

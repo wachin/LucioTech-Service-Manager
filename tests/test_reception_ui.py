@@ -6,11 +6,13 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMessageBox
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.database.enums import OrderState, Priority
+from luciotech.database.models import ServiceOrder
 from luciotech.services.customer_service import CustomerData, save_customer
 from luciotech.services.equipment_service import EquipmentData, save_equipment
 from luciotech.services.order_service import create_service_order
@@ -149,6 +151,45 @@ def test_reception_asks_before_saving_similar_customer(
     dialog._save()
     assert asked and "Ana Torres" in asked[0]
     assert dialog.saved_order_number is None
+
+
+def test_accessory_detail_is_enabled_only_when_checked(
+    qtbot: QtBot, seeded: sessionmaker[Session]
+) -> None:
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    dialog._type.setCurrentText("Laptop")
+    detail = dialog._accessory_details["Batería"]
+    assert not detail.isEnabled()
+    dialog._accessory_checks["Batería"].setChecked(True)
+    assert detail.isEnabled()
+    dialog._accessory_checks["Batería"].setChecked(False)
+    assert not detail.isEnabled()
+
+
+def test_accessory_model_is_saved_with_its_item(
+    qtbot: QtBot, seeded: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.StandardButton.Yes)
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    _fill_new_customer_reception(dialog, name="Pedro Ruiz")
+    dialog._accessory_checks["Batería"].setChecked(True)
+    dialog._accessory_details["Batería"].setText("Dell XPS 13")
+    dialog._accessory_checks["Cargador"].setChecked(True)
+    dialog._save()
+
+    with seeded() as session:
+        order = session.query(ServiceOrder).order_by(ServiceOrder.id.desc()).first()
+        assert order.equipment.accesorios_recibidos == "Cargador, Batería (Dell XPS 13)"
+
+
+def test_reception_dialog_is_maximized_by_default(
+    qtbot: QtBot, seeded: sessionmaker[Session]
+) -> None:
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    assert dialog.windowState() & Qt.WindowState.WindowMaximized
 
 
 def test_main_window_has_orders_tab(qtbot: QtBot, seeded: sessionmaker[Session]) -> None:

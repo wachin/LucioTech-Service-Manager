@@ -295,6 +295,15 @@ def test_accessories_text_joins_selection_and_manual_input() -> None:
     assert build_accessories_text([], "  ") is None
 
 
+def test_accessories_text_includes_detail_of_each_item() -> None:
+    text = build_accessories_text(
+        ["Batería", "Cargador"],
+        None,
+        details={"Batería": " Dell XPS 13 ", "Cargador": "  "},
+    )
+    assert text == "Batería (Dell XPS 13), Cargador"
+
+
 def test_equipment_model_is_unchanged_by_reception(session_factory: sessionmaker[Session]) -> None:
     with session_factory() as session:
         register_reception(session, reception())
