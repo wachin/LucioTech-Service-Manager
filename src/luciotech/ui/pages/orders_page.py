@@ -20,8 +20,11 @@ from sqlalchemy.orm import Session, sessionmaker
 from luciotech.database.enums import OrderState, Priority
 from luciotech.services.order_query_service import OrderFilter, search_orders
 from luciotech.services.settings_service import equipment_types
+from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
 from luciotech.ui.dialogs.reception_dialog import ReceptionDialog
 from luciotech.ui.formatting import format_datetime, format_money
+
+OPERATOR = "Ing. Lucio"
 
 ANY = ""
 COLUMNS = (
@@ -53,6 +56,7 @@ class OrdersPage(QWidget):
         self._only_balance = QCheckBox(self.tr("Con saldo pendiente"))
         self._new_button = QPushButton(self.tr("Nueva recepción"))
         self._new_button.clicked.connect(self._new_reception)
+        self._order_ids: list[int] = []
 
         self._state.addItem(self.tr("Todos los estados"), ANY)
         for state in OrderState:
@@ -77,6 +81,7 @@ class OrdersPage(QWidget):
         self._table.verticalHeader().setVisible(False)
         self._table.horizontalHeader().setStretchLastSection(True)
         self._table.setSortingEnabled(False)
+        self._table.doubleClicked.connect(lambda _index: self.open_selected())
 
         self._text.textChanged.connect(lambda _text: self.refresh())
         self._state.currentIndexChanged.connect(lambda _index: self.refresh())
@@ -110,6 +115,7 @@ class OrdersPage(QWidget):
     def refresh(self) -> None:
         with self._session_factory() as session:
             orders = search_orders(session, self.current_filter())
+            self._order_ids = [order.id for order in orders]
             rows = [
                 [
                     order.numero_orden,
@@ -136,6 +142,16 @@ class OrdersPage(QWidget):
     def order_number_at(self, row: int) -> str:
         item = self._table.item(row, 0)
         return item.text() if item is not None else ""
+
+    def open_selected(self) -> None:
+        row = self._table.currentRow()
+        if row < 0:
+            return
+        order_id = self._order_ids[row]
+        dialog = OrderDetailDialog(self._session_factory, order_id, OPERATOR, parent=self)
+        dialog.exec()
+        self.refresh()
+        self.data_changed.emit()
 
     def _new_reception(self) -> None:
         dialog = ReceptionDialog(self._session_factory, parent=self)

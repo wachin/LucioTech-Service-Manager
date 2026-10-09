@@ -23,6 +23,8 @@ _ERROR_TEXTS = {
     "amount.invalid": "Importe no válido. Use solo números y punto decimal.",
     "anticipo.exceeds_total": "El anticipo no puede superar el total con impuestos.",
     "date.before_entry": "La fecha estimada no puede ser anterior a la fecha de ingreso.",
+    "amount.must_be_positive": "El importe debe ser mayor que cero.",
+    "refund.exceeds_paid": "No se puede reembolsar más de lo pagado.",
 }
 
 _FIELD_LABELS = {
