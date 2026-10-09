@@ -33,6 +33,7 @@ APP_VERSION: str = APP_CONFIG.application_version
 DEFAULT_TAX_PERCENT = Decimal("15")
 DEFAULT_TAX_ENABLED = True
 DEFAULT_CURRENCY = "USD"
+DEFAULT_USER = "Ing. Lucio"
 
 DEFAULT_EQUIPMENT_TYPES: tuple[str, ...] = (
     "Laptop",

@@ -11,6 +11,13 @@ from luciotech.database.models import NumberSequence
 ORDER_PREFIX = "OT"
 
 
+def peek_next_order_number(session: Session, year: int) -> str:
+    """Muestra el número que tendría la próxima orden, sin reservarlo."""
+    key = f"{ORDER_PREFIX}-{year}"
+    current = session.scalar(select(NumberSequence.ultimo_valor).where(NumberSequence.clave == key))
+    return f"{key}-{(current or 0) + 1:06d}"
+
+
 def next_order_number(session: Session, year: int) -> str:
     """Reserva el siguiente número del año dentro de la transacción actual.
 

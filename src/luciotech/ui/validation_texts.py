@@ -18,6 +18,11 @@ _ERROR_TEXTS = {
     "email.invalid": "Correo electrónico no válido.",
     "invalid_type": "Seleccione un tipo de equipo de la lista.",
     "not_found": "El cliente seleccionado ya no existe.",
+    "customer.required": "Seleccione un cliente existente o complete los datos de cliente nuevo.",
+    "amount.negative": "El importe no puede ser negativo.",
+    "amount.invalid": "Importe no válido. Use solo números y punto decimal.",
+    "anticipo.exceeds_total": "El anticipo no puede superar el total con impuestos.",
+    "date.before_entry": "La fecha estimada no puede ser anterior a la fecha de ingreso.",
 }
 
 _FIELD_LABELS = {
@@ -28,6 +33,10 @@ _FIELD_LABELS = {
     "correo_electronico": "Correo electrónico",
     "cliente_id": "Cliente",
     "tipo_equipo": "Tipo de equipo",
+    "cliente": "Cliente",
+    "costo_diagnostico": "Costo de diagnóstico",
+    "anticipo": "Anticipo recibido",
+    "fecha_estimada_entrega": "Fecha estimada de entrega",
 }
 
 
