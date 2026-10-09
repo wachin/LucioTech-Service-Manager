@@ -6,6 +6,7 @@ Cambiar el nombre, el app_id o la versión se hace únicamente aquí.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 
 
 @dataclass(frozen=True)
@@ -28,3 +29,6 @@ APP_CONFIG = AppConfig(
 )
 
 APP_VERSION: str = APP_CONFIG.application_version
+
+DEFAULT_TAX_PERCENT = Decimal("15")
+DEFAULT_TAX_ENABLED = True
