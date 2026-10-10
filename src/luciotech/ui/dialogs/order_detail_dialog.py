@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from decimal import Decimal, InvalidOperation
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -16,6 +17,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
@@ -33,6 +35,12 @@ from luciotech.services.order_detail_service import (
     mark_delivered,
     order_timeline,
     register_payment,
+)
+from luciotech.services.order_view_service import (
+    CustomerView,
+    EquipmentView,
+    customer_view,
+    equipment_view,
 )
 from luciotech.services.state_service import change_order_state
 from luciotech.ui.formatting import format_datetime, format_money
@@ -124,11 +132,23 @@ class OrderDetailDialog(QDialog):
         actions_layout.addLayout(note_row)
         actions_layout.addWidget(deliver_button)
 
+        self._customer_text = QLabel()
+        self._customer_text.setWordWrap(True)
+        self._equipment_text = QLabel()
+        self._equipment_text.setWordWrap(True)
+        self._toggle_password = QPushButton(self.tr("Mostrar contraseña"))
+        self._toggle_password.setCheckable(True)
+        self._toggle_password.toggled.connect(self._on_toggle_password)
+
         tabs = QTabWidget()
-        summary_tab = QWidget()
-        summary_layout = QVBoxLayout(summary_tab)
-        summary_layout.addWidget(self._summary)
-        tabs.addTab(summary_tab, self.tr("Resumen"))
+        tabs.addTab(_scrollable(self._summary), self.tr("Resumen"))
+        tabs.addTab(_scrollable(self._customer_text), self.tr("Cliente"))
+        equipment_tab = QWidget()
+        equipment_layout = QVBoxLayout(equipment_tab)
+        equipment_layout.addWidget(self._equipment_text)
+        equipment_layout.addWidget(self._toggle_password, alignment=Qt.AlignmentFlag.AlignLeft)
+        equipment_layout.addStretch(1)
+        tabs.addTab(equipment_tab, self.tr("Equipo"))
         history_tab = QWidget()
         history_layout = QVBoxLayout(history_tab)
         history_layout.addWidget(self._history)
@@ -154,10 +174,20 @@ class OrderDetailDialog(QDialog):
                 return
             self.setWindowTitle(f"{self.tr('Orden')} {order.numero_orden}")
             self._summary.setText(_summary_html(order))
+            self._customer_text.setText(_customer_html(customer_view(session, order)))
+            self._equipment_text.setText(
+                _equipment_html(equipment_view(order), reveal=self._toggle_password.isChecked())
+            )
             index = self._state_combo.findData(order.estado)
             if index >= 0:
                 self._state_combo.setCurrentIndex(index)
             self._fill_history(order)
+
+    def _on_toggle_password(self, shown: bool) -> None:
+        self._toggle_password.setText(
+            self.tr("Ocultar contraseña") if shown else self.tr("Mostrar contraseña")
+        )
+        self.refresh()
 
     def _fill_history(self, order: ServiceOrder) -> None:
         entries = order_timeline(order)
@@ -238,6 +268,55 @@ class OrderDetailDialog(QDialog):
         self._run(lambda session, order: mark_delivered(session, order, usuario=self._usuario))
 
 
+def _table(rows: list[tuple[str, str]]) -> str:
+    body = "".join(
+        f"<tr><td><b>{_escape(label)}</b></td><td>{_escape(value)}</td></tr>" for label, value in rows
+    )
+    return f"<table cellspacing='4'>{body}</table>"
+
+
+def _customer_html(view: CustomerView) -> str:
+    rows = [
+        ("Nombre", view.nombre_completo),
+        ("Identificación", view.numero_identificacion or "-"),
+        ("Teléfono principal", view.telefono_principal or "-"),
+        ("Teléfono secundario", view.telefono_secundario or "-"),
+        ("Correo", view.correo_electronico or "-"),
+        ("Dirección", view.direccion or "-"),
+        ("Notas", view.notas or "-"),
+        ("Otras órdenes", ", ".join(view.otras_ordenes) or "-"),
+        ("Saldo pendiente total", format_money(view.saldo_pendiente_total)),
+    ]
+    return _table(rows)
+
+
+def _equipment_html(view: EquipmentView, reveal: bool) -> str:
+    password = view.contrasena_equipo or "-"
+    if view.contrasena_equipo and not reveal:
+        password = "••••••"
+    rows = [
+        ("Tipo", view.tipo_equipo),
+        ("Marca", view.marca or "-"),
+        ("Modelo", view.modelo or "-"),
+        ("Número de serie", view.numero_serie or "-"),
+        ("Color", view.color or "-"),
+        ("Sistema operativo", view.sistema_operativo or "-"),
+        ("Contraseña o PIN", password),
+        ("Accesorios recibidos", view.accesorios_recibidos or "-"),
+        ("Estado físico", view.estado_fisico or "-"),
+        ("Problema reportado", view.problema_reportado_cliente or "-"),
+        ("Observaciones de ingreso", view.observaciones_ingreso or "-"),
+    ]
+    return _table(rows)
+
+
+def _scrollable(content: QWidget) -> QScrollArea:
+    area = QScrollArea()
+    area.setWidgetResizable(True)
+    area.setWidget(content)
+    return area
+
+
 def _summary_html(order: ServiceOrder) -> str:
     equipment = order.equipment
     customer = order.customer
@@ -255,10 +334,7 @@ def _summary_html(order: ServiceOrder) -> str:
         ("Anticipo", format_money(order.anticipo)),
         ("Saldo pendiente", format_money(order.saldo_pendiente)),
     ]
-    body = "".join(
-        f"<tr><td><b>{_escape(label)}</b></td><td>{_escape(value)}</td></tr>" for label, value in rows
-    )
-    return f"<table cellspacing='4'>{body}</table>"
+    return _table(rows)
 
 
 def _escape(value: str) -> str:
