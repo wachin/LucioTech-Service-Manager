@@ -39,6 +39,29 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 5. At the end of each phase, create a Git commit with the message:
    `phase-N: <description> [checklist updated]`.
 6. Never edit historical checklists to hide incomplete work. Add new checkboxes when new requirements appear.
+7. When a requirement moves to another phase, do not delete it from the checklist where it was written. Mark it in the checklist as `[~]` with the note `trasladado a Fase N (fecha)`, and add it to the checklist of the new phase.
+8. Every checkbox marked `[x]` must cite the step or commit that verified it, in the format `(paso N, <hash>)` at the end of the line. Use `(paso N, pendiente de commit)` while the commit does not exist yet.
+9. At the start of each phase, copy its checklist into the section "Seguimiento de fase activa" below and work from that copy. Mark items there as they are completed, then copy the final state back to the phase checklist when the phase closes.
+
+## Estado de las fases
+
+| Fase | Estado | Commit de cierre |
+|---|---|---|
+| Fase 1 — Núcleo ejecutable | Cerrada | `219a877` |
+| Fase 2 — Diagnóstico y documentación | Pendiente de iniciar | — |
+| Fase 3 — Presupuesto, pagos, PDF e impresión | Pendiente | — |
+| Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente | — |
+
+## Requisitos trasladados
+
+| Requisito | Origen | Destino | Motivo |
+|---|---|---|---|
+| Fotografías de equipos (§5.4 y §7.4) | Fase 1 | Fase 2 | La importación de imágenes requiere copia a `attachments/`, miniaturas y corrección EXIF, que no son parte del núcleo de la Fase 1. Aprobado por el usuario el 2026-10-09. |
+| Editor de texto enriquecido para diagnóstico, trabajo y recomendaciones (§8) | Fase 2 (original) | Fase 2 | Sin cambio; se incluye aquí para que el seguimiento de la Fase 2 quede completo. |
+
+## Seguimiento de fase activa
+
+Fase activa: ninguna. Al iniciar la Fase 2 se copiará aquí su checklist (regla 9).
 
 ---
 

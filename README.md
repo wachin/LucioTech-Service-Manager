@@ -1,20 +1,41 @@
 # LucioTech Service Manager
 
-Aplicación de escritorio en Python 3 y PyQt6 para registrar la recepción, el diagnóstico, la reparación y la entrega de equipos tecnológicos en el servicio técnico del **Ing. Lucio**.
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+[![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
+[![Tests](https://img.shields.io/badge/tests-157%20passing-brightgreen.svg)](#testing)
+[![Status](https://img.shields.io/badge/status-Phase%201%20in%20progress-orange.svg)](ROADMAP.md)
 
-La aplicación funciona completamente sin conexión y no envía datos a servidores externos.
+A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
 
-> Estado: **Fase 1 en desarrollo**. Ya se puede probar la interfaz gráfica: panel de inicio, clientes, equipos, recepciones, lista de órdenes y detalle de orden con cambio de estado, pagos y notas. Aún no están los documentos PDF, las fotografías ni el presupuesto. Consulta `ROADMAP.md` para el detalle del avance.
+The application works fully offline and does not send data to any external server.
 
-## Requisitos
+> **Status:** Phase 1 (runnable core). The graphical interface can already be used to manage clients, equipment, intake orders, the order list, and order details with status changes, payments and notes. PDF documents, photographs and quotes are not implemented yet. See [`ROADMAP.md`](ROADMAP.md) for details.
 
-- Debian, Ubuntu, MX Linux o derivados (Windows está previsto, pero aún no está probado).
-- Python 3.11 o superior.
-- Paquetes del sistema necesarios para PyQt6 en Linux, si tu distribución no los trae: consulta la documentación de PyQt6.
+> **Language note:** the application's user interface is in Spanish, because it is made for a Spanish-speaking service technician. This README is in English for developers. Translations of the interface are planned for Phase 4.
 
-## Instalación en entorno virtual
+## Contents
 
-Ejecuta estos comandos desde la carpeta del proyecto:
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Running the application](#running-the-application)
+- [Trying the interface](#trying-the-interface)
+- [Testing](#testing)
+- [Project structure](#project-structure)
+- [Data location](#data-location)
+- [Password storage policy](#password-storage-policy)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+
+## Requirements
+
+- Debian, Ubuntu, MX Linux or a derivative distribution. Windows is planned but not yet tested.
+- Python 3.11 or newer.
+- System packages required by PyQt6 on Linux, if your distribution does not provide them. See the PyQt6 documentation.
+
+## Installation
+
+Run these commands from the project folder:
 
 ```bash
 python3 -m venv .venv
@@ -22,87 +43,89 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Ejecución
+## Running the application
 
-Con el entorno virtual activado, desde la carpeta del proyecto:
+With the virtual environment activated, from the project folder:
 
 ```bash
 pip install -e .
 python -m luciotech.main
 ```
 
-Si no quieres instalar el paquete, puedes ejecutar sin instalarlo:
+To run without installing the package:
 
 ```bash
 PYTHONPATH=src python -m luciotech.main
 ```
 
-Al arrancar, la aplicación crea la base de datos si no existe y aplica las migraciones.
+On startup the application creates the database if it does not exist and applies the migrations.
 
-La ventana principal se abre maximizada y se adapta al tamaño de la pantalla. Si la reduces, el tamaño mínimo es de 800×560 píxeles; los formularios tienen barras de desplazamiento para ver todos sus campos.
+The main window opens maximized and adapts to the screen size. If you make it smaller, the minimum size is 800×560 pixels; forms have scroll bars so every field stays reachable.
 
-## Probar la interfaz gráfica
+## Trying the interface
 
-### Usar una base de datos de prueba
+### Use a temporary database
 
-Para no mezclar datos de prueba con los datos reales, abre la aplicación con una base temporal:
+To keep test data apart from real data, start the application with a temporary database:
 
 ```bash
 LUCIOTECH_DATABASE_URL=sqlite:////tmp/luciotech-prueba.sqlite3 PYTHONPATH=src python -m luciotech.main
 ```
 
-Cada vez que quieras empezar de cero, borra ese archivo antes de arrancar:
+To start from scratch, delete that file before starting:
 
 ```bash
 rm -f /tmp/luciotech-prueba.sqlite3
 ```
 
-### Qué puedes probar
+### What you can try
 
-1. **Inicio:** las tarjetas muestran conteos. Con una base vacía, todas aparecen en 0 o en `0.00 USD`.
-2. **Clientes:** pulsa **Nuevo cliente** y prueba:
-   - dejar el nombre vacío (debe mostrar «Campo obligatorio»);
-   - una cédula de 10 dígitos con dígito verificador incorrecto, como `1710034066` (debe rechazarla);
-   - la cédula válida `1710034065`;
-   - un teléfono con letras, como `099ABC4567` (debe rechazarlo).
-   - Guarda otro cliente con el mismo teléfono en otro formato (`099 123-4567`): la aplicación debe pedir confirmación antes de guardar.
-3. **Equipos:** pulsa **Nuevo equipo**. Si no hay clientes, te pedirá registrar uno primero. La contraseña se muestra oculta y el botón **Mostrar** la revela.
-4. **Órdenes:** pulsa **Nueva recepción**:
-   - elige un cliente existente o **Cliente nuevo** (los campos aparecen en el mismo formulario);
-   - marca accesorios, escribe el problema reportado y, si quieres, un anticipo;
-   - observa que el número de orden previsto es `OT-AAAA-000001` antes de guardar;
-   - registra dos equipos con el mismo número de serie: debe avisar y pedir confirmación.
-   - En la lista, prueba el buscador y los filtros de estado, prioridad, tipo de equipo y saldo pendiente.
-   - Si el cliente ya tiene un equipo registrado, el campo **Equipo** lo muestra. Elígelo y sus datos quedan bloqueados: la orden usa ese mismo equipo y no se crea otro.
-5. **Detalle de orden:** haz doble clic en una orden de la lista. Tiene cuatro pestañas:
-   - **Resumen:** número, estado, cliente, equipo, fechas, total, anticipo y saldo.
-   - **Cliente:** datos de contacto, otras órdenes del cliente y saldo pendiente total (sin contar las canceladas).
-   - **Equipo:** datos técnicos. La contraseña aparece oculta; el botón **Mostrar contraseña** la revela.
-   - **Historial:** cambios de estado y notas, en orden cronológico.
-   - Desde la parte inferior puedes cambiar el estado, registrar un pago o reembolso, añadir una nota y marcar la orden como entregada (pide confirmación).
-6. **Atajos:** `F5` actualiza todas las pantallas y `Ctrl+Q` cierra la aplicación.
-7. **Reinicio:** cierra la aplicación, vuelve a abrirla con la misma base y comprueba que los datos siguen ahí.
+1. **Home:** the cards show live counts. With an empty database they show 0 or `0.00 USD`.
+2. **Clients:** click **Nuevo cliente** and try:
+   - leaving the name empty (it must show "Campo obligatorio");
+   - a 10-digit national ID with a wrong check digit, such as `1710034066` (it must be rejected);
+   - the valid ID `1710034065`;
+   - a phone number with letters, such as `099ABC4567` (it must be rejected);
+   - saving a second client with the same phone in another format (`099 123-4567`): the application must ask for confirmation before saving.
+3. **Equipment:** click **Nuevo equipo**. If there are no clients, you are asked to register one first. The password is hidden; the **Mostrar** button reveals it.
+4. **Orders:** click **Nueva recepción**:
+   - choose an existing client or **Cliente nuevo** (the fields appear in the same form);
+   - tick accessories, describe the reported problem and, optionally, enter a deposit;
+   - check that the planned order number is `OT-AAAA-000001` before saving;
+   - register two devices with the same serial number: the application must warn and ask for confirmation;
+   - in the list, try the search box and the filters for status, priority, equipment type and outstanding balance;
+   - if the client already has a device registered, the **Equipo** field lists it. Select it and its data is locked: the order uses that same device and no new one is created.
+5. **Order details:** double-click an order in the list. It has four tabs:
+   - **Resumen (Summary):** number, status, client, equipment, dates, total, deposit and balance.
+   - **Cliente (Client):** contact details, other orders of the client and total outstanding balance (cancelled orders are excluded).
+   - **Equipo (Equipment):** technical data. The password is hidden; **Mostrar contraseña** reveals it.
+   - **Historial (History):** status changes and notes in chronological order.
+   - From the bottom of the dialog you can change the status, record a payment or refund, add a note, and mark the order as delivered (this asks for confirmation).
+6. **Shortcuts:** `F5` refreshes every screen and `Ctrl+Q` quits.
+7. **Restart:** close the application, open it again with the same database and check that the data is still there.
 
-### Qué todavía no funciona
+### Not implemented yet
 
-- No se pueden adjuntar fotografías ni generar PDF.
-- No hay presupuesto con líneas de detalle ni diagnóstico en editor de texto enriquecido.
-- No hay copias de seguridad desde la interfaz.
-- Cambiar el estado de una orden no tiene reglas de transición: se puede pasar a cualquier estado.
+- Attaching photographs and generating PDF documents (planned for Phase 2 and Phase 3).
+- Quotes with line items, and rich-text diagnosis editing (Phase 2 and Phase 3).
+- Backups from the interface (Phase 4).
+- Transition rules for order statuses: any status can currently be set from any other.
 
-### Si algo falla
+### If something fails
 
-Todavía no hay registro de eventos en archivo (§20 del ROADMAP). Si algo falla, ejecuta el programa desde una terminal y copia el mensaje de error completo que aparece allí.
+There is no log file yet (ROADMAP §20). If something fails, run the program from a terminal and copy the full error message that appears there.
 
-## Pruebas
+## Testing
 
-Con el entorno virtual activado:
+With the virtual environment activated, from the project folder:
 
 ```bash
 pytest
 ```
 
-## Estructura del proyecto
+The suite uses a temporary SQLite database for each test and runs the Qt interface offscreen, so it does not open windows. Interface tests use `pytest-qt`.
+
+## Project structure
 
 ```text
 .
@@ -110,42 +133,58 @@ pytest
 ├── requirements.txt
 ├── README.md
 ├── ROADMAP.md
+├── AGENTS.md
 ├── LICENSE
+├── alembic.ini
 ├── src/
 │   └── luciotech/
-│       ├── config.py        # Nombre, app_id, organización y versión
+│       ├── main.py               # Entry point: migrations, then main window
+│       ├── config.py             # Name, app_id, organization, version, defaults
+│       ├── database/
+│       │   ├── connection.py     # SQLite engine with foreign keys enabled
+│       │   ├── enums.py          # Statuses, priorities and types (defined once)
+│       │   ├── models.py         # SQLAlchemy models
+│       │   ├── repositories.py   # CRUD per entity (flush only, no commit)
+│       │   ├── migrate.py        # Applies Alembic migrations at startup
+│       │   └── migrations/       # Alembic revisions
+│       ├── services/             # Business rules; receive a session, never commit
+│       ├── ui/
+│       │   ├── main_window.py    # Main window with tabs
+│       │   ├── pages/            # Home, orders, clients and equipment pages
+│       │   └── dialogs/          # Forms and order details
 │       └── utils/
-│           └── paths.py     # Rutas de datos y registros
-└── tests/
+│           ├── paths.py          # XDG data and log paths
+│           └── validators.py     # Ecuadorian national ID (modulus 10), phone, email
+└── tests/                        # pytest and pytest-qt
 ```
 
-## Ubicación de datos
+## Data location
 
-En Linux se usan las rutas XDG:
+On Linux the application uses XDG paths:
 
-| Contenido | Ruta |
+| Content | Path |
 |---|---|
-| Base de datos SQLite | `~/.local/share/luciotech-service-manager/database.sqlite3` |
-| Fotografías (planificado) | `~/.local/share/luciotech-service-manager/attachments/` |
-| Registros (logs) | `~/.local/state/luciotech-service-manager/logs/` |
+| SQLite database | `~/.local/share/luciotech-service-manager/database.sqlite3` |
+| Photographs (planned) | `~/.local/share/luciotech-service-manager/attachments/` |
+| Logs (planned) | `~/.local/state/luciotech-service-manager/logs/` |
 
-Si defines `XDG_DATA_HOME` o `XDG_STATE_HOME`, las rutas cambian en consecuencia.
+If you set `XDG_DATA_HOME` or `XDG_STATE_HOME`, the paths change accordingly.
 
-## Seguridad de las contraseñas de equipos
+## Password storage policy
 
-Las contraseñas o PIN de los equipos se guardan **en texto plano** en la base de datos SQLite local. El sistema no tiene servidor, así que la protección depende de los permisos del sistema de archivos. Por eso:
+Equipment passwords and PINs are stored **in plain text** in the local SQLite database. The system has no server, so protection depends on the file-system permissions. Therefore:
 
-- No compartas la carpeta de datos.
-- Protege tu cuenta de usuario con una contraseña fuerte.
-- Las contraseñas nunca se escriben en los registros.
+- do not share the data folder;
+- protect your user account with a strong password;
+- passwords are never written to logs.
 
-## Solución de problemas
+## Troubleshooting
 
-- **`source: no such file`**: el comando `source` debe ir en su propia línea o unido con `&&` en la misma línea. Vuelve a escribir los comandos tal como aparecen arriba.
-- **`ModuleNotFoundError: No module named 'luciotech'`**: el paquete no está instalado. Ejecuta `pip install -e .` con el entorno virtual activado, o usa `PYTHONPATH=src` como se muestra arriba.
-- **`ModuleNotFoundError` con otro nombre**: verifica que el entorno virtual esté activado; el prompt debe mostrar `(.venv)`.
-- **La ventana no aparece en una sesión remota o sin pantalla**: ejecuta con `QT_QPA_PLATFORM=offscreen` solo para pruebas automáticas; no verás ventana.
+- **`source: no such file`**: the `source` command must be on its own line or joined with `&&` on the same line. Type the commands exactly as shown above.
+- **`ModuleNotFoundError: No module named 'luciotech'`**: the package is not installed. Run `pip install -e .` with the virtual environment activated, or use `PYTHONPATH=src` as shown above.
+- **`ModuleNotFoundError` for another module**: check that the virtual environment is active; the prompt must show `(.venv)`.
+- **No window appears in a remote or headless session**: run with `QT_QPA_PLATFORM=offscreen` only for automated tests; no window is shown.
 
-## Licencia
+## License
 
-GPL-3.0. Consulta el archivo `LICENSE`.
+GNU General Public License v3.0. See [`LICENSE`](LICENSE).
