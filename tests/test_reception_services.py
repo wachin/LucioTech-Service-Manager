@@ -304,6 +304,55 @@ def test_accessories_text_includes_detail_of_each_item() -> None:
     assert text == "Batería (Dell XPS 13), Cargador"
 
 
+def test_reception_can_reuse_existing_equipment_of_the_customer(
+    session_factory: sessionmaker[Session],
+) -> None:
+    customer_id = seed_customer(session_factory)
+    with session_factory() as session:
+        first = register_reception(
+            session,
+            reception(new_customer=None, customer_id=customer_id,
+                      equipment=equipment(numero_serie="SN-REUSE")),
+        )
+        session.commit()
+        equipment_id = first.equipo_id
+
+        second = register_reception(
+            session,
+            reception(new_customer=None, customer_id=customer_id, equipment_id=equipment_id,
+                      equipment=equipment(tipo_equipo="Laptop")),
+        )
+        session.commit()
+
+        assert second.equipo_id == equipment_id
+        assert session.query(Equipment).count() == 1
+        assert second.numero_orden == "OT-2026-000002"
+
+
+def test_reusing_equipment_of_another_customer_is_rejected(
+    session_factory: sessionmaker[Session],
+) -> None:
+    owner_id = seed_customer(session_factory, nombre_completo="Dueño", numero_identificacion="",
+                             telefono_principal="0999000001")
+    other_id = seed_customer(session_factory, nombre_completo="Otro", numero_identificacion="",
+                             telefono_principal="0999000002")
+    with session_factory() as session:
+        owner_equipment = register_reception(
+            session, reception(new_customer=None, customer_id=owner_id),
+        )
+        session.commit()
+        data = reception(new_customer=None, customer_id=other_id,
+                         equipment_id=owner_equipment.equipo_id)
+        assert reception_input_errors(session, data) == {"equipo": "equipment.other_customer"}
+
+
+def test_reusing_missing_equipment_is_rejected(session_factory: sessionmaker[Session]) -> None:
+    customer_id = seed_customer(session_factory)
+    with session_factory() as session:
+        data = reception(new_customer=None, customer_id=customer_id, equipment_id=999)
+        assert reception_input_errors(session, data) == {"equipo": "not_found"}
+
+
 def test_equipment_model_is_unchanged_by_reception(session_factory: sessionmaker[Session]) -> None:
     with session_factory() as session:
         register_reception(session, reception())

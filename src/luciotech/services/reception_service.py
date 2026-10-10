@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from luciotech.config import DEFAULT_USER
 from luciotech.database.enums import Priority
-from luciotech.database.models import Customer, ServiceOrder
+from luciotech.database.models import Customer, Equipment, ServiceOrder
 from luciotech.services.customer_service import (
     CustomerData,
     customer_input_errors,
@@ -43,6 +43,7 @@ class ReceptionData:
     equipment: EquipmentData
     customer_id: int | None = None
     new_customer: CustomerData | None = None
+    equipment_id: int | None = None
     fecha_ingreso: datetime | None = None
     fecha_estimada_entrega: datetime | None = None
     prioridad: Priority | str = Priority.NORMAL
@@ -72,6 +73,15 @@ def reception_input_errors(session: Session, data: ReceptionData) -> dict[str, s
         errors["cliente"] = "not_found"
     if data.new_customer is not None:
         errors.update(customer_input_errors(data.new_customer))
+
+    if data.equipment_id is not None:
+        existing = session.get(Equipment, data.equipment_id)
+        if existing is None:
+            errors["equipo"] = "not_found"
+        elif data.customer_id is not None and existing.cliente_id != data.customer_id:
+            errors["equipo"] = "equipment.other_customer"
+        elif data.new_customer is not None:
+            errors["equipo"] = "equipment.other_customer"
 
     equipment_errors = equipment_input_errors(data.equipment, equipment_types(session))
     errors.update({field: code for field, code in equipment_errors.items() if field != "cliente_id"})
@@ -103,11 +113,14 @@ def register_reception(session: Session, data: ReceptionData) -> ServiceOrder:
         raise ReceptionValidationError(errors)
 
     customer = _resolve_customer(session, data)
-    equipment = save_equipment(
-        session,
-        replace(data.equipment, cliente_id=customer.id),
-        equipment_types(session),
-    )
+    if data.equipment_id is not None:
+        equipment = session.get(Equipment, data.equipment_id)
+    else:
+        equipment = save_equipment(
+            session,
+            replace(data.equipment, cliente_id=customer.id),
+            equipment_types(session),
+        )
     return create_service_order(
         session,
         customer=customer,

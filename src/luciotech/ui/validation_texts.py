@@ -25,6 +25,7 @@ _ERROR_TEXTS = {
     "date.before_entry": "La fecha estimada no puede ser anterior a la fecha de ingreso.",
     "amount.must_be_positive": "El importe debe ser mayor que cero.",
     "refund.exceeds_paid": "No se puede reembolsar más de lo pagado.",
+    "equipment.other_customer": "El equipo elegido no pertenece a este cliente.",
 }
 
 _FIELD_LABELS = {
@@ -39,6 +40,7 @@ _FIELD_LABELS = {
     "costo_diagnostico": "Costo de diagnóstico",
     "anticipo": "Anticipo recibido",
     "fecha_estimada_entrega": "Fecha estimada de entrega",
+    "equipo": "Equipo",
 }
 
 

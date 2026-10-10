@@ -199,6 +199,67 @@ def test_main_window_has_orders_tab(qtbot: QtBot, seeded: sessionmaker[Session])
     assert window._tabs.tabText(1) == "Órdenes"
 
 
+def _customer_with_equipment(session_factory: sessionmaker[Session]) -> int:
+    with session_factory() as session:
+        customer = save_customer(
+            session,
+            CustomerData(nombre_completo="Jean Carlos", numero_identificacion="",
+                         telefono_principal="0978907244"),
+        )
+        save_equipment(
+            session,
+            EquipmentData(cliente_id=customer.id, tipo_equipo="Laptop", marca="Dell",
+                          modelo="Inspiron 1750", contrasena_equipo="abc"),
+            ["Laptop", "Otro"],
+        )
+        session.commit()
+        return customer.id
+
+
+def test_equipment_selector_lists_only_the_customers_equipment(
+    qtbot: QtBot, seeded: sessionmaker[Session]
+) -> None:
+    customer_id = _customer_with_equipment(seeded)
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    dialog._customer_combo.setCurrentIndex(dialog._customer_combo.findData(customer_id))
+    labels = [dialog._equipment_combo.itemText(i) for i in range(dialog._equipment_combo.count())]
+    assert labels == ["— Equipo nuevo —", "Laptop Dell Inspiron 1750"]
+
+
+def test_choosing_existing_equipment_locks_its_fields(
+    qtbot: QtBot, seeded: sessionmaker[Session]
+) -> None:
+    customer_id = _customer_with_equipment(seeded)
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    dialog._customer_combo.setCurrentIndex(dialog._customer_combo.findData(customer_id))
+    dialog._equipment_combo.setCurrentIndex(1)
+    assert dialog._brand.text() == "Dell"
+    assert not dialog._brand.isEnabled()
+    dialog._equipment_combo.setCurrentIndex(0)
+    assert dialog._brand.isEnabled()
+
+
+def test_saving_with_existing_equipment_does_not_create_another(
+    qtbot: QtBot, seeded: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from luciotech.database.models import Equipment
+
+    customer_id = _customer_with_equipment(seeded)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.StandardButton.Yes)
+    dialog = ReceptionDialog(seeded)
+    qtbot.addWidget(dialog)
+    dialog._customer_combo.setCurrentIndex(dialog._customer_combo.findData(customer_id))
+    dialog._equipment_combo.setCurrentIndex(1)
+    dialog._problem.setPlainText("No carga")
+    dialog._save()
+
+    assert dialog.saved_order_number is not None
+    with seeded() as session:
+        assert session.query(Equipment).filter_by(cliente_id=customer_id).count() == 1
+
+
 def test_new_order_from_existing_customer_is_registered(
     qtbot: QtBot, seeded: sessionmaker[Session]
 ) -> None:

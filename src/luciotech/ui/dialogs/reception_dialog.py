@@ -28,8 +28,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.database.enums import Priority
-from luciotech.database.models import Customer
-from luciotech.database.repositories import CustomerRepository
+from luciotech.database.models import Customer, Equipment
+from luciotech.database.repositories import CustomerRepository, EquipmentRepository
 from luciotech.services.accessories import build_accessories_text, suggested_accessories
 from luciotech.services.customer_service import CustomerData
 from luciotech.services.equipment_service import EquipmentData
@@ -46,6 +46,7 @@ from luciotech.services.settings_service import equipment_types
 from luciotech.ui.validation_texts import error_text, field_label
 
 NEW_CUSTOMER_KEY = -1
+NEW_EQUIPMENT_KEY = 0
 
 
 class ReceptionDialog(QDialog):
@@ -58,6 +59,7 @@ class ReceptionDialog(QDialog):
         self.setWindowState(self.windowState() | Qt.WindowState.WindowMaximized)
 
         self._customer_combo = QComboBox()
+        self._equipment_combo = QComboBox()
         self._new_name = QLineEdit()
         self._new_identification = QLineEdit()
         self._new_phone = QLineEdit()
@@ -113,6 +115,7 @@ class ReceptionDialog(QDialog):
 
         customer_form = QFormLayout()
         customer_form.addRow(field_label("cliente") + " *", self._customer_combo)
+        customer_form.addRow(self.tr("Equipo"), self._equipment_combo)
 
         equipment_form = QFormLayout()
         equipment_form.addRow(field_label("tipo_equipo") + " *", self._type)
@@ -175,6 +178,7 @@ class ReceptionDialog(QDialog):
         layout.addWidget(buttons)
 
         self._customer_combo.currentIndexChanged.connect(self._on_customer_changed)
+        self._equipment_combo.currentIndexChanged.connect(lambda _index: self._on_equipment_changed())
         self._type.currentTextChanged.connect(self._rebuild_accessories)
         self._entry.dateTimeChanged.connect(self._refresh_number)
         self._load_choices()
@@ -213,6 +217,52 @@ class ReceptionDialog(QDialog):
     def _on_customer_changed(self) -> None:
         is_new = self._customer_combo.currentData() == NEW_CUSTOMER_KEY
         self._new_group.setVisible(is_new)
+        self._reload_equipment_choices()
+
+    def _reload_equipment_choices(self) -> None:
+        self._equipment_combo.blockSignals(True)
+        self._equipment_combo.clear()
+        self._equipment_combo.addItem(self.tr("— Equipo nuevo —"), NEW_EQUIPMENT_KEY)
+        customer_id = self._customer_combo.currentData()
+        if customer_id is not None and customer_id != NEW_CUSTOMER_KEY:
+            with self._session_factory() as session:
+                for equipment in EquipmentRepository(session).list_all():
+                    if equipment.cliente_id == int(customer_id):
+                        label = " ".join(
+                            part for part in (equipment.tipo_equipo, equipment.marca, equipment.modelo) if part
+                        )
+                        self._equipment_combo.addItem(label, equipment.id)
+        self._equipment_combo.blockSignals(False)
+        self._equipment_combo.setCurrentIndex(0)
+        self._on_equipment_changed()
+
+    def _on_equipment_changed(self) -> None:
+        existing_id = self._equipment_combo.currentData()
+        reuse = existing_id is not None and existing_id != NEW_EQUIPMENT_KEY
+        for field in (self._type, self._brand, self._model, self._serial, self._color, self._os, self._password):
+            field.setEnabled(not reuse)
+        if reuse:
+            self._fill_from_equipment(int(existing_id))
+
+    def _fill_from_equipment(self, equipment_id: int) -> None:
+        with self._session_factory() as session:
+            equipment = session.get(Equipment, equipment_id)
+            if equipment is None:
+                return
+            self._select_or_add_type(equipment.tipo_equipo)
+            self._brand.setText(equipment.marca or "")
+            self._model.setText(equipment.modelo or "")
+            self._serial.setText(equipment.numero_serie or "")
+            self._color.setText(equipment.color or "")
+            self._os.setText(equipment.sistema_operativo or "")
+            self._password.setText(equipment.contrasena_equipo or "")
+
+    def _select_or_add_type(self, tipo: str) -> None:
+        index = self._type.findText(tipo)
+        if index < 0:
+            self._type.addItem(tipo)
+            index = self._type.count() - 1
+        self._type.setCurrentIndex(index)
 
     def _refresh_number(self) -> None:
         year = self._entry.dateTime().toPyDateTime().year
@@ -252,10 +302,17 @@ class ReceptionDialog(QDialog):
             problema_reportado_cliente=self._problem.toPlainText(),
             observaciones_ingreso=self._intake_notes.toPlainText(),
         )
+        chosen_equipment = self._equipment_combo.currentData()
+        reuse_id = (
+            int(chosen_equipment)
+            if chosen_equipment is not None and chosen_equipment != NEW_EQUIPMENT_KEY
+            else None
+        )
         return ReceptionData(
             equipment=equipment,
             customer_id=int(customer_id) if customer_id is not None else None,
             new_customer=new_customer,
+            equipment_id=reuse_id,
             fecha_ingreso=self._entry.dateTime().toPyDateTime(),
             fecha_estimada_entrega=self._estimate.dateTime().toPyDateTime(),
             prioridad=self._priority.currentText(),
