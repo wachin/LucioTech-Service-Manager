@@ -61,7 +61,20 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 
 ## Seguimiento de fase activa
 
-Fase activa: ninguna. Al iniciar la Fase 2 se copiará aquí su checklist (regla 9).
+Fase activa: **Fase 2 — Diagnóstico y documentación** (iniciada). Alcance de este primer bloque: solo lo esencial de la barra de herramientas del editor; el resto de la barra y los textos predefinidos quedan para bloques posteriores.
+
+- [~] Rich text editor widget (paso 10, pendiente de commit). Falta: barra completa de §8 (fuente, tamaño, color, sangría, tabla, imagen, buscar y reemplazar, zoom, impresión, texto sin formato); queda para bloques posteriores.
+- [ ] Diagnosis editor integrated
+- [ ] Work performed editor integrated
+- [ ] Recommendations editor integrated
+- [ ] Predefined texts
+- [ ] State change with history (ya existente en Fase 1; se verifica aquí)
+- [ ] Photograph import (trasladado desde Fase 1, pendiente de implementar)
+- [ ] Photograph viewer
+- [ ] Photograph reorder
+- [ ] Tests for HTML round-trip and photograph import
+- [ ] README updated
+- [ ] Git commit created
 
 ---
 
