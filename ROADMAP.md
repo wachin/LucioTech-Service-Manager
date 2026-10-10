@@ -1816,23 +1816,25 @@ Create:
 
 ### Checklist Phase 1
 
-- [ ] Project structure created
-- [ ] `pyproject.toml`, `requirements.txt`
-- [ ] Main window opens and closes without errors
-- [ ] SQLAlchemy configured
-- [ ] All models created
-- [ ] Alembic initial migration applied
-- [ ] Repositories with CRUD
-- [ ] Customer form with cédula validation
-- [ ] Equipment form
-- [ ] Reception form
-- [ ] Order list with basic filters
-- [ ] Basic order view (Summary, Customer, Equipment, History)
-- [ ] Order number auto-generated
-- [ ] State history logging
-- [ ] Tests for cédula validation, order number generation, totals
-- [ ] README updated
+- [x] Project structure created
+- [x] `pyproject.toml`, `requirements.txt`
+- [x] Main window opens and closes without errors
+- [x] SQLAlchemy configured
+- [x] All models created
+- [x] Alembic initial migration applied
+- [x] Repositories with CRUD
+- [x] Customer form with cédula validation
+- [x] Equipment form
+- [x] Reception form
+- [x] Order list with basic filters
+- [x] Basic order view (Summary, Customer, Equipment, History)
+- [x] Order number auto-generated
+- [x] State history logging
+- [x] Tests for cédula validation, order number generation, totals
+- [x] README updated
 - [ ] Git commit created
+
+> Nota (2026-10-09): las fotografías (§5.4 y §7.4) no forman parte de la Fase 1; se trasladan a la Fase 2. La lista de órdenes filtra por texto, estado, prioridad, tipo de equipo y saldo; no incluye columnas ordenables ni exportación CSV, que quedan para fases posteriores de §10.
 
 ## Phase 2
 
@@ -2014,22 +2016,22 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 
 ## Phase 1 — Runnable core
 
-- [ ] Structure
-- [ ] Database
-- [ ] Models
-- [ ] Repositories
-- [ ] Main window
-- [ ] Home panel
-- [ ] Customer form
-- [ ] Equipment form
-- [ ] Reception form
-- [ ] Order list
-- [ ] Basic order view
-- [ ] Cédula validation (módulo 10)
-- [ ] Order number generation
-- [ ] State history
-- [ ] Tests
-- [ ] README
+- [x] Structure
+- [x] Database
+- [x] Models
+- [x] Repositories
+- [x] Main window
+- [x] Home panel
+- [x] Customer form
+- [x] Equipment form
+- [x] Reception form
+- [x] Order list
+- [x] Basic order view
+- [x] Cédula validation (módulo 10)
+- [x] Order number generation
+- [x] State history
+- [x] Tests
+- [x] README
 - [ ] Commit
 
 ## Phase 2 — Diagnosis and documentation

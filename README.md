@@ -4,7 +4,7 @@ Aplicación de escritorio en Python 3 y PyQt6 para registrar la recepción, el d
 
 La aplicación funciona completamente sin conexión y no envía datos a servidores externos.
 
-> Estado: **Fase 1 en desarrollo**. Ya se puede probar la interfaz gráfica (panel de inicio, clientes, equipos y recepciones). Aún no están la vista de detalle de una orden, la edición de estados desde la interfaz ni los documentos PDF. Consulta `ROADMAP.md` para el detalle del avance.
+> Estado: **Fase 1 en desarrollo**. Ya se puede probar la interfaz gráfica: panel de inicio, clientes, equipos, recepciones, lista de órdenes y detalle de orden con cambio de estado, pagos y notas. Aún no están los documentos PDF, las fotografías ni el presupuesto. Consulta `ROADMAP.md` para el detalle del avance.
 
 ## Requisitos
 
@@ -73,14 +73,22 @@ rm -f /tmp/luciotech-prueba.sqlite3
    - observa que el número de orden previsto es `OT-AAAA-000001` antes de guardar;
    - registra dos equipos con el mismo número de serie: debe avisar y pedir confirmación.
    - En la lista, prueba el buscador y los filtros de estado, prioridad, tipo de equipo y saldo pendiente.
-5. **Atajos:** `F5` actualiza todas las pantallas y `Ctrl+Q` cierra la aplicación.
-6. **Reinicio:** cierra la aplicación, vuelve a abrirla con la misma base y comprueba que los datos siguen ahí.
+   - Si el cliente ya tiene un equipo registrado, el campo **Equipo** lo muestra. Elígelo y sus datos quedan bloqueados: la orden usa ese mismo equipo y no se crea otro.
+5. **Detalle de orden:** haz doble clic en una orden de la lista. Tiene cuatro pestañas:
+   - **Resumen:** número, estado, cliente, equipo, fechas, total, anticipo y saldo.
+   - **Cliente:** datos de contacto, otras órdenes del cliente y saldo pendiente total (sin contar las canceladas).
+   - **Equipo:** datos técnicos. La contraseña aparece oculta; el botón **Mostrar contraseña** la revela.
+   - **Historial:** cambios de estado y notas, en orden cronológico.
+   - Desde la parte inferior puedes cambiar el estado, registrar un pago o reembolso, añadir una nota y marcar la orden como entregada (pide confirmación).
+6. **Atajos:** `F5` actualiza todas las pantallas y `Ctrl+Q` cierra la aplicación.
+7. **Reinicio:** cierra la aplicación, vuelve a abrirla con la misma base y comprueba que los datos siguen ahí.
 
 ### Qué todavía no funciona
 
-- No hay vista de detalle de una orden, así que no se puede cambiar su estado ni añadir pagos desde la interfaz.
 - No se pueden adjuntar fotografías ni generar PDF.
+- No hay presupuesto con líneas de detalle ni diagnóstico en editor de texto enriquecido.
 - No hay copias de seguridad desde la interfaz.
+- Cambiar el estado de una orden no tiene reglas de transición: se puede pasar a cualquier estado.
 
 ### Si algo falla
 

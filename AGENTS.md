@@ -102,6 +102,7 @@ Las rutas de datos son XDG (`~/.local/share/...` y `~/.local/state/.../logs/`). 
 
 ## Estado actual
 
-- Fase 1, pasos 1 a 4 implementados y probados (47 pruebas).
-- Pendiente: paso 5 (ventana principal, panel de inicio, formularios de cliente y equipo, con pruebas de UI con `pytest-qt`).
+- Fase 1, pasos 1 a 8 implementados y probados (157 pruebas): núcleo de datos, servicios, ventana principal, panel de inicio, clientes, equipos, recepción con selección de equipo existente, lista de órdenes y detalle de orden con cuatro pestañas.
+- Pendiente de la Fase 1: fotografías, presupuesto y PDF. Las casillas del ROADMAP se marcan según §0 al cerrar la fase.
 - `pytest-qt==4.5.0` ya está instalado en el `.venv`.
+- El punto de entrada es `luciotech.main`; ejecútalo con `PYTHONPATH=src` o con el paquete instalado.
