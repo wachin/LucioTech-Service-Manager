@@ -49,8 +49,8 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 |---|---|---|
 | Fase 1 — Núcleo ejecutable | Cerrada | `219a877` |
 | Fase 2 — Diagnóstico y documentación | Cerrada | `1a7ab2e` |
-| Fase 3 — Presupuesto, pagos, PDF e impresión | En curso | — |
-| Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente | — |
+| Fase 3 — Presupuesto, pagos, PDF e impresión | Cerrada | `pendiente de commit` |
+| Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente (siguiente) | — |
 
 ## Requisitos trasladados
 
@@ -58,10 +58,11 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 |---|---|---|---|
 | Fotografías de equipos (§5.4 y §7.4) | Fase 1 | Fase 2 | La importación de imágenes requiere copia a `attachments/`, miniaturas y corrección EXIF, que no son parte del núcleo de la Fase 1. Aprobado por el usuario el 2026-10-09. |
 | Editor de texto enriquecido para diagnóstico, trabajo y recomendaciones (§8) | Fase 2 (original) | Fase 2 | Sin cambio; se incluye aquí para que el seguimiento de la Fase 2 quede completo. |
+| Resumen de la recepción antes de guardar (§7.5) | Fase 1 | Fase 4 | El formulario ya muestra el número de orden planificado con `peek_next_order_number`, pero falta el diálogo de resumen completo. No pertenece a la Fase 3; se traslada el 2026-11-14 para no cerrar la fase ocultando trabajo pendiente (regla 7). |
 
 ## Seguimiento de fase activa
 
-Fase activa: **Fase 3 — Presupuesto, pagos, PDF e impresión** (iniciada; checklist copiado de §26 según la regla 9). Plan de bloques: 1) líneas de presupuesto (modelo, migración y servicio de totales) — entregado, 2) pestaña Presupuesto y pagos — entregado, 3) comprobante de recepción imprimible y términos y condiciones — entregado, 4) papelera con restauración y borrado lógico desde la interfaz — entregado, 5) los cinco documentos de §13.1 con selector «Documentos…» — entregado, 6) hoja, numeración, encabezado y pie, y PDF con nombre descriptivo (§13.2) — entregado, 7) siguiente paso según el estado en el resumen (§9) — entregado, 8) detalle de la orden en tres pestañas (Resumen, Trabajo y Dinero) — entregado, 9) eliminación de los costos fantasma `costo_repuestos` y `costo_mano_obra` (migración 0004) — entregado, 10) el historial como pestaña propia al lado de Dinero — entregado, 11) usuarios con acceso por contraseña y nombre propio en los documentos (§19) — entregado, 12) lista desplegable de usuarios en el acceso diario — entregado, 13) pantalla de **Configuración** para editar los términos y condiciones, la garantía y los datos del taller/impresión (§5.8), pedida por el usuario y entregada antes de cerrar la Fase 3 — entregado.
+Fase cerrada: **Fase 3 — Presupuesto, pagos, PDF e impresión** (checklist copiado de §26 según la regla 9; cerrada el 2026-11-14 con el commit de cierre de la tabla «Estado de las fases»). La Fase 4 todavía no está iniciada: al abrirla hay que copiar su checklist de §26 aquí. El seguimiento que sigue queda como histórico de la Fase 3. Plan de bloques: 1) líneas de presupuesto (modelo, migración y servicio de totales) — entregado, 2) pestaña Presupuesto y pagos — entregado, 3) comprobante de recepción imprimible y términos y condiciones — entregado, 4) papelera con restauración y borrado lógico desde la interfaz — entregado, 5) los cinco documentos de §13.1 con selector «Documentos…» — entregado, 6) hoja, numeración, encabezado y pie, y PDF con nombre descriptivo (§13.2) — entregado, 7) siguiente paso según el estado en el resumen (§9) — entregado, 8) detalle de la orden en tres pestañas (Resumen, Trabajo y Dinero) — entregado, 9) eliminación de los costos fantasma `costo_repuestos` y `costo_mano_obra` (migración 0004) — entregado, 10) el historial como pestaña propia al lado de Dinero — entregado, 11) usuarios con acceso por contraseña y nombre propio en los documentos (§19) — entregado, 12) lista desplegable de usuarios en el acceso diario — entregado, 13) pantalla de **Configuración** para editar los términos y condiciones, la garantía y los datos del taller/impresión (§5.8), pedida por el usuario y entregada como último bloque de la Fase 3 — entregado.
 
 Decisiones de dinero tomadas con el usuario el 2026-10-13:
 
@@ -128,6 +129,8 @@ Decisiones de documentos tomadas el 2026-10-13:
 - [x] Tests for PDF generation and totals (totales y pagos en los bloques 1 y 2; comprobante en el 3; los cinco documentos en el 5; hoja, numeración y PDF en el 6, con `tests/test_documents.py` y `tests/test_print_page.py`)
 - [x] README updated
 - [x] Git commit created
+
+Cierre de la Fase 3 (2026-11-14, reglas 3, 5 y 9 de §0): el programa fue ejecutado por el usuario y la suite completa pasa (477 pruebas). El estado final de estas 14 casillas se copió a §26 «Checklist Phase 3» y a §30 «Master phase checklist». Los dos `[~]` de §26 se resuelven con su decisión ya documentada: la librería de PDF es `QTextDocument` de Qt (§13) y las pruebas de PDF no extraen texto porque el entorno no tiene lector de PDF, así que verifican la maqueta, el encabezado, el pie y el número de hojas (§13). El único requisito deliberadamente pendiente, el **resumen previo al guardado** de §7.5, no se marca como hecho: se traslada a la Fase 4 con la regla 7. Los checklists de especificación de §2 a §25 son espejos históricos de la especificación, no el estado de avance de las fases; no se reescriben en bloque.
 
 ---
 
@@ -921,9 +924,9 @@ Crear otra recepción
 
 ### Checklist §7.5
 
-- [ ] Summary dialog before saving
+- [~] Summary dialog before saving — **trasladado a Fase 4 (2026-11-14)**; el diálogo de resumen completo sigue pendiente y ahora es una casilla del checklist de la Fase 4 (regla 7)
 - [x] Post-save action dialog (bloque 3: tras guardar la recepción se ofrecen «Imprimir comprobante», «Abrir orden» y «Cerrar»)
-- [~] Order number shown in summary (el número planificado ya se muestra en el formulario antes de guardar, con `peek_next_order_number`; falta el diálogo de resumen completo)
+- [~] Order number shown in summary — **trasladado a Fase 4 (2026-11-14)**; el número planificado ya se muestra en el formulario antes de guardar, con `peek_next_order_number`; falta el diálogo de resumen completo
 
 ---
 
@@ -1952,7 +1955,7 @@ Create:
 - [x] State history logging
 - [x] Tests for cédula validation, order number generation, totals
 - [x] README updated
-- [ ] Git commit created
+- [x] Git commit created (paso 15, `219a877`, cierre de la Fase 1)
 
 > Nota (2026-10-09): las fotografías (§5.4 y §7.4) no forman parte de la Fase 1; se trasladan a la Fase 2. La lista de órdenes filtra por texto, estado, prioridad, tipo de equipo y saldo; no incluye columnas ordenables ni exportación CSV, que quedan para fases posteriores de §10.
 
@@ -1997,19 +2000,19 @@ Create:
 
 ### Checklist Phase 3
 
-- [x] Line items model and UI (bloques 1 y 2)
-- [x] Totals calculation service (bloque 1)
-- [x] Payment registration (Fase 1; diálogo propio desde el bloque 2)
-- [x] Balance update (Fase 1; cubierto por la suite)
-- [~] PDF library integrated (bloque 3: `QTextDocument` de Qt en lugar de ReportLab/WeasyPrint; decisión documentada)
-- [x] Reception receipt (bloque 3)
-- [ ] Technical report
-- [ ] Budget PDF
-- [ ] Delivery receipt PDF
-- [x] Print preview and print dialog (bloque 3)
-- [~] Tests for PDF generation and totals (totales, pagos, comprobante y papelera cubiertos; falta la extracción de texto del PDF)
-- [x] README updated
-- [ ] Git commit created
+- [x] Line items model and UI (paso 1 y 2, `pendiente de commit`)
+- [x] Totals calculation service (paso 1, `pendiente de commit`)
+- [x] Payment registration (paso 2, `pendiente de commit`; existe desde la Fase 1)
+- [x] Balance update (paso 2, `pendiente de commit`; existe desde la Fase 1)
+- [x] PDF library integrated (paso 3, `pendiente de commit`; `QTextDocument` de Qt en lugar de ReportLab/WeasyPrint, decisión documentada en §13; el bloque 6 añade el PDF con nombre descriptivo, encabezado, pie y numeración)
+- [x] Reception receipt (paso 3, `pendiente de commit`; `ui/documents.py::receipt_html`)
+- [x] Technical report (paso 5, `pendiente de commit`; `ui/documents.py::technical_report_html`)
+- [x] Budget PDF (paso 5, `pendiente de commit`; `ui/documents.py::budget_html`)
+- [x] Delivery receipt PDF (paso 5, `pendiente de commit`; `ui/documents.py::delivery_html`)
+- [x] Print preview and print dialog (paso 3, `pendiente de commit`; `QPrintPreviewDialog` con impresora, papel, márgenes, rango y copias del propio Qt)
+- [x] Tests for PDF generation and totals (pasos 1, 2, 3, 5 y 6, `pendiente de commit`; `tests/test_documents.py` y `tests/test_print_page.py`. No hay lector de PDF en el entorno: en lugar de extraer texto se verifica la maqueta, el encabezado, el pie y el número de hojas, como documenta §13)
+- [x] README updated (paso 13, `pendiente de commit`)
+- [x] Git commit created (paso 14, `pendiente de commit`; este mismo commit de cierre)
 
 ## Phase 4
 
@@ -2024,6 +2027,7 @@ Create:
 
 ### Checklist Phase 4
 
+- [ ] Summary dialog before saving (§7.5, trasladado desde la Fase 1 el 2026-11-14 según la regla 7; incluye el número de orden planificado)
 - [ ] Reports section
 - [ ] CSV export
 - [ ] Backup and restore
@@ -2152,7 +2156,7 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 - [x] State history
 - [x] Tests
 - [x] README
-- [ ] Commit
+- [x] Commit (paso 15, `219a877`, cierre de la Fase 1)
 
 ## Phase 2 — Diagnosis and documentation
 
@@ -2167,18 +2171,19 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 
 ## Phase 3 — Budget, payments, PDF, printing
 
-- [x] Line items
-- [x] Payments
-- [x] Totals and balance
-- [x] Reception receipt and print preview
-- [ ] Remaining PDF types (technical report, budget, delivery receipt, full history)
-- [x] Trash with restore and delete button
-- [~] Tests
-- [x] README
-- [ ] Commit
+- [x] Line items (paso 1, `pendiente de commit`)
+- [x] Payments (paso 2, `pendiente de commit`)
+- [x] Totals and balance (paso 1, `pendiente de commit`)
+- [x] Reception receipt and print preview (paso 3, `pendiente de commit`)
+- [x] Remaining PDF types (technical report, budget, delivery receipt, full history) (paso 5, `pendiente de commit`)
+- [x] Trash with restore and delete button (paso 4, `pendiente de commit`)
+- [x] Tests (pasos 1 a 13, `pendiente de commit`; 477 pruebas; sin extracción de texto de PDF, se verifica la maqueta según §13)
+- [x] README (paso 13, `pendiente de commit`)
+- [x] Commit (paso 14, `pendiente de commit`)
 
 ## Phase 4 — Reports, backups, settings, packaging
 
+- [ ] Summary dialog before saving (§7.5, trasladado el 2026-11-14)
 - [ ] Reports
 - [ ] CSV export
 - [ ] Backups

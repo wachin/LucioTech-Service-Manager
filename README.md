@@ -4,13 +4,13 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
 [![Tests](https://img.shields.io/badge/tests-477%2F477%20on%20Windows-brightgreen.svg)](#windows-test-status)
-[![Status](https://img.shields.io/badge/status-Phase%203%20in%20progress-orange.svg)](ROADMAP.md)
+[![Status](https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg)](ROADMAP.md)
 
 A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
 
 The application works fully offline and does not send data to any external server.
 
-> **Status:** Phase 1 (runnable core) and Phase 2 (diagnosis, predefined texts and photographs) are closed. Phase 3 is in progress: budget line items, the **Dinero** tab, the printable **reception receipt**, the trash with restore and the terms and conditions are implemented, and so are the five documents of §13.1 (reception receipt, budget, technical report, delivery receipt and full history) with page numbers, header and footer, A4/Letter paper, configurable margins and PDF export with a descriptive file name. See [`ROADMAP.md`](ROADMAP.md) for details.
+> **Status:** Phase 1 (runnable core), Phase 2 (diagnosis, predefined texts and photographs) and Phase 3 (budgets, payments, PDF and printing) are closed. Phase 3 delivered the budget line items and the **Dinero** tab, the trash with restore, the five documents of §13.1 (reception receipt, budget, technical report, delivery receipt and full history) with page numbers, header and footer, A4/Letter paper, configurable margins and PDF export with a descriptive file name, the order detail in four tabs, user accounts with password login and the **Configuración** screen for workshop data, taxes, terms and conditions and the warranty. Phase 4 (reports, backups, themes, translations and packaging) is next and has not started yet. See [`ROADMAP.md`](ROADMAP.md) for details.
 
 > **Language note:** the application's user interface is in Spanish, because it is made for a Spanish-speaking service technician. This README is in English for developers. Translations of the interface are planned for Phase 4.
 
