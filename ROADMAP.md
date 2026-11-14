@@ -49,7 +49,7 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 |---|---|---|
 | Fase 1 — Núcleo ejecutable | Cerrada | `219a877` |
 | Fase 2 — Diagnóstico y documentación | Cerrada | `1a7ab2e` |
-| Fase 3 — Presupuesto, pagos, PDF e impresión | Cerrada | `pendiente de commit` |
+| Fase 3 — Presupuesto, pagos, PDF e impresión | Cerrada | `f876ca8` |
 | Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente (siguiente) | — |
 
 ## Requisitos trasladados
@@ -2000,19 +2000,19 @@ Create:
 
 ### Checklist Phase 3
 
-- [x] Line items model and UI (paso 1 y 2, `pendiente de commit`)
-- [x] Totals calculation service (paso 1, `pendiente de commit`)
-- [x] Payment registration (paso 2, `pendiente de commit`; existe desde la Fase 1)
-- [x] Balance update (paso 2, `pendiente de commit`; existe desde la Fase 1)
-- [x] PDF library integrated (paso 3, `pendiente de commit`; `QTextDocument` de Qt en lugar de ReportLab/WeasyPrint, decisión documentada en §13; el bloque 6 añade el PDF con nombre descriptivo, encabezado, pie y numeración)
-- [x] Reception receipt (paso 3, `pendiente de commit`; `ui/documents.py::receipt_html`)
-- [x] Technical report (paso 5, `pendiente de commit`; `ui/documents.py::technical_report_html`)
-- [x] Budget PDF (paso 5, `pendiente de commit`; `ui/documents.py::budget_html`)
-- [x] Delivery receipt PDF (paso 5, `pendiente de commit`; `ui/documents.py::delivery_html`)
-- [x] Print preview and print dialog (paso 3, `pendiente de commit`; `QPrintPreviewDialog` con impresora, papel, márgenes, rango y copias del propio Qt)
-- [x] Tests for PDF generation and totals (pasos 1, 2, 3, 5 y 6, `pendiente de commit`; `tests/test_documents.py` y `tests/test_print_page.py`. No hay lector de PDF en el entorno: en lugar de extraer texto se verifica la maqueta, el encabezado, el pie y el número de hojas, como documenta §13)
-- [x] README updated (paso 13, `pendiente de commit`)
-- [x] Git commit created (paso 14, `pendiente de commit`; este mismo commit de cierre)
+- [x] Line items model and UI (paso 1 y 2, `f876ca8`)
+- [x] Totals calculation service (paso 1, `f876ca8`)
+- [x] Payment registration (paso 2, `f876ca8`; existe desde la Fase 1)
+- [x] Balance update (paso 2, `f876ca8`; existe desde la Fase 1)
+- [x] PDF library integrated (paso 3, `f876ca8`; `QTextDocument` de Qt en lugar de ReportLab/WeasyPrint, decisión documentada en §13; el bloque 6 añade el PDF con nombre descriptivo, encabezado, pie y numeración)
+- [x] Reception receipt (paso 3, `f876ca8`; `ui/documents.py::receipt_html`)
+- [x] Technical report (paso 5, `f876ca8`; `ui/documents.py::technical_report_html`)
+- [x] Budget PDF (paso 5, `f876ca8`; `ui/documents.py::budget_html`)
+- [x] Delivery receipt PDF (paso 5, `f876ca8`; `ui/documents.py::delivery_html`)
+- [x] Print preview and print dialog (paso 3, `f876ca8`; `QPrintPreviewDialog` con impresora, papel, márgenes, rango y copias del propio Qt)
+- [x] Tests for PDF generation and totals (pasos 1, 2, 3, 5 y 6, `f876ca8`; `tests/test_documents.py` y `tests/test_print_page.py`. No hay lector de PDF en el entorno: en lugar de extraer texto se verifica la maqueta, el encabezado, el pie y el número de hojas, como documenta §13)
+- [x] README updated (paso 13, `f876ca8`)
+- [x] Git commit created (paso 14, `f876ca8`; este mismo commit de cierre)
 
 ## Phase 4
 
@@ -2171,15 +2171,15 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 
 ## Phase 3 — Budget, payments, PDF, printing
 
-- [x] Line items (paso 1, `pendiente de commit`)
-- [x] Payments (paso 2, `pendiente de commit`)
-- [x] Totals and balance (paso 1, `pendiente de commit`)
-- [x] Reception receipt and print preview (paso 3, `pendiente de commit`)
-- [x] Remaining PDF types (technical report, budget, delivery receipt, full history) (paso 5, `pendiente de commit`)
-- [x] Trash with restore and delete button (paso 4, `pendiente de commit`)
-- [x] Tests (pasos 1 a 13, `pendiente de commit`; 477 pruebas; sin extracción de texto de PDF, se verifica la maqueta según §13)
-- [x] README (paso 13, `pendiente de commit`)
-- [x] Commit (paso 14, `pendiente de commit`)
+- [x] Line items (paso 1, `f876ca8`)
+- [x] Payments (paso 2, `f876ca8`)
+- [x] Totals and balance (paso 1, `f876ca8`)
+- [x] Reception receipt and print preview (paso 3, `f876ca8`)
+- [x] Remaining PDF types (technical report, budget, delivery receipt, full history) (paso 5, `f876ca8`)
+- [x] Trash with restore and delete button (paso 4, `f876ca8`)
+- [x] Tests (pasos 1 a 13, `f876ca8`; 477 pruebas; sin extracción de texto de PDF, se verifica la maqueta según §13)
+- [x] README (paso 13, `f876ca8`)
+- [x] Commit (paso 14, `f876ca8`)
 
 ## Phase 4 — Reports, backups, settings, packaging
 
