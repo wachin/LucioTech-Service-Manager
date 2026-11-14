@@ -9,22 +9,31 @@ from PyQt6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
+from luciotech.config import DEFAULT_USER
 from luciotech.database.enums import OrderState, Priority
+from luciotech.database.models import ServiceOrder
 from luciotech.services.order_query_service import OrderFilter, search_orders
+from luciotech.services.order_service import soft_delete_order
 from luciotech.services.settings_service import equipment_types
 from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
 from luciotech.ui.dialogs.reception_dialog import ReceptionDialog
+from luciotech.ui.documents import print_order_receipt
 from luciotech.ui.formatting import format_datetime, format_money
 
-OPERATOR = "Ing. Lucio"
+# El nombre del técnico sale de la sesión abierta (`MainWindow`), no de una constante: es el
+# que queda en el historial y el que se imprime. `DEFAULT_USER` solo cubre las llamadas
+# antiguas y las pruebas.
+OPERATOR = DEFAULT_USER
 
 ANY = ""
 COLUMNS = (
@@ -43,9 +52,15 @@ COLUMNS = (
 class OrdersPage(QWidget):
     data_changed = pyqtSignal()
 
-    def __init__(self, session_factory: sessionmaker[Session], parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        session_factory: sessionmaker[Session],
+        usuario: str = OPERATOR,
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self._session_factory = session_factory
+        self._usuario = usuario
 
         self._text = QLineEdit()
         self._text.setPlaceholderText(self.tr("Número, cliente, teléfono, serie, marca o modelo"))
@@ -56,6 +71,9 @@ class OrdersPage(QWidget):
         self._only_balance = QCheckBox(self.tr("Con saldo pendiente"))
         self._new_button = QPushButton(self.tr("Nueva recepción"))
         self._new_button.clicked.connect(self._new_reception)
+        self._delete_button = QPushButton(self.tr("Eliminar"))
+        self._delete_button.setToolTip(self.tr("Envía la orden seleccionada a la papelera"))
+        self._delete_button.clicked.connect(self._delete_selected)
         self._order_ids: list[int] = []
 
         self._state.addItem(self.tr("Todos los estados"), ANY)
@@ -72,6 +90,7 @@ class OrdersPage(QWidget):
         filters.addWidget(self._equipment_type)
         filters.addWidget(self._only_balance)
         filters.addWidget(self._new_button)
+        filters.addWidget(self._delete_button)
 
         self._table = QTableWidget(0, len(COLUMNS))
         self._table.setHorizontalHeaderLabels([self.tr(c) for c in COLUMNS])
@@ -147,14 +166,80 @@ class OrdersPage(QWidget):
         row = self._table.currentRow()
         if row < 0:
             return
-        order_id = self._order_ids[row]
-        dialog = OrderDetailDialog(self._session_factory, order_id, OPERATOR, parent=self)
+        self.open_order(self._order_ids[row])
+
+    def open_order(self, order_id: int) -> None:
+        dialog = OrderDetailDialog(self._session_factory, order_id, self._usuario, parent=self)
         dialog.exec()
         self.refresh()
         self.data_changed.emit()
 
+    def _delete_selected(self) -> None:
+        """Borra lógicamente la orden seleccionada, con confirmación previa (§18)."""
+        row = self._table.currentRow()
+        if row < 0:
+            QMessageBox.information(
+                self, self.windowTitle(), self.tr("Seleccione una orden de la lista.")
+            )
+            return
+        number = self.order_number_at(row)
+        answer = QMessageBox.warning(
+            self,
+            self.windowTitle(),
+            self.tr(
+                "La orden %1 se enviará a la papelera y dejará de aparecer en la lista. "
+                "Podrá restaurarla desde la pestaña Papelera.\n\n¿Desea continuar?"
+            ).replace("%1", number),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer != QMessageBox.StandardButton.Yes:
+            return
+        order_id = self._order_ids[row]
+        try:
+            with self._session_factory() as session:
+                order = session.get(ServiceOrder, order_id)
+                if order is None:
+                    raise ValueError(self.tr("La orden ya no existe."))
+                soft_delete_order(session, order, usuario=self._usuario)
+                session.commit()
+        except ValueError as exc:
+            QMessageBox.warning(self, self.windowTitle(), str(exc))
+            return
+        except SQLAlchemyError:
+            QMessageBox.critical(
+                self, self.windowTitle(), self.tr("No se pudo eliminar. Intente de nuevo.")
+            )
+            return
+        self.refresh()
+        self.data_changed.emit()
+
     def _new_reception(self) -> None:
-        dialog = ReceptionDialog(self._session_factory, parent=self)
-        if dialog.exec():
-            self.refresh()
-            self.data_changed.emit()
+        dialog = ReceptionDialog(self._session_factory, usuario=self._usuario, parent=self)
+        if not dialog.exec():
+            return
+        self.refresh()
+        self.data_changed.emit()
+        if dialog.saved_order_id is not None:
+            self._offer_follow_up(dialog.saved_order_id, dialog.saved_order_number or "")
+
+    def _offer_follow_up(self, order_id: int, numero_orden: str) -> None:
+        """Tras guardar la recepción se ofrece abrir la orden o imprimir el comprobante (§7.5)."""
+        box = QMessageBox(self)
+        box.setWindowTitle(self.tr("Recepción registrada"))
+        box.setText(
+            self.tr("La recepción quedó registrada con el número %1.").replace("%1", numero_orden)
+        )
+        print_button = box.addButton(
+            self.tr("Imprimir comprobante"), QMessageBox.ButtonRole.AcceptRole
+        )
+        open_button = box.addButton(self.tr("Abrir orden"), QMessageBox.ButtonRole.ActionRole)
+        box.addButton(self.tr("Cerrar"), QMessageBox.ButtonRole.RejectRole)
+        box.exec()
+        clicked = box.clickedButton()
+        if clicked is print_button:
+            print_order_receipt(
+                self._session_factory, order_id, self, printed_by=self._usuario
+            )
+        elif clicked is open_button:
+            self.open_order(order_id)

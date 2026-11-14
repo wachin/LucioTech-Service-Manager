@@ -56,19 +56,27 @@ src/luciotech/
 │   ├── reception_service.py       # Recepción en una transacción (cliente, equipo, orden)
 │   ├── order_query_service.py     # Lista de órdenes con filtros
 │   ├── order_detail_service.py    # Pagos, notas y entrega de una orden
-│   ├── order_view_service.py      # Datos de las pestañas Cliente y Equipo
+│   ├── order_view_service.py      # Datos del cliente y del equipo de la orden
 │   ├── clinical_text_service.py   # Diagnóstico, trabajo y recomendaciones (HTML)
 │   ├── predefined_text_service.py # Textos predefinidos del editor
 │   ├── budget_service.py          # Líneas de presupuesto (§12)
 │   ├── photo_service.py           # Fotografías: importación con UUID y EXIF
 │   ├── dashboard_service.py       # Conteos del panel de inicio
 │   ├── settings_service.py        # Tabla configuracion (clave/valor)
+│   ├── user_service.py            # Cuentas, contraseñas PBKDF2 y roles (§19)
 │   ├── customer_service.py        # Validación y duplicados de clientes
 │   └── equipment_service.py       # Equipos y advertencia por serie repetida
 ├── ui/
 │   ├── main_window.py        # Ventana principal maximizada con pestañas
 │   ├── formatting.py         # Formatos de fecha e importe
 │   ├── validation_texts.py   # Mensajes de error y nombres de campo
+│   ├── documents.py          # Los cinco documentos imprimibles (§13.1)
+│   ├── order_actions.py      # Siguiente paso de una orden según su estado (§9)
+│   ├── print_support.py      # Tamaño de la vista previa, hoja, encabezado, pie y PDF (§13.2)
+│   ├── translations.py       # Diálogos de Qt en español (qtbase_es, qt_es)
+│   ├── dialogs/login_dialog.py   # Acceso y creación del primer usuario (§19)
+│   ├── dialogs/users_dialog.py   # Alta, edición, contraseña y baja de cuentas
+│   ├── dialogs/settings_dialog.py # Configuración: taller, documentos, términos y garantía
 │   ├── pages/                # Inicio, órdenes, clientes y equipos
 │   ├── dialogs/              # Recepción, detalle de orden, fotos, buscar y reemplazar
 │   ├── widgets/              # Editor de texto enriquecido (§8)
@@ -94,10 +102,13 @@ tests/                        # pytest y pytest-qt; base temporal por prueba
 - **Cédula:** módulo 10. No aplicar módulo 11 (eso es para la clave de acceso de facturas).
 - **Número de orden:** formato `OT-AAAA-NNNNNN`, generado con la tabla `secuencias` dentro de la transacción. No usar `MAX(id)+1`.
 - **Totales:** solo en `totals_service.py`. Fórmula en ROADMAP §5.3.
-- **IVA:** 15% por defecto desde `config.py`, editable y desactivable. No dejar el 15 fijo en la lógica.
+- **IVA:** **desactivado por defecto** desde `config.py` (los precios del taller ya lo llevan incluido, así que el total es el subtotal); el 15 % sigue configurable y se reactiva con `impuesto_activo`. No dejar el 15 fijo en la lógica.
+- **Totales guardados:** al cambiar el IVA hay que recalcular las columnas guardadas de las órdenes (`totals_service.recalculate_stored_totals`, ya se llama al arrancar). Si no, la lista, la papelera y el panel de inicio muestran cifras viejas.
 - **Historial de estados:** se crea automáticamente en cada cambio y nunca se borra al editar.
 - **Borrado:** lógico (`activo=False`, `fecha_eliminacion`). Cancelar un servicio no es borrarlo.
 - **Número de serie repetido:** advertencia no bloqueante.
+- **Usuarios:** las contraseñas **nunca** se guardan en claro ni se registran en logs; solo el hash PBKDF2 de `user_service.hash_password`. Las cuentas no se borran, se desactivan, y el último administrador activo no se puede desactivar ni degradar. El `nombre_usuario` no se cambia una vez creado porque es la firma del historial.
+- **Textos legales:** los términos y la garantía salen de `settings_service` (`service_conditions` y `warranty_conditions`), nunca de literales en `documents.py`. Los cuatro documentos al cliente los imprimen con `_legal_html`; el historial completo, interno, no. Los marcadores se sustituyen al imprimir y el texto se escapa. `garantia_dias` se copia a la orden al crearla y `effective_warranty_days` lo usa como respaldo cuando la orden tiene 0 días (las anteriores al bloque 13); ponerlo en 0 apaga la garantía para todas las órdenes. Solo un administrador abre **Archivo ▸ Configuración…**.
 
 ## Datos y ficheros locales
 
@@ -109,7 +120,7 @@ Las rutas de datos son XDG (`~/.local/share/...` y `~/.local/state/.../logs/`). 
 - `*.sqlite3`, `*.sqlite` y `*.db` impiden versionar bases de datos.
 - `attachments/` y `backups/` impiden versionar fotos de equipos y copias de seguridad.
 - Los temporales de Kate (`*~`, `*.kate-swp`, `.kateproject`, `.kateconfig`) están ignorados.
-- Si un archivo ignorado ya estaba versionado, quítalo del índice con `git rm --cached`, sin borrarlo del disco. Si el archivo nuevo debe versionarse, revisa antes si una regla lo excluye (`git check-ignore -v <ruta>`).
+- Si un archivo ignorado ya estaba versionado, quítalo del índice con `git rm --cached`, sin borrarlo del disco. Si el archivo nuevo debe versionarse, revisa antes si una regla lo excluye (`git check-ignore -v <ruta>`)
 
 ## Documentación que debe mantenerse
 
@@ -119,7 +130,11 @@ Las rutas de datos son XDG (`~/.local/share/...` y `~/.local/state/.../logs/`). 
 
 ## Estado actual
 
-- Fase 1 (núcleo) y Fase 2 (diagnóstico, textos predefinidos y fotografías) cerradas. Fase 3 (presupuesto, pagos, PDF e impresión) en curso.
-- Bloque 1 de la Fase 3 entregado: líneas de presupuesto (modelo, migración 0002, servicio y totales ampliados). Pendiente: pestaña Presupuesto y pagos, PDF, impresión y papelera.
-- 234 pruebas pasan con `.venv/bin/python -m pytest`.
+- Fase 1 (núcleo), Fase 2 (diagnóstico, textos predefinidos y fotografías) y Fase 3 (presupuesto, pagos, PDF e impresión, más cuentas de usuario y Configuración) **cerradas**. Fase 4 (reportes, respaldos, temas, traducciones y empaquetado) es la siguiente y no está iniciada.
+- Bloques 1 a 10 de la Fase 3 entregados: líneas de presupuesto, pestaña Presupuesto y pagos, papelera, los cinco documentos de §13.1 (comprobante de recepción, presupuesto, informe técnico, comprobante de entrega e historial) con selector «Documentos…» en la ventana de la orden, §13.2 (A4/Carta, márgenes, numeración de páginas, encabezado y pie, PDF con nombre descriptivo en `ui/print_support.py`), el bloque 7 (siguiente paso según el estado en el resumen, `ui/order_actions.py`), el bloque 8 (detalle de la orden en pestañas), el bloque 9 (los costos fantasma `costo_repuestos` y `costo_mano_obra` fuera, migración 0004) y el bloque 10 (el historial como pestaña propia al lado de Dinero: cuatro pestañas, Resumen, Trabajo, Dinero e Historial).
+- Bloque 11 (rama `feat/usuarios`): **cuentas de usuario**. Tabla `usuarios` (migración 0005), `services/user_service.py` (PBKDF2 con sal, roles Administrador/Técnico, cuentas que se desactivan y no se borran), diálogos de acceso (`ui/dialogs/login_dialog.py`) y de gestión (`ui/dialogs/users_dialog.py`), y el nombre de la sesión en la barra de estado, el historial y el pie de los documentos.
+- Bloque 12 (rama `feat/usuarios`, 2026-11-09): el acceso diario **muestra los usuarios activos en una lista desplegable** por su nombre completo en vez de pedir teclear el nombre de usuario; la cuenta del último acceso va primera (`list_login_users`) y las desactivadas no aparecen. El primer arranque sigue pidiendo crear el administrador.
+- Bloque 13 (rama `feat/usuarios`, 2026-11-10): **pantalla de Configuración** (`ui/dialogs/settings_dialog.py`, solo administradores) con tres pestañas. Nuevas claves `condiciones_garantia` y `garantia_dias` en `settings_service.py`, marcadores `{dias}`, `{orden}` y `{meses}`, y `_legal_html` en `ui/documents.py` para que los términos y la garantía salgan en los cuatro documentos al cliente. Las órdenes nuevas heredan los días de garantía configurados y las antiguas sin días propios los toman como respaldo (`effective_warranty_days`).
+- Cierre de la Fase 3 (2026-11-14): los checklists de §26 y §30 se copiaron desde «Seguimiento de fase activa» (regla 9 del ROADMAP). El **resumen previo al guardado** de §7.5 queda trasladado a la Fase 4 (regla 7), no se marca como hecho. Las pruebas de PDF no extraen texto porque el entorno no tiene lector de PDF: verifican la maqueta, el encabezado, el pie y el número de hojas (§13). Los checklists de §2 a §25 son espejos históricos de la especificación, no estado de avance.
+- 477 pruebas pasan con `.venv/Scripts/python.exe -m pytest` en Windows (`.venv/bin/python -m pytest` en Linux/macOS).
 - El punto de entrada es `luciotech.main`; ejecútalo con `PYTHONPATH=src` o con el paquete instalado. La aplicación migra la base al arrancar.

@@ -49,8 +49,8 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 |---|---|---|
 | Fase 1 — Núcleo ejecutable | Cerrada | `219a877` |
 | Fase 2 — Diagnóstico y documentación | Cerrada | `1a7ab2e` |
-| Fase 3 — Presupuesto, pagos, PDF e impresión | En curso | — |
-| Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente | — |
+| Fase 3 — Presupuesto, pagos, PDF e impresión | Cerrada | `f876ca8` |
+| Fase 4 — Reportes, respaldos, configuración y empaquetado | Pendiente (siguiente) | — |
 
 ## Requisitos trasladados
 
@@ -58,24 +58,79 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 |---|---|---|---|
 | Fotografías de equipos (§5.4 y §7.4) | Fase 1 | Fase 2 | La importación de imágenes requiere copia a `attachments/`, miniaturas y corrección EXIF, que no son parte del núcleo de la Fase 1. Aprobado por el usuario el 2026-10-09. |
 | Editor de texto enriquecido para diagnóstico, trabajo y recomendaciones (§8) | Fase 2 (original) | Fase 2 | Sin cambio; se incluye aquí para que el seguimiento de la Fase 2 quede completo. |
+| Resumen de la recepción antes de guardar (§7.5) | Fase 1 | Fase 4 | El formulario ya muestra el número de orden planificado con `peek_next_order_number`, pero falta el diálogo de resumen completo. No pertenece a la Fase 3; se traslada el 2026-11-14 para no cerrar la fase ocultando trabajo pendiente (regla 7). |
 
 ## Seguimiento de fase activa
 
-Fase activa: **Fase 3 — Presupuesto, pagos, PDF e impresión** (iniciada; checklist copiado de §26 según la regla 9). Plan de bloques: 1) líneas de presupuesto (modelo, migración y servicio de totales), 2) pestaña Presupuesto y pagos, 3) PDF e impresión, 4) papelera con restauración.
+Fase cerrada: **Fase 3 — Presupuesto, pagos, PDF e impresión** (checklist copiado de §26 según la regla 9; cerrada el 2026-11-14 con el commit de cierre de la tabla «Estado de las fases»). La Fase 4 todavía no está iniciada: al abrirla hay que copiar su checklist de §26 aquí. El seguimiento que sigue queda como histórico de la Fase 3. Plan de bloques: 1) líneas de presupuesto (modelo, migración y servicio de totales) — entregado, 2) pestaña Presupuesto y pagos — entregado, 3) comprobante de recepción imprimible y términos y condiciones — entregado, 4) papelera con restauración y borrado lógico desde la interfaz — entregado, 5) los cinco documentos de §13.1 con selector «Documentos…» — entregado, 6) hoja, numeración, encabezado y pie, y PDF con nombre descriptivo (§13.2) — entregado, 7) siguiente paso según el estado en el resumen (§9) — entregado, 8) detalle de la orden en tres pestañas (Resumen, Trabajo y Dinero) — entregado, 9) eliminación de los costos fantasma `costo_repuestos` y `costo_mano_obra` (migración 0004) — entregado, 10) el historial como pestaña propia al lado de Dinero — entregado, 11) usuarios con acceso por contraseña y nombre propio en los documentos (§19) — entregado, 12) lista desplegable de usuarios en el acceso diario — entregado, 13) pantalla de **Configuración** para editar los términos y condiciones, la garantía y los datos del taller/impresión (§5.8), pedida por el usuario y entregada como último bloque de la Fase 3 — entregado.
 
-- [~] Line items model and UI (bloque 1 de la Fase 3, pendiente de commit: modelo, migración 0002, servicio y totales ampliados; falta la pestaña, bloque 2)
-- [x] Totals calculation service (bloque 1, pendiente de commit; ampliado con las líneas de presupuesto y probado con la suite)
-- [x] Payment registration (existe desde la Fase 1, pasos 4 y 7; verificado con la suite y uso real)
+Decisiones de dinero tomadas con el usuario el 2026-10-13:
+
+- El anticipo capturado en la recepción (campo `anticipo` de la orden) y los pagos registrados son registros distintos y ambos restan del saldo, como indica §5.3. La pestaña avisa sin bloquear si se intenta registrar un pago de tipo «Anticipo» existiendo ya un anticipo.
+- `costo_repuestos` y `costo_mano_obra` **se eliminaron** (migración 0004, bloque 9). Venían del esquema de la Fase 1, no tenían campo en la interfaz y siempre valían cero; mientras existieron, la fórmula del subtotal los sumaba y el presupuesto detallado iba aparte en las líneas, así que el mismo importe podía contarse dos veces. La fórmula queda `subtotal = costo_diagnostico + sum(line_items)`.
+
+Decisión de interfaz tomada con el usuario el 2026-10-22:
+
+- El dinero se registra **solo** en la pestaña «Dinero». Se quitó el formulario de pago que el diálogo de la orden repetía en el grupo «Acciones»: era la misma acción en dos sitios. El grupo «Acciones» queda con el cambio de estado y las notas.
+- En el panel de totales, **Total** y **Saldo pendiente** van separados por una línea y en tipografía mayor que el resto; el saldo es el número más grande de la pestaña y cambia de color (rojo mientras hay algo por cobrar, verde cuando llega a cero).
+- El diálogo de la orden abre con el 92 % de la pantalla disponible (tope de 1180×1000 px) y su tamaño mínimo lo fija el contenido (`QLayout.SetMinimumSize`). Antes abría a 960×720 con un mínimo fijo de 760×560, por debajo de los 1048×702 que pide el contenido: Qt recortaba la pestaña de presupuesto y los importes se veían a medias.
+- El detalle pasó de **nueve pestañas a cuatro** (bloques 8 y 10): «Resumen», «Trabajo», «Dinero» e «Historial». Las nueve del borrador de §9 pesaban lo mismo en la barra, y las que solo se consultan (Cliente, Equipo) ocupaban tanto como las que se trabajan. El reparto: **Resumen** = siguiente paso, orden, cliente y equipo en una sola página con scroll y secciones en `QGroupBox` (se lee de arriba abajo, no se salta); **Trabajo** = diagnóstico, reparación, recomendaciones y fotografías, en una segunda fila de pestañas para que cada editor conserve el alto entero de la ventana en vez de quedarse en dos líneas visibles; **Dinero** = el presupuesto y los pagos, que ya era una pestaña completa y no cambia; **Historial** = cambios de estado, notas y pagos. El historial empezó siendo una sección del resumen y el usuario pidió devolverlo a pestaña **al lado de Dinero**: es lo que se mira cuando se duda de un cobro y, dentro de la página con scroll, se quedaba con cuatro filas visibles y una barra de scroll dentro de otra. Como pestaña ocupa el alto entero y reparte el ancho con `QHeaderView` («Detalle» se estira, las otras tres se ajustan al contenido).
+
+Decisión del bloque 11 (2026-11-01, rama `feat/usuarios`):
+
+- La aplicación pasa de un único operador (`OPERATOR = "Ing. Lucio"`) a **cuentas**: cada técnico entra con su usuario y su contraseña, y su nombre completo es el que firma el historial y el pie de los documentos que imprime. El nombre ya no es una constante: viaja en un `CurrentUser` desde el acceso hasta la ventana y los diálogos.
+- Las contraseñas **no** se guardan ni se cifran con un algoritmo reversible: hash PBKDF2 con sal por usuario, en `services/user_service.py`, con la biblioteca estándar (regla 1 del AGENTS: nada de instalar paquetes).
+- Las cuentas **no se borran**, se desactivan: el historial guarda el nombre de quien hizo cada cambio y ese nombre tiene que seguir significando algo. Por lo mismo, el nombre de usuario no se puede editar una vez creado.
+- El primer arranque de una base sin cuentas pide crear el administrador; no hay usuario por defecto con contraseña conocida.
+- El técnico de la recepción se propone con el nombre de la sesión, pero sigue siendo editable: a veces recibe uno y repara otro.
+
+Decisión de interfaz del bloque 7 (2026-10-29):
+
+- Cada estado propone **una sola acción principal** (`ui/order_actions.py`): «Iniciar diagnóstico», «Entregar presupuesto al cliente», «Marcar como reparado», «Entregar el equipo»… El botón grande del **Resumen** la ejecuta y, cuando el paso entrega un papel al cliente, abre su vista previa (presupuesto al diagnosticar, informe al reparar, comprobante de entrega al entregar). Las transiciones siguen siendo libres: el selector «Cambiar estado» no se toca, así que la sugerencia nunca bloquea un salto.
+- Se quitó el botón **Marcar como entregado** de la fila inferior porque la acción principal ya lo hace; para no perder el registro de la fecha de entrega, elegir «Entregado» en el selector pasa por `mark_delivered` (fecha, historial y evento) en vez de por un cambio de estado pelado.
+
+Decisiones de negocio tomadas con el usuario el 2026-10-28:
+
+- El **IVA nace desactivado** (`DEFAULT_TAX_ENABLED = False`): el taller trabaja con precios que ya lo llevan incluido, así que el total es el subtotal y no se suma un 15 % sobre la cifra que se escribe. El porcentaje y la posibilidad de reactivarlo siguen en la configuración (§5.8).
+- El comprobante **no imprime la fila del IVA cuando está desactivado**: al cliente no se le entrega una línea de impuesto en cero. La pestaña «Dinero» sí la muestra como «IVA (desactivado)» para que el técnico sepa por qué no suma.
+- Al cambiar el IVA, las órdenes ya guardadas se recalculan al arrancar (`totals_service.recalculate_stored_totals`). La lista de órdenes, la papelera y el panel de inicio leen las columnas `total` y `saldo_pendiente` guardadas; sin este paso mostrarían las cifras de la configuración anterior mientras el detalle y el comprobante ya usan la nueva. Solo se escriben las órdenes cuyo importe cambia.
+- Términos y condiciones por defecto: quedan **tres**. Se retiró la condición sobre la presentación del comprobante (2026-10-22) y la que eximía al taller de responsabilidad por los datos no respaldados (2026-10-28). El resto se renumera sin huecos.
+
+Decisiones de documentos tomadas el 2026-10-13:
+
+- Se usa **`QTextDocument` + `QPrinter` + `QPrintPreviewDialog`** y no ReportLab ni WeasyPrint. §13.3 lo permite siempre que se documenten las limitaciones. Motivos: ReportLab obliga a maquetar cada plantilla dos veces (una para la vista previa y otra para el PDF) y WeasyPrint añade una dependencia nativa pesada en Windows; `QTextDocument` acepta el mismo HTML que ya usa la interfaz y da vista previa, selección de impresora, tamaño de papel, márgenes, rango de páginas y número de copias sin escribir nada. La numeración de páginas, el encabezado y el pie no los da Qt: se dibujan a mano en `ui/print_support.py` (bloque 6). La limitación que queda es el soporte de CSS: es el de Qt (subconjunto de HTML 4 y CSS 2.1), por lo que las plantillas usan tablas y estilos en línea.
+- El comprobante de recepción **nunca** incluye la contraseña del equipo: el documento se entrega al cliente (§5.2 y §19).
+- Los importes del comprobante (diagnóstico, repuestos, mano de obra, líneas, subtotal, descuento, IVA, total, anticipo, pagos y saldo) se arman con `order_totals` (§5.3), la misma fórmula que la pestaña «Dinero» y el resumen del detalle. Antes el documento leía las columnas `total` y `saldo_pendiente` guardadas y solo imprimía tres importes: si el dinero estaba en las líneas de presupuesto, el papel no lo mostraba. Las filas que pueden ser cero se omiten; el total y el saldo salen siempre.
+- Los cinco documentos de §13.1 existen y se eligen desde **Documentos…** en la ventana de la orden (`ui/dialogs/document_chooser_dialog.py`). El despacho está en `ui/documents.py::document_html` y todos comparten cabecera, secciones, tablas y firmas. El comprobante de entrega se imprime aunque la orden todavía no se haya marcado como entregada: en ese caso «Fecha de entrega» sale vacía, para poder imprimirlo antes de cerrar el trámite.
+- El presupuesto no imprime anticipos, pagos ni saldo: es una oferta, no un estado de cuenta. Su validez sale de `presupuesto_validez_dias` (por defecto 15 días) y el plazo se cuenta desde la fecha de ingreso.
+- El informe técnico separa las fotografías en «al recibir» (estado, daño físico, accesorios y número de serie) y «equipo reparado» (proceso de reparación y equipo reparado); los repuestos salen del campo `repuestos_utilizados` si tiene texto y, si no, de las líneas de tipo Repuesto.
+- La vista previa de impresión (`QPrintPreviewDialog`) se abre **maximizada**, con los tres botones en la barra de título y el papel al **100 %**. Qt la abría con un tamaño propio muy pequeño (había que agrandarla a mano para leer los importes) y con el documento ajustado a la ventana (`FitInView`), que en una hoja A4 deja la letra pequeña; el zoom sigue en la barra para alejarlo cuando haga falta ver la hoja entera. Un `QDialog` sale solo con la cruz de cerrar, así que `size_preview` añade `WindowMinMaxButtonsHint`; el zoom se fija con `QPrintPreviewWidget.setZoomMode(CustomZoom)` + `setZoomFactor(1.0)` antes de mostrar el diálogo. Al maximizar el orden importa: primero `resize()` —el tamaño al que vuelve si se restaura: el 90 % de la pantalla, tope de 1500×1100 px y mínimo de 760×620— y después `setWindowState(WindowMaximized)`, porque al revés Qt deshace el maximizado al redimensionar. Comprobado en Windows con `GetWindowPlacement`: la ventana queda maximizada de verdad (`showCmd = 3`) y su rectángulo de restauración es ese 90 %. El cálculo vive en `ui/print_support.py` y lo usan tanto los documentos como la vista previa del editor de texto.
+- El plazo de retirada vive en la configuración (`retencion_meses`, por defecto 6) y el texto de condiciones usa el marcador `{meses}`, que se sustituye al imprimir. Así se cambia el plazo sin reescribir el texto.
+- Los **términos y condiciones** (`condiciones_servicio`) y las **condiciones de garantía** (`condiciones_garantia`) se editan completos en **Archivo ▸ Configuración…** (bloque 13, §5.8). Se imprimen en el comprobante de recepción, el presupuesto, el informe técnico y el comprobante de entrega: son los cuatro papeles que salen del taller; el historial completo no los lleva. La garantía usa los marcadores `{dias}`, `{orden}` y `{meses}` y solo aparece si la garantía general es mayor que cero y el texto no está en blanco. `garantia_dias` (30 por defecto) se copia a cada orden nueva y, con `effective_warranty_days`, sirve de respaldo para las órdenes guardadas con 0 días (todas las anteriores a este bloque): así el informe técnico de una orden antigua dice «30 días» y no «Sin garantía registrada». Una orden con días propios conserva su plazo, salvo que el taller ponga la garantía general en 0, que la apaga para todos los documentos. Los textos se escapan como HTML y cada línea del usuario se imprime en su propia línea.
+- Numeración, encabezado y pie se dibujan a mano (bloque 6). `QTextDocument` pagina solo, pero no deja tocar el espacio entre páginas: `ui/print_support.py::render_document` reserva una banda arriba y otra abajo, le da al documento una altura de hoja menor que la imprimible y desplaza el contenido hoja a hoja, de modo que el texto nunca se monta sobre el pie. El encabezado repite el taller y su contacto a la izquierda y el documento con el número de orden a la derecha; el pie, la fecha de generación y «Página X de Y».
+- La hoja y los márgenes salen de la configuración (`tamano_papel` = `A4` o `Carta`, `margen_pagina_mm` = 15 mm, entre 5 y 40). Se aplican con `QPageLayout` antes de abrir la vista previa y «Configuración de página» del propio Qt permite cambiarlos para una impresión concreta: al repintar se vuelve a leer el área imprimible, así que el cambio se respeta.
+- «Guardar como PDF» se añade a la barra de la vista previa y propone `OT-2026-000001_Ana-Torres_Informe-Tecnico.pdf`: número de orden, nombre del cliente sin acentos ni símbolos y tipo de documento. El PDF se escribe con la misma hoja y los mismos márgenes que la vista previa (`save_as_pdf` copia el `QPageLayout`), así que lo que se ve es lo que se guarda.
+- Los espaciados de las plantillas se pasan a píxeles al imprimir (`scale_lengths`). Qt escala las fuentes en puntos pero **no** convierte las unidades físicas de `margin` y `padding`: las deja en cero. Por eso las secciones salían pegadas y las celdas sin aire aunque el HTML pedía 10 pt. Qt mide los `px` del HTML como píxeles CSS de 96 ppp, así que la conversión es 1 pt = 96/72 px y no depende de la impresora. Con los espaciados corregidos el comprobante de recepción sigue cabiendo en una hoja; para eso se afinaron los rellenos (0,5 pt por celda), los títulos de sección (6 pt) y el ancho de las fotos (110 px).
+- Los diálogos de Qt se muestran en español (bloque 6): `ui/translations.py` carga `qtbase_es` y `qt_es` al arrancar. Antes la barra de la vista previa decía «Print», «Fit width» y «Page setup» en inglés en medio de una interfaz en español. Si los `.qm` no estuvieran, la aplicación arranca igual.
+- `reportlab` sigue declarado en `requirements.txt` y `pyproject.toml` aunque ya no se use. Se deja instalado a propósito para no romper entornos existentes; si al cerrar la Fase 3 se confirma que las plantillas restantes también se hacen con `QTextDocument`, se puede quitar en un bloque aparte.
+
+- [x] Line items model and UI (bloque 1: modelo, migración 0002 y servicio; bloque 2: pestaña «Dinero»)
+- [x] Totals calculation service (bloque 1; ampliado con las líneas de presupuesto y probado con la suite)
+- [x] Payment registration (existe desde la Fase 1; desde el bloque 2 también hay diálogo propio en la pestaña)
 - [x] Balance update (existe desde la Fase 1; verificado con la suite y uso real)
-- [ ] PDF library integrated
-- [ ] Reception receipt
-- [ ] Technical report
-- [ ] Budget PDF
-- [ ] Delivery receipt PDF
-- [ ] Print preview and print dialog
-- [~] Tests for PDF generation and totals (totales cubiertos en el bloque 1; PDF pendiente)
-- [ ] README updated
-- [ ] Git commit created
+- [x] Payments list with void (bloque 2: listado de pagos con anulación por borrado lógico, migración 0003)
+- [x] PDF library integrated (bloque 3: se eligió `QTextDocument` de Qt en lugar de ReportLab o WeasyPrint; decisión documentada arriba; el bloque 6 añade el PDF con nombre descriptivo, encabezado, pie y numeración)
+- [x] Reception receipt (bloque 3: `ui/documents.py`, con fotos, valores, condiciones y firmas; botón en el detalle de la orden y oferta posterior al guardar la recepción)
+- [x] Technical report (bloque 5: `ui/documents.py::technical_report_html`)
+- [x] Budget PDF (bloque 5: `ui/documents.py::budget_html`)
+- [x] Delivery receipt PDF (bloque 5: `ui/documents.py::delivery_html`)
+- [x] Print preview and print dialog (bloque 3: `QPrintPreviewDialog` sobre A4, con impresora, tamaño de papel, márgenes, rango y copias del propio Qt)
+- [x] Page layout of the documents: A4 or Letter, margins, page numbers, header and footer, and PDF export with a descriptive name (bloque 6: `ui/print_support.py`, `ui/documents.py`)
+- [x] Tests for PDF generation and totals (totales y pagos en los bloques 1 y 2; comprobante en el 3; los cinco documentos en el 5; hoja, numeración y PDF en el 6, con `tests/test_documents.py` y `tests/test_print_page.py`)
+- [x] README updated
+- [x] Git commit created
+
+Cierre de la Fase 3 (2026-11-14, reglas 3, 5 y 9 de §0): el programa fue ejecutado por el usuario y la suite completa pasa (477 pruebas). El estado final de estas 14 casillas se copió a §26 «Checklist Phase 3» y a §30 «Master phase checklist». Los dos `[~]` de §26 se resuelven con su decisión ya documentada: la librería de PDF es `QTextDocument` de Qt (§13) y las pruebas de PDF no extraen texto porque el entorno no tiene lector de PDF, así que verifican la maqueta, el encabezado, el pie y el número de hojas (§13). El único requisito deliberadamente pendiente, el **resumen previo al guardado** de §7.5, no se marca como hecho: se traslada a la Fase 4 con la regla 7. Los checklists de especificación de §2 a §25 son espejos históricos de la especificación, no el estado de avance de las fases; no se reescriben en bloque.
 
 ---
 
@@ -335,8 +390,6 @@ trabajo_realizado_html
 recomendaciones_html
 repuestos_utilizados
 costo_diagnostico
-costo_repuestos
-costo_mano_obra
 descuento
 impuestos
 total
@@ -349,6 +402,8 @@ fecha_eliminacion
 fecha_creacion
 fecha_actualizacion
 ```
+
+Las columnas `costo_repuestos` y `costo_mano_obra` del borrador **se eliminaron en la migración 0004** (bloque 9): existían desde la Fase 1, nunca se pudieron editar y siempre valían cero. El detalle de repuestos y mano de obra son las líneas de presupuesto (§12).
 
 The order number must be generated automatically. Use a configurable format, for example:
 
@@ -391,7 +446,7 @@ Urgente
 **Total calculation formula (defined once, referenced elsewhere):**
 
 ```text
-subtotal = costo_diagnostico + costo_repuestos + costo_mano_obra + sum(line_items)
+subtotal = costo_diagnostico + sum(line_items)
 impuestos = round(subtotal * impuesto_porcentaje / 100, 2)   # 0 if taxes disabled
 total = round(subtotal - descuento + impuestos, 2)
 saldo_pendiente = round(total - anticipo - sum(payments), 2)
@@ -540,11 +595,12 @@ Otro
 
 ### Checklist §5.7
 
-- [ ] Model created
-- [ ] Payment types enumerable
-- [ ] Payment methods enumerable
-- [ ] Balance updates automatically after payment
-- [ ] Tests for payment registration and balance update
+- [x] Model created (desde la Fase 1; ampliado en el bloque 2 con `anulado`, `fecha_anulacion` y `motivo_anulacion`, migración 0003)
+- [x] Payment types enumerable
+- [x] Payment methods enumerable
+- [x] Balance updates automatically after payment
+- [x] Tests for payment registration and balance update
+- [x] Payments list with void (bloque 2: la anulación es lógica, el pago sigue en el historial y deja de contar en el saldo)
 
 ## 5.8. Configuration
 
@@ -577,15 +633,16 @@ USD
 
 Default country: Ecuador.
 
-Default tax: **15% (IVA Ecuador, 2025)**. Editable. Taxes can be disabled with `impuesto_activo = False`.
+Default tax: **15% (IVA Ecuador, 2025)**, **disabled by default** (`impuesto_activo = False`) because the workshop prices already include it. Editable, and it can be switched on with `impuesto_activo = True`.
 
 ### Checklist §5.8
 
-- [ ] Model created
-- [ ] Default values set for first run
-- [ ] Tax configurable and can be disabled
-- [ ] Tax default value is 15 but not hardcoded
-- [ ] Settings read/write tested
+- [x] Model created
+- [x] Default values set for first run
+- [x] Tax configurable and can be disabled
+- [x] Tax default value is 15 but not hardcoded
+- [x] Settings read/write tested
+- [x] `condiciones_servicio` y `retencion_meses` con valor por defecto y sustitución del marcador `{meses}` (bloque 3); **pantalla de Configuración** para editarlos junto con `condiciones_garantia`, `garantia_dias`, los datos del taller, el IVA y la hoja (bloque 13). Los textos legales se imprimen en los cuatro documentos que se entregan al cliente; el historial completo es interno y no los lleva. Quedan para la Fase 4 los reportes, los respaldos y el empaquetado.
 
 ---
 
@@ -867,9 +924,9 @@ Crear otra recepción
 
 ### Checklist §7.5
 
-- [ ] Summary dialog before saving
-- [ ] Post-save action dialog
-- [ ] Order number shown in summary
+- [~] Summary dialog before saving — **trasladado a Fase 4 (2026-11-14)**; el diálogo de resumen completo sigue pendiente y ahora es una casilla del checklist de la Fase 4 (regla 7)
+- [x] Post-save action dialog (bloque 3: tras guardar la recepción se ofrecen «Imprimir comprobante», «Abrir orden» y «Cerrar»)
+- [~] Order number shown in summary — **trasladado a Fase 4 (2026-11-14)**; el número planificado ya se muestra en el formulario antes de guardar, con `peek_next_order_number`; falta el diálogo de resumen completo
 
 ---
 
@@ -958,12 +1015,30 @@ Cliente
 Equipo
 Diagnóstico
 Reparación
+Recomendaciones
 Fotografías
 Presupuesto y pagos
 Historial
 ```
 
 The "Documentos" tab from the previous draft has been removed. Documents are generated on demand from the Summary tab.
+
+**Delivered as four tabs** (bloques 8 y 10 de la Fase 3), keeping every section of the list above:
+
+```text
+Resumen   → Siguiente paso, Orden, Cliente, Equipo
+Trabajo   → Diagnóstico, Reparación, Recomendaciones, Fotografías
+Dinero    → Presupuesto y pagos
+Historial → Cambios de estado, notas y pagos
+```
+
+Nine tabs of the same visual weight meant hunting for each field in a row of buttons, and the ones that only show data (Client, Equipment) took as much room as the ones where work happens. With four areas the question «where is this?» answers itself: what you read, what you write, what you charge, what happened. Inside **Trabajo** the four writing surfaces take turns in a second row, so each editor keeps the full height of the window instead of three squeezed boxes; **Resumen** is a single page with scroll, with the sections in group boxes, because it is read top to bottom.
+
+**Historial** started as a section of the summary and moved to its own tab at the user's request, right after **Dinero**: it is what you look at when a charge is in doubt, and inside a scrolling page it was left with four visible rows and a scroll bar inside another scroll bar. As a tab it takes the full height, **Detalle** stretches with the free width and the other three columns fit their content.
+
+The **Resumen** tab opens with a **Siguiente paso** box: one big button that does what the current state asks for and, when it makes sense, opens the matching document (bloque 7 de la Fase 3). The rest of the tab is the order summary, now with the technician in charge and the delivery date.
+
+The bottom row of the dialog carries the order-level actions: **Documentos…**, **Guardar textos** and **Eliminar orden** (borrado lógico con confirmación, ver §18); the delete button is disabled once the order is in the trash. **Cambiar estado** and **Añadir nota** live in the **Acciones** group above it, and «Entregado» chosen there goes through the real delivery (delivery date plus event), so the old **Marcar como entregado** button was removed: there is a single door for each action.
 
 ## Summary
 
@@ -1011,17 +1086,18 @@ Do not delete historical events when editing the order.
 
 ### Checklist §9
 
-- [ ] Tabbed order view
-- [ ] Summary tab with all fields
-- [ ] Quick action buttons
-- [ ] State change button with history log
-- [ ] Payment registration dialog
-- [ ] Add note dialog
-- [ ] Add photographs dialog
-- [ ] PDF generation from Summary tab
-- [ ] Print from Summary tab
-- [ ] "Mark as delivered" action
-- [ ] History tab with chronological timeline
+- [x] Tabbed order view (bloques 8 y 10: cuatro pestañas en vez de nueve; ver la decisión en la Fase 3)
+- [x] Summary tab with all fields (bloque 7: se añadieron el técnico responsable y la fecha de entrega)
+- [~] Quick action buttons (bloque 7: en lugar de los ocho botones de la lista hay un solo **Siguiente paso** que cambia con el estado y abre el documento que toca; «Cambiar estado», «Añadir nota», los pagos y las fotografías viven en su pestaña, para no repetir la misma acción en dos sitios)
+- [x] State change button with history log
+- [x] Payment registration dialog
+- [x] Add note dialog
+- [x] Add photographs dialog
+- [x] PDF generation from Summary tab (bloque 6: «Documentos…» en la fila inferior del diálogo, con los cinco documentos y «Guardar como PDF» dentro de la vista previa; no se repite el botón en el resumen)
+- [x] Print from Summary tab (bloque 6: la misma vista previa imprime)
+- [x] "Mark as delivered" action
+- [x] History tab with chronological timeline (bloque 10: pestaña propia al lado de Dinero, con el alto entero)
+- [x] "Dinero" tab (bloque 2 de la Fase 3: líneas, descuento, totales en vivo y pagos)
 
 ---
 
@@ -1165,12 +1241,13 @@ For Ecuador, allow configuring IVA, but do not permanently hardcode a percentage
 
 ### Checklist §12
 
-- [x] Line items model and table (bloque 1 de la Fase 3, pendiente de commit; migración 0002)
-- [~] Add / edit / remove line items (servicio implementado y probado en el bloque 1; falta la pestaña de presupuesto, bloque 2)
-- [x] Subtotal per line item (bloque 1, pendiente de commit; se calcula, no se guarda)
-- [x] Subtotal, discount, taxes, total, balance computed via shared service (bloque 1, pendiente de commit; totals_service ampliado con las líneas)
-- [~] Tax configurable from Settings (configurable en la tabla configuracion desde la Fase 1, con 15% por defecto; la ventana de Ajustes llega en la Fase 4)
-- [x] Tests for totals with different tax rates and discounts (bloque 1, pendiente de commit; 234 pruebas en total)
+- [x] Line items model and table (bloque 1 de la Fase 3; migración 0002)
+- [x] Add / edit / remove line items (bloque 1: servicio; bloque 2: pestaña «Dinero»)
+- [x] Subtotal per line item (se calcula, no se guarda)
+- [x] Subtotal, discount, taxes, total, balance computed via shared service (totals_service ampliado con las líneas)
+- [x] Discount editable from the budget tab (bloque 2: `budget_service.set_discount`, recalculado en vivo)
+- [x] Tax configurable from Settings (pestaña **Taller** de **Archivo ▸ Configuración…**, bloque 13; 15 % por defecto y **desactivado**, porque los precios del taller ya lo incluyen; al guardar se recalculan los totales guardados igual que al arrancar)
+- [x] Tests for totals with different tax rates and discounts (bloques 1 y 2)
 
 ---
 
@@ -1306,22 +1383,22 @@ Allow:
 
 ### Checklist §13
 
-- [ ] PDF generation library chosen and documented
-- [ ] Reception receipt template
-- [ ] Technical report template
-- [ ] Budget template
-- [ ] Delivery receipt template
-- [ ] Full history template
-- [ ] A4 and Letter sizes
-- [ ] Page numbers
-- [ ] Header and footer
-- [ ] Configurable margins
-- [ ] Descriptive file names
-- [ ] Preview dialog
-- [ ] Print dialog
-- [ ] Page range selection
-- [ ] Multiple copies
-- [ ] Tests for PDF generation (at least file creation and text extraction)
+- [x] PDF generation library chosen and documented (`QTextDocument` de Qt; ver «Decisiones de documentos» arriba)
+- [x] Reception receipt template (`ui/documents.py::receipt_html`)
+- [x] Technical report template (`ui/documents.py::technical_report_html`)
+- [x] Budget template (`ui/documents.py::budget_html`)
+- [x] Delivery receipt template (`ui/documents.py::delivery_html`)
+- [x] Full history template (`ui/documents.py::history_html`)
+- [x] A4 and Letter sizes (`tamano_papel` = `A4` o `Carta` en la configuración; `ui/print_support.py::apply_page_setup`; «Configuración de página» en la vista previa permite cambiarlo para una impresión concreta)
+- [x] Page numbers (`render_document` escribe «Página X de Y» en el pie de cada hoja)
+- [x] Header and footer (taller y contacto a la izquierda, documento y número de orden a la derecha, regla separadora y fecha de generación al pie)
+- [x] Configurable margins (`margen_pagina_mm`, 15 mm por defecto, entre 5 y 40; también se ajustan en «Configuración de página»)
+- [x] Descriptive file names (`OT-2026-000001_Juan-Perez_Informe-Tecnico.pdf`, propuesto por «Guardar como PDF»)
+- [x] Preview dialog (`QPrintPreviewDialog` en `ui/documents.py::print_document`)
+- [x] Print dialog (lo aporta la vista previa de Qt)
+- [x] Page range selection (lo aporta la vista previa de Qt)
+- [x] Multiple copies (lo aporta la vista previa de Qt)
+- [x] Tests for PDF generation (at least file creation and text extraction) (`tests/test_print_page.py`: la hoja, los márgenes, el nombre del archivo, el encabezado y el pie, la creación del PDF y el número de hojas contado en los objetos del archivo; no hay lector de PDF en el entorno, así que el texto no se extrae, se comprueba la maqueta)
 
 ---
 
@@ -1454,7 +1531,7 @@ Use:
 Nombre del técnico: Ing. Lucio
 Moneda: USD
 País: Ecuador
-IVA por defecto: 15%
+IVA por defecto: 15 % (desactivado: los precios ya lo incluyen)
 ```
 
 All other data must remain editable.
@@ -1540,13 +1617,13 @@ Add a trash view from which an order can be restored.
 
 ### Checklist §18
 
-- [ ] All listed validations implemented
-- [ ] Cédula validation (see §7.1.1)
-- [ ] Duplicate serial number warning
-- [ ] Duplicate customer warning
-- [ ] Soft delete fields in all relevant models
-- [ ] Trash view with restore
-- [ ] Tests for each validation
+- [x] All listed validations implemented
+- [x] Cédula validation (see §7.1.1)
+- [x] Duplicate serial number warning
+- [x] Duplicate customer warning
+- [x] Soft delete fields in all relevant models
+- [x] Trash view with restore (pestaña «Papelera» de la ventana principal; lista las órdenes con `activo = False` y las restaura, con confirmación previa al borrar)
+- [x] Tests for each validation
 
 ---
 
@@ -1568,6 +1645,15 @@ Prepare the architecture to add users and roles in the future. **For the first v
 - Any place that writes a `usuario` field uses a configurable value from Settings (default "Ing. Lucio").
 - Services do not assume a single global user in a way that would break multi-user later.
 
+**Entregado en el bloque 11 (rama `feat/usuarios`, 2026-11-01).** La primera versión se cerró sin tablas de usuarios, como pedía este apartado. Con el taller ya funcionando, el usuario pidió lo contrario: que cada técnico entre con su nombre y su contraseña y que ese nombre sea el que salga en los documentos. Lo que hay ahora:
+
+- Tabla `usuarios` (migración 0005): `nombre_usuario` (único, en minúsculas), `nombre_completo` (el que se imprime), `contrasena_hash`, `rol`, `activo`, `fecha_creacion` y `ultimo_acceso`.
+- `services/user_service.py`: PBKDF2-HMAC-SHA256 con 260 000 iteraciones y sal aleatoria por usuario, comparación de tiempo constante y el mismo tiempo de respuesta cuando el usuario no existe. Sin dependencias nuevas: todo con la biblioteca estándar.
+- Dos roles: **Administrador** (gestiona usuarios) y **Técnico**. El último administrador activo no se puede desactivar ni degradar, y las cuentas no se borran: se desactivan, porque el historial de las órdenes guarda el nombre de quien hizo cada cambio.
+- `CurrentUser` viaja desde el acceso hasta la ventana, el historial, el técnico propuesto en la recepción y el pie de los documentos (`Generado el … por <nombre>`).
+- Primer arranque: si no hay cuentas, la aplicación pide crear la del administrador en vez de traer un usuario por defecto con contraseña conocida.
+- Acceso diario (2026-11-09, rama `feat/usuarios`): el diálogo de acceso **no pide teclear el nombre de usuario**. Muestra las cuentas activas por su nombre completo en una lista desplegable, como el selector de usuarios de un sistema operativo moderno, y solo queda escribir la contraseña. La cuenta que entró por última vez va primera (`user_service.list_login_users` ordena por `ultimo_acceso` descendente); las desactivadas no aparecen. El nombre de acceso sigue viajando como dato de la opción elegida, así que `authenticate` no cambia. Si no quedara ninguna cuenta activa, el diálogo lo explica en vez de intentar un acceso imposible.
+
 ### Checklist §19
 
 - [ ] App works offline
@@ -1578,8 +1664,8 @@ Prepare the architecture to add users and roles in the future. **For the first v
 - [ ] Destructive operations confirmed
 - [ ] Photograph import uses UUID file names
 - [ ] Password field masked
-- [ ] `usuario` field read from Settings
-- [ ] No user/role tables created in v1
+- [x] `usuario` field read from the session (bloque 11; antes, del valor de configuración)
+- [x] No user/role tables created in v1 (v1 se cerró sin ellas; el bloque 11 las añadió después)
 
 ---
 
@@ -1869,7 +1955,7 @@ Create:
 - [x] State history logging
 - [x] Tests for cédula validation, order number generation, totals
 - [x] README updated
-- [ ] Git commit created
+- [x] Git commit created (paso 15, `219a877`, cierre de la Fase 1)
 
 > Nota (2026-10-09): las fotografías (§5.4 y §7.4) no forman parte de la Fase 1; se trasladan a la Fase 2. La lista de órdenes filtra por texto, estado, prioridad, tipo de equipo y saldo; no incluye columnas ordenables ni exportación CSV, que quedan para fases posteriores de §10.
 
@@ -1914,19 +2000,19 @@ Create:
 
 ### Checklist Phase 3
 
-- [ ] Line items model and UI
-- [ ] Totals calculation service
-- [ ] Payment registration
-- [ ] Balance update
-- [ ] PDF library integrated
-- [ ] Reception receipt
-- [ ] Technical report
-- [ ] Budget PDF
-- [ ] Delivery receipt PDF
-- [ ] Print preview and print dialog
-- [ ] Tests for PDF generation and totals
-- [ ] README updated
-- [ ] Git commit created
+- [x] Line items model and UI (paso 1 y 2, `f876ca8`)
+- [x] Totals calculation service (paso 1, `f876ca8`)
+- [x] Payment registration (paso 2, `f876ca8`; existe desde la Fase 1)
+- [x] Balance update (paso 2, `f876ca8`; existe desde la Fase 1)
+- [x] PDF library integrated (paso 3, `f876ca8`; `QTextDocument` de Qt en lugar de ReportLab/WeasyPrint, decisión documentada en §13; el bloque 6 añade el PDF con nombre descriptivo, encabezado, pie y numeración)
+- [x] Reception receipt (paso 3, `f876ca8`; `ui/documents.py::receipt_html`)
+- [x] Technical report (paso 5, `f876ca8`; `ui/documents.py::technical_report_html`)
+- [x] Budget PDF (paso 5, `f876ca8`; `ui/documents.py::budget_html`)
+- [x] Delivery receipt PDF (paso 5, `f876ca8`; `ui/documents.py::delivery_html`)
+- [x] Print preview and print dialog (paso 3, `f876ca8`; `QPrintPreviewDialog` con impresora, papel, márgenes, rango y copias del propio Qt)
+- [x] Tests for PDF generation and totals (pasos 1, 2, 3, 5 y 6, `f876ca8`; `tests/test_documents.py` y `tests/test_print_page.py`. No hay lector de PDF en el entorno: en lugar de extraer texto se verifica la maqueta, el encabezado, el pie y el número de hojas, como documenta §13)
+- [x] README updated (paso 13, `f876ca8`)
+- [x] Git commit created (paso 14, `f876ca8`; este mismo commit de cierre)
 
 ## Phase 4
 
@@ -1941,6 +2027,7 @@ Create:
 
 ### Checklist Phase 4
 
+- [ ] Summary dialog before saving (§7.5, trasladado desde la Fase 1 el 2026-11-14 según la regla 7; incluye el número de orden planificado)
 - [ ] Reports section
 - [ ] CSV export
 - [ ] Backup and restore
@@ -2069,7 +2156,7 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 - [x] State history
 - [x] Tests
 - [x] README
-- [ ] Commit
+- [x] Commit (paso 15, `219a877`, cierre de la Fase 1)
 
 ## Phase 2 — Diagnosis and documentation
 
@@ -2084,18 +2171,19 @@ Then create the files for Phase 1 and provide exact instructions to install and 
 
 ## Phase 3 — Budget, payments, PDF, printing
 
-- [ ] Line items
-- [ ] Payments
-- [ ] Totals and balance
-- [ ] PDF generation
-- [ ] All PDF types
-- [ ] Print preview and print
-- [ ] Tests
-- [ ] README
-- [ ] Commit
+- [x] Line items (paso 1, `f876ca8`)
+- [x] Payments (paso 2, `f876ca8`)
+- [x] Totals and balance (paso 1, `f876ca8`)
+- [x] Reception receipt and print preview (paso 3, `f876ca8`)
+- [x] Remaining PDF types (technical report, budget, delivery receipt, full history) (paso 5, `f876ca8`)
+- [x] Trash with restore and delete button (paso 4, `f876ca8`)
+- [x] Tests (pasos 1 a 13, `f876ca8`; 477 pruebas; sin extracción de texto de PDF, se verifica la maqueta según §13)
+- [x] README (paso 13, `f876ca8`)
+- [x] Commit (paso 14, `f876ca8`)
 
 ## Phase 4 — Reports, backups, settings, packaging
 
+- [ ] Summary dialog before saving (§7.5, trasladado el 2026-11-14)
 - [ ] Reports
 - [ ] CSV export
 - [ ] Backups

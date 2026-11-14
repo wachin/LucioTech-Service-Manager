@@ -6,7 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
-from PyQt6.QtWidgets import QLabel, QScrollArea, QTabWidget
+from PyQt6.QtWidgets import QGroupBox, QLabel, QScrollArea
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -21,8 +21,9 @@ from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
 
 
 @pytest.fixture
-def two_orders(session_factory: sessionmaker[Session]) -> tuple[int, int]:
-    """Cliente con dos órdenes: la primera con saldo 95, la segunda cancelada con saldo 115."""
+def two_orders(session_factory: sessionmaker[Session], tax_enabled: None) -> tuple[int, int]:
+    """Cliente con dos órdenes, con IVA del 15 %: la primera con saldo 95, la segunda
+    cancelada con saldo 115."""
     with session_factory() as session:
         first = register_reception(
             session,
@@ -97,18 +98,53 @@ def test_customer_view_without_other_orders_is_empty_list(
         assert customer_view(session, order).otras_ordenes == []
 
 
-def test_detail_dialog_has_customer_and_equipment_tabs(
+def test_detail_dialog_groups_everything_in_four_tabs(
     qtbot: QtBot, session_factory: sessionmaker[Session], two_orders: tuple[int, int]
 ) -> None:
+    """Nueve pestañas del mismo peso se buscaban a ciegas; ahora son cuatro áreas y dentro de
+    «Trabajo» se turnan las cuatro superficies de escritura."""
     first_id, _ = two_orders
     dialog = OrderDetailDialog(session_factory, first_id, "Ing. Lucio")
     qtbot.addWidget(dialog)
-    tabs = dialog.findChild(QTabWidget)
-    names = [tabs.tabText(i) for i in range(tabs.count())]
-    assert names == [
-        "Resumen", "Cliente", "Equipo", "Diagnóstico", "Reparación",
-        "Recomendaciones", "Fotografías", "Historial",
+
+    names = [dialog._tabs.tabText(i) for i in range(dialog._tabs.count())]
+    assert names == ["Resumen", "Trabajo", "Dinero", "Historial"]
+
+    work = [dialog._work_tabs.tabText(i) for i in range(dialog._work_tabs.count())]
+    assert work == ["Diagnóstico", "Reparación", "Recomendaciones", "Fotografías"]
+
+    # Las secciones de consulta viven en la página del resumen, no en pestañas sueltas.
+    sections = [
+        box.title() for box in dialog._tabs.widget(0).widget().findChildren(QGroupBox)
     ]
+    assert sections == ["Siguiente paso", "Orden", "Cliente", "Equipo"]
+
+
+def test_the_summary_page_is_the_only_one_that_scrolls(
+    qtbot: QtBot, session_factory: sessionmaker[Session], two_orders: tuple[int, int]
+) -> None:
+    """El resumen se lee como una ficha larga; el trabajo, el dinero y el historial necesitan el
+    alto entero."""
+    first_id, _ = two_orders
+    dialog = OrderDetailDialog(session_factory, first_id, "Ing. Lucio")
+    qtbot.addWidget(dialog)
+    assert isinstance(dialog._tabs.widget(0), QScrollArea)
+    assert not isinstance(dialog._tabs.widget(1), QScrollArea)
+    assert not isinstance(dialog._tabs.widget(2), QScrollArea)
+    assert not isinstance(dialog._tabs.widget(3), QScrollArea)
+
+
+def test_the_history_has_its_own_tab_next_to_the_money(
+    qtbot: QtBot, session_factory: sessionmaker[Session], two_orders: tuple[int, int]
+) -> None:
+    """El historial va al lado del dinero y no dentro del resumen: es lo que se mira cuando se
+    duda de un cobro, y ahí tiene el alto entero de la ventana."""
+    first_id, _ = two_orders
+    dialog = OrderDetailDialog(session_factory, first_id, "Ing. Lucio")
+    qtbot.addWidget(dialog)
+    assert dialog._history.rowCount() >= 1
+    assert dialog._tabs.tabText(3) == "Historial"
+    assert dialog._tabs.widget(3).isAncestorOf(dialog._history)
 
 
 def test_equipment_tab_hides_password_until_toggled(

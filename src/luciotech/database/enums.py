@@ -51,6 +51,13 @@ class PaymentMethod(StrEnum):
     OTRO = "Otro"
 
 
+class UserRole(StrEnum):
+    """Perfil de un usuario: el administrador gestiona usuarios, el técnico solo trabaja."""
+
+    ADMINISTRADOR = "Administrador"
+    TECNICO = "Técnico"
+
+
 class EventType(StrEnum):
     LLAMADA_CLIENTE = "Llamada al cliente"
     MENSAJE_ENVIADO = "Mensaje enviado"
@@ -60,8 +67,11 @@ class EventType(StrEnum):
     REPUESTO_RECIBIDO = "Repuesto recibido"
     DIAGNOSTICO_ACTUALIZADO = "Diagnóstico actualizado"
     PAGO_RECIBIDO = "Pago recibido"
+    PAGO_ANULADO = "Pago anulado"
     EQUIPO_ENTREGADO = "Equipo entregado"
     NOTA_INTERNA = "Nota interna"
+    ORDEN_ELIMINADA = "Orden eliminada"
+    ORDEN_RESTAURADA = "Orden restaurada"
 
 
 class BudgetLineType(StrEnum):

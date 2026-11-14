@@ -31,9 +31,46 @@ APP_CONFIG = AppConfig(
 APP_VERSION: str = APP_CONFIG.application_version
 
 DEFAULT_TAX_PERCENT = Decimal("15")
-DEFAULT_TAX_ENABLED = True
+# El taller trabaja con precios que ya llevan el IVA incluido, así que el impuesto nace
+# desactivado: el total es el subtotal. Sigue siendo configurable (§5.8) y el porcentaje se
+# conserva para cuando se quiera volver a sumarlo.
+DEFAULT_TAX_ENABLED = False
 DEFAULT_CURRENCY = "USD"
 DEFAULT_USER = "Ing. Lucio"
+
+# Meses que se considera abandonado un equipo sin retirar antes de poder darlo de baja (§5.8).
+DEFAULT_RETENTION_MONTHS = 6
+
+# Días que un presupuesto impreso mantiene su validez (§13.1.3).
+DEFAULT_BUDGET_VALIDITY_DAYS = 15
+
+# Hoja y márgenes con los que salen los documentos (§13.2). «Carta» es el tamaño Letter.
+DEFAULT_PAPER_SIZE = "A4"
+PAPER_SIZES: tuple[str, ...] = ("A4", "Carta")
+DEFAULT_PAGE_MARGIN_MM = 15
+MIN_PAGE_MARGIN_MM = 5
+MAX_PAGE_MARGIN_MM = 40
+
+# El marcador {meses} se sustituye por el plazo configurado al imprimir el comprobante.
+DEFAULT_SERVICE_TERMS = (
+    "1. La reparación se inicia solo con el presupuesto aprobado por el cliente.\n"
+    "2. El equipo reparado queda con garantía sobre el trabajo realizado.\n"
+    "3. Si el equipo no es retirado dentro de {meses} meses contados desde la fecha de ingreso, "
+    "se considerará abandonado y el taller podrá darlo de baja y disponer de él."
+)
+
+# Días de garantía que recibe cada orden nueva; se cambia en la pantalla de Configuración.
+DEFAULT_WARRANTY_DAYS = 30
+
+# Los marcadores {dias}, {orden} y {meses} se sustituyen al imprimir (§13.1.2 y §13.1.4).
+DEFAULT_WARRANTY_TERMS = (
+    "1. La garantía cubre el trabajo realizado y los repuestos facturados durante {dias} días "
+    "contados desde la entrega del equipo.\n"
+    "2. No cubre daños por golpes, líquidos, descargas eléctricas, software instalado por el "
+    "cliente ni intervenciones de terceros.\n"
+    "3. Para hacer valer la garantía, el cliente debe presentar este documento con la orden "
+    "{orden}."
+)
 
 DEFAULT_PREDEFINED_TEXTS: tuple[str, ...] = (
     "Se realizó inspección visual del equipo.",
