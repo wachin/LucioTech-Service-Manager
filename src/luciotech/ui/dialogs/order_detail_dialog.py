@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import QCoreApplication, Qt, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -66,13 +66,19 @@ from luciotech.services.totals_service import OrderTotals, order_totals
 from luciotech.ui.dialogs.budget_payments_tab import BudgetPaymentsTab
 from luciotech.ui.dialogs.document_chooser_dialog import DocumentChooserDialog
 from luciotech.ui.dialogs.photographs_tab import PhotographsTab
-from luciotech.ui.documents import DocumentKind, print_order_document
+from luciotech.ui.documents import DocumentKind, document_label, print_order_document
 from luciotech.ui.formatting import format_datetime, format_money
+from luciotech.ui.labels import (
+    event_title_label,
+    history_detail_label,
+    priority_label,
+    state_label,
+)
 from luciotech.ui.order_actions import NextAction, next_action
 from luciotech.ui.widgets.rich_text_editor import RichTextEditor
 from luciotech.ui.validation_texts import error_text
 
-HISTORY_COLUMNS = ("Fecha", "Tipo", "Detalle", "Usuario")
+HISTORY_COLUMNS = ("Date", "Type", "Detail", "User")
 AUTOSAVE_DELAY_MS = 1500
 
 # El diálogo se abre con el mayor tamaño cómodo de la pantalla: la pestaña de presupuesto tiene
@@ -95,23 +101,23 @@ class OrderDetailDialog(QDialog):
         self._session_factory = session_factory
         self._order_id = order_id
         self._usuario = usuario
-        self.setWindowTitle(self.tr("Orden de servicio"))
+        self.setWindowTitle(self.tr("Service order"))
 
         self._summary = QLabel()
         self._summary.setWordWrap(True)
         self._state_combo = QComboBox()
         for state in OrderState:
-            self._state_combo.addItem(state.value, state.value)
+            self._state_combo.addItem(state_label(state.value), state.value)
         self._state_comment = QLineEdit()
-        self._state_comment.setPlaceholderText(self.tr("Comentario del cambio (opcional)"))
-        change_button = QPushButton(self.tr("Cambiar estado"))
+        self._state_comment.setPlaceholderText(self.tr("Change comment (optional)"))
+        change_button = QPushButton(self.tr("Change status"))
         change_button.clicked.connect(self._change_state)
 
         self._note_title = QLineEdit()
-        self._note_title.setPlaceholderText(self.tr("Título de la nota"))
+        self._note_title.setPlaceholderText(self.tr("Note title"))
         self._note_body = QLineEdit()
-        self._note_body.setPlaceholderText(self.tr("Detalle (opcional)"))
-        note_button = QPushButton(self.tr("Añadir nota"))
+        self._note_body.setPlaceholderText(self.tr("Detail (optional)"))
+        note_button = QPushButton(self.tr("Add note"))
         note_button.clicked.connect(self._add_note)
 
         self._history = QTableWidget(0, len(HISTORY_COLUMNS))
@@ -125,7 +131,7 @@ class OrderDetailDialog(QDialog):
         for column in range(len(HISTORY_COLUMNS)):
             mode = (
                 QHeaderView.ResizeMode.Stretch
-                if HISTORY_COLUMNS[column] == "Detalle"
+                if HISTORY_COLUMNS[column] == "Detail"
                 else QHeaderView.ResizeMode.ResizeToContents
             )
             header.setSectionResizeMode(column, mode)
@@ -143,22 +149,22 @@ class OrderDetailDialog(QDialog):
         note_row.addWidget(self._note_body, 2)
         note_row.addWidget(note_button)
 
-        actions = QGroupBox(self.tr("Acciones"))
+        actions = QGroupBox(self.tr("Actions"))
         actions_layout = QVBoxLayout(actions)
         actions_layout.addLayout(state_row)
         actions_layout.addLayout(note_row)
 
         self._next_action = next_action(OrderState.RECIBIDO)
-        self._primary_button = QPushButton(self._next_action.label)
+        self._primary_button = QPushButton(_action_label(self._next_action))
         self._primary_button.setMinimumHeight(PRIMARY_BUTTON_HEIGHT)
         primary_font = self._primary_button.font()
         primary_font.setBold(True)
         self._primary_button.setFont(primary_font)
         self._primary_button.clicked.connect(self._run_primary)
-        self._primary_hint = QLabel(self._next_action.hint)
+        self._primary_hint = QLabel(_action_hint(self._next_action))
         self._primary_hint.setWordWrap(True)
 
-        primary_box = QGroupBox(self.tr("Siguiente paso"))
+        primary_box = QGroupBox(self.tr("Next step"))
         primary_layout = QVBoxLayout(primary_box)
         primary_layout.addWidget(self._primary_button)
         primary_layout.addWidget(self._primary_hint)
@@ -167,7 +173,7 @@ class OrderDetailDialog(QDialog):
         self._customer_text.setWordWrap(True)
         self._equipment_text = QLabel()
         self._equipment_text.setWordWrap(True)
-        self._toggle_password = QPushButton(self.tr("Mostrar contraseña"))
+        self._toggle_password = QPushButton(self.tr("Show password"))
         self._toggle_password.setCheckable(True)
         self._toggle_password.toggled.connect(self._on_toggle_password)
 
@@ -177,10 +183,10 @@ class OrderDetailDialog(QDialog):
         summary_layout = QVBoxLayout(summary_tab)
         summary_layout.setContentsMargins(0, 0, 0, 0)
         summary_layout.addWidget(primary_box)
-        summary_layout.addWidget(_section(self.tr("Orden"), self._summary))
-        summary_layout.addWidget(_section(self.tr("Cliente"), self._customer_text))
+        summary_layout.addWidget(_section(self.tr("Order"), self._summary))
+        summary_layout.addWidget(_section(self.tr("Customer"), self._customer_text))
         summary_layout.addWidget(
-            _section(self.tr("Equipo"), self._equipment_text, self._toggle_password)
+            _section(self.tr("Equipment"), self._equipment_text, self._toggle_password)
         )
         summary_layout.addStretch(1)
 
@@ -195,27 +201,27 @@ class OrderDetailDialog(QDialog):
         # pestaña en vez de apilarse: ninguna se queda con un par de líneas visibles.
         self._work_tabs = QTabWidget()
         self._work_tabs.addTab(
-            _editor_page(self.tr("Diagnóstico técnico"), self._diagnosis), self.tr("Diagnóstico")
+            _editor_page(self.tr("Technical diagnosis"), self._diagnosis), self.tr("Diagnosis")
         )
         self._work_tabs.addTab(
-            _editor_page(self.tr("Trabajo realizado"), self._work_performed), self.tr("Reparación")
+            _editor_page(self.tr("Work performed"), self._work_performed), self.tr("Repair")
         )
         self._work_tabs.addTab(
-            _editor_page(self.tr("Recomendaciones al cliente"), self._recommendations),
-            self.tr("Recomendaciones"),
+            _editor_page(self.tr("Customer recommendations"), self._recommendations),
+            self.tr("Recommendations"),
         )
         self._photos = PhotographsTab(session_factory)
         self._photos.set_order(self._order_id)
-        self._work_tabs.addTab(self._photos, self.tr("Fotografías"))
+        self._work_tabs.addTab(self._photos, self.tr("Photographs"))
 
         self._budget_payments = BudgetPaymentsTab(session_factory, usuario=self._usuario)
         self._budget_payments.set_order(self._order_id)
         self._budget_payments.changed.connect(self.refresh)
 
         self._tabs = QTabWidget()
-        self._tabs.addTab(_scrollable(summary_tab), self.tr("Resumen"))
-        self._tabs.addTab(self._work_tabs, self.tr("Trabajo"))
-        self._tabs.addTab(self._budget_payments, self.tr("Dinero"))
+        self._tabs.addTab(_scrollable(summary_tab), self.tr("Summary"))
+        self._tabs.addTab(self._work_tabs, self.tr("Work"))
+        self._tabs.addTab(self._budget_payments, self.tr("Money"))
         # El historial va al lado del dinero y con el alto entero de la ventana: es lo que se
         # mira cuando se duda de un cobro, y en una sección del resumen se quedaba con cuatro
         # filas visibles y una barra de scroll dentro de otra.
@@ -223,21 +229,21 @@ class OrderDetailDialog(QDialog):
         history_layout = QVBoxLayout(history_tab)
         history_layout.setContentsMargins(0, 0, 0, 0)
         history_layout.addWidget(self._history, 1)
-        self._tabs.addTab(history_tab, self.tr("Historial"))
+        self._tabs.addTab(history_tab, self.tr("History"))
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         buttons.rejected.connect(self.reject)
         buttons.accepted.connect(self.accept)
 
-        self._documents_button = QPushButton(self.tr("Documentos…"))
+        self._documents_button = QPushButton(self.tr("Documents…"))
         self._documents_button.setToolTip(
-            self.tr("Imprimir o guardar en PDF los documentos de la orden")
+            self.tr("Print or save the order documents as PDF")
         )
         self._documents_button.clicked.connect(self._print_document)
-        self._delete_button = QPushButton(self.tr("Eliminar orden"))
+        self._delete_button = QPushButton(self.tr("Delete order"))
         self._delete_button.clicked.connect(self._delete_order)
 
-        save_texts_button = QPushButton(self.tr("Guardar textos"))
+        save_texts_button = QPushButton(self.tr("Save texts"))
         save_texts_button.clicked.connect(self._save_clinical_texts)
 
         bottom_row = QHBoxLayout()
@@ -291,9 +297,9 @@ class OrderDetailDialog(QDialog):
         with self._session_factory() as session:
             order = session.get(ServiceOrder, self._order_id)
             if order is None:
-                self._message.setText(self.tr("La orden ya no existe."))
+                self._message.setText(self.tr("The order no longer exists."))
                 return
-            self.setWindowTitle(f"{self.tr('Orden')} {order.numero_orden}")
+            self.setWindowTitle(f"{self.tr('Order')} {order.numero_orden}")
             self._summary.setText(
                 _summary_html(order, order_totals(order, tax_settings(session)))
             )
@@ -311,7 +317,7 @@ class OrderDetailDialog(QDialog):
 
     def _on_toggle_password(self, shown: bool) -> None:
         self._toggle_password.setText(
-            self.tr("Ocultar contraseña") if shown else self.tr("Mostrar contraseña")
+            self.tr("Hide password") if shown else self.tr("Show password")
         )
         self.refresh()
 
@@ -348,7 +354,7 @@ class OrderDetailDialog(QDialog):
         current = self._current_clinical_html()
         if current == self._saved_clinical_html:
             if show_message:
-                self._message.setText(self.tr("Guardado."))
+                self._message.setText(self.tr("Saved."))
             return True
         self._autosave_timer.stop()
         diagnosis, work, recommendations = current
@@ -361,17 +367,19 @@ class OrderDetailDialog(QDialog):
             with self._session_factory() as session:
                 order = session.get(ServiceOrder, self._order_id)
                 if order is None:
-                    raise ValueError(self.tr("La orden ya no existe."))
+                    raise ValueError(self.tr("The order no longer exists."))
                 save_clinical_texts(session, order, texts)
                 session.commit()
         except (SQLAlchemyError, ValueError) as exc:
-            self._message.setText(self.tr("No se pudieron guardar los textos: %1").replace("%1", str(exc)))
+            self._message.setText(
+                self.tr("The texts could not be saved: %1").replace("%1", str(exc))
+            )
             if not show_message:
                 self._autosave_timer.start()
             return False
         self._saved_clinical_html = current
         self._message.setText(
-            self.tr("Textos guardados.") if show_message else self.tr("Cambios guardados automáticamente.")
+            self.tr("Texts saved.") if show_message else self.tr("Changes saved automatically.")
         )
         self._refresh_history_only()
         return True
@@ -388,7 +396,7 @@ class OrderDetailDialog(QDialog):
             answer = QMessageBox.question(
                 self,
                 self.windowTitle(),
-                self.tr("No se pudieron guardar los textos clínicos. ¿Cerrar de todos modos?"),
+                self.tr("The clinical texts could not be saved. Close anyway?"),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No,
             )
@@ -401,7 +409,12 @@ class OrderDetailDialog(QDialog):
         entries = order_timeline(order)
         self._history.setRowCount(len(entries))
         for row, entry in enumerate(entries):
-            cells = [format_datetime(entry.fecha), entry.titulo, entry.detalle, entry.usuario]
+            cells = [
+                format_datetime(entry.fecha),
+                event_title_label(entry.titulo),
+                history_detail_label(entry.detalle),
+                entry.usuario,
+            ]
             for column, value in enumerate(cells):
                 self._history.setItem(row, column, QTableWidgetItem(value))
 
@@ -411,7 +424,7 @@ class OrderDetailDialog(QDialog):
             with self._session_factory() as session:
                 order = session.get(ServiceOrder, self._order_id)
                 if order is None:
-                    raise ValueError(self.tr("La orden ya no existe."))
+                    raise ValueError(self.tr("The order no longer exists."))
                 action(session, order)
                 session.commit()
         except PaymentValidationError as exc:
@@ -422,10 +435,10 @@ class OrderDetailDialog(QDialog):
             return False
         except SQLAlchemyError:
             QMessageBox.critical(
-                self, self.windowTitle(), self.tr("No se pudo guardar. Intente de nuevo.")
+                self, self.windowTitle(), self.tr("Could not save. Please try again.")
             )
             return False
-        self._message.setText(self.tr("Guardado."))
+        self._message.setText(self.tr("Saved."))
         self.refresh()
         return True
 
@@ -453,8 +466,8 @@ class OrderDetailDialog(QDialog):
     def _show_next_action(self, state: str) -> None:
         """Pinta el siguiente paso que propone el estado de la orden (§9)."""
         self._next_action = next_action(state)
-        self._primary_button.setText(self.tr(self._next_action.label))
-        self._primary_hint.setText(self.tr(self._next_action.hint))
+        self._primary_button.setText(_action_label(self._next_action))
+        self._primary_hint.setText(_action_hint(self._next_action))
         self._primary_hint.setVisible(bool(self._next_action.hint))
         self._primary_button.setEnabled(self._next_action.available)
 
@@ -484,7 +497,7 @@ class OrderDetailDialog(QDialog):
         answer = QMessageBox.question(
             self,
             self.windowTitle(),
-            self.tr("¿Marcar la orden como entregada?"),
+            self.tr("Mark the order as delivered?"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )
@@ -505,7 +518,7 @@ class OrderDetailDialog(QDialog):
             self._session_factory, self._order_id, kind, self, printed_by=self._usuario
         ):
             self._message.setText(
-                self.tr("Vista previa: {documento}.").format(documento=self.tr(kind.value))
+                self.tr("Preview: {document}.").format(document=document_label(kind))
             )
 
     def _print_document(self) -> None:
@@ -520,8 +533,8 @@ class OrderDetailDialog(QDialog):
             self,
             self.windowTitle(),
             self.tr(
-                "La orden se enviará a la papelera y dejará de aparecer en la lista. "
-                "Podrá restaurarla desde la pestaña Papelera.\n\n¿Desea continuar?"
+                "The order will be sent to the trash and will no longer appear in the list. "
+                "You can restore it from the Trash tab.\n\nDo you want to continue?"
             ),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
@@ -532,7 +545,7 @@ class OrderDetailDialog(QDialog):
             with self._session_factory() as session:
                 order = session.get(ServiceOrder, self._order_id)
                 if order is None:
-                    raise ValueError(self.tr("La orden ya no existe."))
+                    raise ValueError(self.tr("The order no longer exists."))
                 soft_delete_order(session, order, usuario=self._usuario)
                 session.commit()
         except ValueError as exc:
@@ -540,11 +553,19 @@ class OrderDetailDialog(QDialog):
             return
         except SQLAlchemyError:
             QMessageBox.critical(
-                self, self.windowTitle(), self.tr("No se pudo eliminar. Intente de nuevo.")
+                self, self.windowTitle(), self.tr("The order could not be deleted. Please try again.")
             )
             return
         self._autosave_timer.stop()
         super().reject()
+
+
+def _action_label(action: NextAction) -> str:
+    return QCoreApplication.translate("NextAction", action.label)
+
+
+def _action_hint(action: NextAction) -> str:
+    return QCoreApplication.translate("NextAction", action.hint) if action.hint else ""
 
 
 def _table(rows: list[tuple[str, str]]) -> str:
@@ -556,15 +577,21 @@ def _table(rows: list[tuple[str, str]]) -> str:
 
 def _customer_html(view: CustomerView) -> str:
     rows = [
-        ("Nombre", view.nombre_completo),
-        ("Identificación", view.numero_identificacion or "-"),
-        ("Teléfono principal", view.telefono_principal or "-"),
-        ("Teléfono secundario", view.telefono_secundario or "-"),
-        ("Correo", view.correo_electronico or "-"),
-        ("Dirección", view.direccion or "-"),
-        ("Notas", view.notas or "-"),
-        ("Otras órdenes", ", ".join(view.otras_ordenes) or "-"),
-        ("Saldo pendiente total", format_money(view.saldo_pendiente_total)),
+        (QCoreApplication.translate("LucioTech", "Name"), view.nombre_completo),
+        (QCoreApplication.translate("LucioTech", "ID number"), view.numero_identificacion or "-"),
+        (QCoreApplication.translate("LucioTech", "Primary phone"), view.telefono_principal or "-"),
+        (
+            QCoreApplication.translate("LucioTech", "Secondary phone"),
+            view.telefono_secundario or "-",
+        ),
+        (QCoreApplication.translate("LucioTech", "Email"), view.correo_electronico or "-"),
+        (QCoreApplication.translate("LucioTech", "Address"), view.direccion or "-"),
+        (QCoreApplication.translate("LucioTech", "Notes"), view.notas or "-"),
+        (QCoreApplication.translate("LucioTech", "Other orders"), ", ".join(view.otras_ordenes) or "-"),
+        (
+            QCoreApplication.translate("LucioTech", "Total outstanding balance"),
+            format_money(view.saldo_pendiente_total),
+        ),
     ]
     return _table(rows)
 
@@ -574,17 +601,17 @@ def _equipment_html(view: EquipmentView, reveal: bool) -> str:
     if view.contrasena_equipo and not reveal:
         password = "••••••"
     rows = [
-        ("Tipo", view.tipo_equipo),
-        ("Marca", view.marca or "-"),
-        ("Modelo", view.modelo or "-"),
-        ("Número de serie", view.numero_serie or "-"),
-        ("Color", view.color or "-"),
-        ("Sistema operativo", view.sistema_operativo or "-"),
-        ("Contraseña o PIN", password),
-        ("Accesorios recibidos", view.accesorios_recibidos or "-"),
-        ("Estado físico", view.estado_fisico or "-"),
-        ("Problema reportado", view.problema_reportado_cliente or "-"),
-        ("Observaciones de ingreso", view.observaciones_ingreso or "-"),
+        (QCoreApplication.translate("LucioTech", "Type"), view.tipo_equipo),
+        (QCoreApplication.translate("LucioTech", "Brand"), view.marca or "-"),
+        (QCoreApplication.translate("LucioTech", "Model"), view.modelo or "-"),
+        (QCoreApplication.translate("LucioTech", "Serial number"), view.numero_serie or "-"),
+        (QCoreApplication.translate("LucioTech", "Colour"), view.color or "-"),
+        (QCoreApplication.translate("LucioTech", "Operating system"), view.sistema_operativo or "-"),
+        (QCoreApplication.translate("LucioTech", "Password or PIN"), password),
+        (QCoreApplication.translate("LucioTech", "Accessories received"), view.accesorios_recibidos or "-"),
+        (QCoreApplication.translate("LucioTech", "Physical condition"), view.estado_fisico or "-"),
+        (QCoreApplication.translate("LucioTech", "Reported problem"), view.problema_reportado_cliente or "-"),
+        (QCoreApplication.translate("LucioTech", "Intake notes"), view.observaciones_ingreso or "-"),
     ]
     return _table(rows)
 
@@ -623,20 +650,26 @@ def _summary_html(order: ServiceOrder, totals: OrderTotals) -> str:
     equipment = order.equipment
     customer = order.customer
     rows = [
-        ("Número de orden", order.numero_orden),
-        ("Estado", order.estado),
-        ("Prioridad", order.prioridad),
-        ("Cliente", f"{customer.nombre_completo} ({customer.telefono_principal or '-'})"),
-        ("Equipo", f"{equipment.tipo_equipo} {equipment.marca or ''} {equipment.modelo or ''}".strip()),
-        ("Número de serie", equipment.numero_serie or "-"),
-        ("Fecha de ingreso", format_datetime(order.fecha_ingreso)),
-        ("Fecha estimada", format_datetime(order.fecha_estimada_entrega) or "-"),
-        ("Fecha de entrega", format_datetime(order.fecha_entrega) or "-"),
-        ("Técnico responsable", order.tecnico_responsable or "-"),
-        ("Problema reportado", order.problema_reportado or "-"),
-        ("Total", format_money(totals.total)),
-        ("Anticipo", format_money(order.anticipo)),
-        ("Saldo pendiente", format_money(totals.saldo_pendiente)),
+        (QCoreApplication.translate("LucioTech", "Order number"), order.numero_orden),
+        (QCoreApplication.translate("LucioTech", "Status"), state_label(order.estado)),
+        (QCoreApplication.translate("LucioTech", "Priority"), priority_label(order.prioridad)),
+        (
+            QCoreApplication.translate("LucioTech", "Customer"),
+            f"{customer.nombre_completo} ({customer.telefono_principal or '-'})",
+        ),
+        (
+            QCoreApplication.translate("LucioTech", "Equipment"),
+            f"{equipment.tipo_equipo} {equipment.marca or ''} {equipment.modelo or ''}".strip(),
+        ),
+        (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or "-"),
+        (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
+        (QCoreApplication.translate("LucioTech", "Estimated date"), format_datetime(order.fecha_estimada_entrega) or "-"),
+        (QCoreApplication.translate("LucioTech", "Delivery date"), format_datetime(order.fecha_entrega) or "-"),
+        (QCoreApplication.translate("LucioTech", "Technician in charge"), order.tecnico_responsable or "-"),
+        (QCoreApplication.translate("LucioTech", "Reported problem"), order.problema_reportado or "-"),
+        (QCoreApplication.translate("LucioTech", "Total"), format_money(totals.total)),
+        (QCoreApplication.translate("LucioTech", "Deposit"), format_money(order.anticipo)),
+        (QCoreApplication.translate("LucioTech", "Outstanding balance"), format_money(totals.saldo_pendiente)),
     ]
     return _table(rows)
 

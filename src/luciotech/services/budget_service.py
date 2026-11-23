@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from decimal import ROUND_HALF_UP, Decimal
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -25,7 +26,7 @@ class BudgetLineValidationError(ValueError):
     """Lleva un diccionario campo -> código de error para que la UI lo muestre."""
 
     def __init__(self, errors: dict[str, str]) -> None:
-        super().__init__("Línea de presupuesto no válida.")
+        super().__init__(QCoreApplication.translate("LucioTech", "Invalid budget line."))
         self.errors = errors
 
 

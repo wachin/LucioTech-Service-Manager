@@ -13,11 +13,11 @@ from luciotech.database.connection import (
     resolve_database_url,
 )
 from luciotech.database.migrate import upgrade_database
-from luciotech.services.settings_service import tax_settings
+from luciotech.services.settings_service import language, tax_settings
 from luciotech.services.totals_service import recalculate_stored_totals
 from luciotech.ui.dialogs.login_dialog import login_user
 from luciotech.ui.main_window import MainWindow
-from luciotech.ui.translations import install_spanish_translations
+from luciotech.ui.translations import install_translations
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,15 +25,18 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationName(APP_CONFIG.app_name)
     app.setApplicationVersion(APP_VERSION)
     app.setOrganizationName(APP_CONFIG.organization_name)
-    install_spanish_translations(app)
 
     url = resolve_database_url()
     upgrade_database(url)
     engine = create_db_engine(url)
     session_factory = create_session_factory(engine)
     with session_factory() as session:
+        chosen_language = language(session)
         if recalculate_stored_totals(session, tax_settings(session)):
             session.commit()
+    # Los traductores se instalan antes de abrir el acceso para que la primera ventana ya
+    # salga en el idioma elegido. Se guardan en `_translators` para que no los recoja el GC.
+    _translators = install_translations(app, chosen_language)
 
     # Cada vuelta es una sesión: al cerrar sesión la ventana se cierra y se pide el acceso
     # otra vez, sin reiniciar el programa.

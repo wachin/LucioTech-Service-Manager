@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -17,7 +18,7 @@ class CustomerValidationError(ValueError):
     """Lleva un diccionario campo -> código de error para que la UI lo muestre."""
 
     def __init__(self, errors: dict[str, str]) -> None:
-        super().__init__("Datos de cliente no válidos.")
+        super().__init__(QCoreApplication.translate("LucioTech", "Invalid customer details."))
         self.errors = errors
 
 
@@ -72,7 +73,7 @@ def save_customer(session: Session, data: CustomerData, customer_id: int | None 
     else:
         found = session.get(Customer, customer_id)
         if found is None:
-            raise ValueError("Cliente no encontrado.")
+            raise ValueError(QCoreApplication.translate("LucioTech", "Customer not found."))
         customer = found
 
     customer.nombre_completo = _clean(data.nombre_completo)

@@ -26,19 +26,20 @@ from luciotech.database.models import ServiceOrder
 from luciotech.services.order_query_service import OrderFilter, search_orders
 from luciotech.services.order_service import restore_order
 from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
+from luciotech.ui.labels import state_label
 from luciotech.ui.formatting import format_datetime, format_money
 
 # Nombre de quien tiene la sesión abierta; `DEFAULT_USER` solo cubre las llamadas antiguas.
 OPERATOR = DEFAULT_USER
 COLUMNS = (
-    "Número de orden",
-    "Fecha de ingreso",
-    "Cliente",
-    "Tipo de equipo",
-    "Marca y modelo",
-    "Estado",
-    "Saldo",
-    "Eliminada el",
+    "Order number",
+    "Received on",
+    "Customer",
+    "Equipment type",
+    "Brand and model",
+    "Status",
+    "Balance",
+    "Deleted on",
 )
 
 
@@ -55,16 +56,16 @@ class TrashPage(QWidget):
         self._session_factory = session_factory
         self._usuario = usuario
 
-        self._restore_button = QPushButton(self.tr("Restaurar"))
-        self._restore_button.setToolTip(self.tr("Devuelve la orden seleccionada a la lista"))
+        self._restore_button = QPushButton(self.tr("Restore"))
+        self._restore_button.setToolTip(self.tr("Returns the selected order to the list"))
         self._restore_button.clicked.connect(self.restore_selected)
-        open_button = QPushButton(self.tr("Abrir"))
+        open_button = QPushButton(self.tr("Open"))
         open_button.clicked.connect(self.open_selected)
 
         self._hint = QLabel(
             self.tr(
-                "Las órdenes eliminadas no se borran de la base de datos: quedan aquí hasta que "
-                "las restaure."
+                "Deleted orders are not removed from the database: they stay here until you "
+                "restore them."
             )
         )
         self._hint.setWordWrap(True)
@@ -99,7 +100,7 @@ class TrashPage(QWidget):
                     order.customer.nombre_completo,
                     order.equipment.tipo_equipo,
                     " ".join(part for part in (order.equipment.marca, order.equipment.modelo) if part),
-                    order.estado,
+                    state_label(order.estado),
                     format_money(order.saldo_pendiente),
                     format_datetime(order.fecha_eliminacion),
                 ]
@@ -134,7 +135,7 @@ class TrashPage(QWidget):
         row = self._table.currentRow()
         if row < 0:
             QMessageBox.information(
-                self, self.windowTitle(), self.tr("Seleccione una orden de la papelera.")
+                self, self.windowTitle(), self.tr("Select an order from the trash.")
             )
             return
         order_id = self._order_ids[row]
@@ -142,7 +143,7 @@ class TrashPage(QWidget):
             with self._session_factory() as session:
                 order = session.get(ServiceOrder, order_id)
                 if order is None:
-                    raise ValueError(self.tr("La orden ya no existe."))
+                    raise ValueError(self.tr("The order no longer exists."))
                 restore_order(session, order, usuario=self._usuario)
                 session.commit()
         except ValueError as exc:
@@ -150,7 +151,7 @@ class TrashPage(QWidget):
             return
         except SQLAlchemyError:
             QMessageBox.critical(
-                self, self.windowTitle(), self.tr("No se pudo restaurar. Intente de nuevo.")
+                self, self.windowTitle(), self.tr("The order could not be restored. Please try again.")
             )
             return
         self.refresh()

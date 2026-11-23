@@ -7,49 +7,50 @@ from PyQt6.QtCore import QCoreApplication
 _CONTEXT = "LucioTech"
 
 _ERROR_TEXTS = {
-    "required": "Campo obligatorio.",
-    "cedula.length": "La cédula debe tener 10 dígitos.",
-    "cedula.not_digits": "La cédula solo puede contener números.",
-    "cedula.province": "Código de provincia no válido (01 a 24, o 30).",
-    "cedula.third_digit": "El tercer dígito debe estar entre 0 y 5 para personas naturales.",
-    "cedula.check_digit": "La cédula no es válida (dígito verificador).",
-    "phone.invalid_chars": "El teléfono solo puede tener números, espacios, +, - y paréntesis.",
-    "phone.length": "El teléfono debe tener entre 7 y 15 dígitos.",
-    "email.invalid": "Correo electrónico no válido.",
-    "invalid_type": "Seleccione un tipo de equipo de la lista.",
-    "not_found": "El cliente seleccionado ya no existe.",
-    "customer.required": "Seleccione un cliente existente o complete los datos de cliente nuevo.",
-    "amount.negative": "El importe no puede ser negativo.",
-    "amount.invalid": "Importe no válido. Use solo números y punto decimal.",
-    "anticipo.exceeds_total": "El anticipo no puede superar el total con impuestos.",
-    "date.before_entry": "La fecha estimada no puede ser anterior a la fecha de ingreso.",
-    "amount.must_be_positive": "El importe debe ser mayor que cero.",
-    "refund.exceeds_paid": "No se puede reembolsar más de lo pagado.",
+    "required": "This field is required.",
+    "cedula.length": "The ID number must have 10 digits.",
+    "cedula.not_digits": "The ID number may only contain digits.",
+    "cedula.province": "Invalid province code (01 to 24, or 30).",
+    "cedula.third_digit": "The third digit must be between 0 and 5 for private individuals.",
+    "cedula.check_digit": "The ID number is not valid (check digit).",
+    "phone.invalid_chars": "The phone may only contain digits, spaces, +, - and brackets.",
+    "phone.length": "The phone must have between 7 and 15 digits.",
+    "email.invalid": "Invalid email address.",
+    "invalid_type": "Select an equipment type from the list.",
+    "not_found": "The selected customer no longer exists.",
+    "customer.required": "Select an existing customer or fill in the new customer details.",
+    "amount.negative": "The amount cannot be negative.",
+    "amount.invalid": "Invalid amount. Use digits and a decimal point only.",
+    "anticipo.exceeds_total": "The deposit cannot exceed the total including taxes.",
+    "date.before_entry": "The estimated date cannot be earlier than the received date.",
+    "amount.must_be_positive": "The amount must be greater than zero.",
+    "refund.exceeds_paid": "You cannot refund more than has been paid.",
     "deposit.already_registered": (
-        "Ya hay un anticipo registrado en la recepción; este pago se restará además de ese anticipo."
+        "A deposit was already recorded at reception; this payment will be subtracted on top "
+        "of that deposit."
     ),
-    "payment.already_voided": "Este pago ya estaba anulado.",
-    "equipment.other_customer": "El equipo elegido no pertenece a este cliente.",
+    "payment.already_voided": "This payment was already voided.",
+    "equipment.other_customer": "The selected equipment does not belong to this customer.",
 }
 
 _FIELD_LABELS = {
-    "nombre_completo": "Nombre completo",
-    "numero_identificacion": "Cédula, RUC o identificación",
-    "telefono_principal": "Teléfono principal",
-    "telefono_secundario": "Teléfono secundario",
-    "correo_electronico": "Correo electrónico",
-    "cliente_id": "Cliente",
-    "tipo_equipo": "Tipo de equipo",
-    "cliente": "Cliente",
-    "costo_diagnostico": "Costo de diagnóstico",
-    "anticipo": "Anticipo recibido",
-    "descuento": "Descuento",
-    "cantidad": "Cantidad",
-    "precio_unitario": "Precio unitario",
-    "descripcion": "Descripción",
-    "tipo_linea": "Tipo",
-    "fecha_estimada_entrega": "Fecha estimada de entrega",
-    "equipo": "Equipo",
+    "nombre_completo": "Full name",
+    "numero_identificacion": "ID, tax ID or identification",
+    "telefono_principal": "Primary phone",
+    "telefono_secundario": "Secondary phone",
+    "correo_electronico": "Email",
+    "cliente_id": "Customer",
+    "tipo_equipo": "Equipment type",
+    "cliente": "Customer",
+    "costo_diagnostico": "Diagnosis cost",
+    "anticipo": "Deposit received",
+    "descuento": "Discount",
+    "cantidad": "Quantity",
+    "precio_unitario": "Unit price",
+    "descripcion": "Description",
+    "tipo_linea": "Type",
+    "fecha_estimada_entrega": "Estimated delivery date",
+    "equipo": "Equipment",
 }
 
 
@@ -57,11 +58,52 @@ def error_text(code: str) -> str:
     source = _ERROR_TEXTS.get(code)
     if source is None:
         return code
-    return QCoreApplication.translate(_CONTEXT, source)
+    return QCoreApplication.translate("LucioTech", source)
 
 
 def field_label(field: str) -> str:
     source = _FIELD_LABELS.get(field)
     if source is None:
         return field
-    return QCoreApplication.translate(_CONTEXT, source)
+    return QCoreApplication.translate("LucioTech", source)
+
+
+def _catalog() -> None:
+    """Mantiene los textos en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate("LucioTech", 'This field is required.')
+    QCoreApplication.translate("LucioTech", 'The ID number must have 10 digits.')
+    QCoreApplication.translate("LucioTech", 'The ID number may only contain digits.')
+    QCoreApplication.translate("LucioTech", 'Invalid province code (01 to 24, or 30).')
+    QCoreApplication.translate("LucioTech", 'The third digit must be between 0 and 5 for private individuals.')
+    QCoreApplication.translate("LucioTech", 'The ID number is not valid (check digit).')
+    QCoreApplication.translate("LucioTech", 'The phone may only contain digits, spaces, +, - and brackets.')
+    QCoreApplication.translate("LucioTech", 'The phone must have between 7 and 15 digits.')
+    QCoreApplication.translate("LucioTech", 'Invalid email address.')
+    QCoreApplication.translate("LucioTech", 'Select an equipment type from the list.')
+    QCoreApplication.translate("LucioTech", 'The selected customer no longer exists.')
+    QCoreApplication.translate("LucioTech", 'Select an existing customer or fill in the new customer details.')
+    QCoreApplication.translate("LucioTech", 'The amount cannot be negative.')
+    QCoreApplication.translate("LucioTech", 'Invalid amount. Use digits and a decimal point only.')
+    QCoreApplication.translate("LucioTech", 'The deposit cannot exceed the total including taxes.')
+    QCoreApplication.translate("LucioTech", 'The estimated date cannot be earlier than the received date.')
+    QCoreApplication.translate("LucioTech", 'The amount must be greater than zero.')
+    QCoreApplication.translate("LucioTech", 'You cannot refund more than has been paid.')
+    QCoreApplication.translate("LucioTech", 'A deposit was already recorded at reception; this payment will be subtracted on top of that deposit.')
+    QCoreApplication.translate("LucioTech", 'This payment was already voided.')
+    QCoreApplication.translate("LucioTech", 'The selected equipment does not belong to this customer.')
+    QCoreApplication.translate("LucioTech", 'Full name')
+    QCoreApplication.translate("LucioTech", 'ID, tax ID or identification')
+    QCoreApplication.translate("LucioTech", 'Primary phone')
+    QCoreApplication.translate("LucioTech", 'Secondary phone')
+    QCoreApplication.translate("LucioTech", 'Email')
+    QCoreApplication.translate("LucioTech", 'Customer')
+    QCoreApplication.translate("LucioTech", 'Equipment type')
+    QCoreApplication.translate("LucioTech", 'Diagnosis cost')
+    QCoreApplication.translate("LucioTech", 'Deposit received')
+    QCoreApplication.translate("LucioTech", 'Discount')
+    QCoreApplication.translate("LucioTech", 'Quantity')
+    QCoreApplication.translate("LucioTech", 'Unit price')
+    QCoreApplication.translate("LucioTech", 'Description')
+    QCoreApplication.translate("LucioTech", 'Type')
+    QCoreApplication.translate("LucioTech", 'Estimated delivery date')
+    QCoreApplication.translate("LucioTech", 'Equipment')

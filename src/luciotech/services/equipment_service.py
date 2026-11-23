@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -15,7 +16,7 @@ class EquipmentValidationError(ValueError):
     """Lleva un diccionario campo -> código de error para que la UI lo muestre."""
 
     def __init__(self, errors: dict[str, str]) -> None:
-        super().__init__("Datos de equipo no válidos.")
+        super().__init__(QCoreApplication.translate("LucioTech", "Invalid equipment details."))
         self.errors = errors
 
 
@@ -66,7 +67,7 @@ def save_equipment(
     else:
         found = session.get(Equipment, equipment_id)
         if found is None:
-            raise ValueError("Equipo no encontrado.")
+            raise ValueError(QCoreApplication.translate("LucioTech", "Equipment not found."))
         equipment = found
 
     equipment.cliente_id = data.cliente_id

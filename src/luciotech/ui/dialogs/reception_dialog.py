@@ -44,6 +44,7 @@ from luciotech.services.reception_service import (
     register_reception,
 )
 from luciotech.services.settings_service import equipment_types
+from luciotech.ui.labels import priority_label
 from luciotech.ui.validation_texts import error_text, field_label
 
 NEW_CUSTOMER_KEY = -1
@@ -64,7 +65,7 @@ class ReceptionDialog(QDialog):
         self._usuario = usuario
         self.saved_order_number: str | None = None
         self.saved_order_id: int | None = None
-        self.setWindowTitle(self.tr("Nueva recepción"))
+        self.setWindowTitle(self.tr("New reception"))
         self.setMinimumSize(900, 600)
         self.setWindowState(self.windowState() | Qt.WindowState.WindowMaximized)
 
@@ -74,7 +75,7 @@ class ReceptionDialog(QDialog):
         self._new_identification = QLineEdit()
         self._new_phone = QLineEdit()
         self._new_email = QLineEdit()
-        self._new_group = QGroupBox(self.tr("Cliente nuevo"))
+        self._new_group = QGroupBox(self.tr("New customer"))
         new_form = QFormLayout(self._new_group)
         new_form.addRow(field_label("nombre_completo") + " *", self._new_name)
         new_form.addRow(field_label("numero_identificacion"), self._new_identification)
@@ -89,7 +90,7 @@ class ReceptionDialog(QDialog):
         self._os = QLineEdit()
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
-        self._password.setPlaceholderText(self.tr("Opcional"))
+        self._password.setPlaceholderText(self.tr("Optional"))
         self._problem = QPlainTextEdit()
         self._problem.setFixedHeight(60)
         self._physical_state = QPlainTextEdit()
@@ -107,8 +108,9 @@ class ReceptionDialog(QDialog):
         self._estimate = QDateTimeEdit(QDateTime.currentDateTime().addDays(7))
         self._estimate.setDisplayFormat("dd/MM/yyyy HH:mm")
         self._priority = QComboBox()
-        self._priority.addItems([p.value for p in Priority])
-        self._priority.setCurrentText(Priority.NORMAL.value)
+        for priority in Priority:
+            self._priority.addItem(priority_label(priority.value), priority.value)
+        self._priority.setCurrentIndex(self._priority.findData(Priority.NORMAL.value))
         self._technician = QLineEdit(usuario)
         self._diagnosis_cost = QDoubleSpinBox()
         self._diagnosis_cost.setRange(0, 1_000_000)
@@ -125,43 +127,43 @@ class ReceptionDialog(QDialog):
 
         customer_form = QFormLayout()
         customer_form.addRow(field_label("cliente") + " *", self._customer_combo)
-        customer_form.addRow(self.tr("Equipo"), self._equipment_combo)
+        customer_form.addRow(self.tr("Equipment"), self._equipment_combo)
 
         equipment_form = QFormLayout()
         equipment_form.addRow(field_label("tipo_equipo") + " *", self._type)
-        equipment_form.addRow(self.tr("Marca"), self._brand)
-        equipment_form.addRow(self.tr("Modelo"), self._model)
-        equipment_form.addRow(self.tr("Número de serie"), self._serial)
-        equipment_form.addRow(self.tr("Color"), self._color)
-        equipment_form.addRow(self.tr("Sistema operativo"), self._os)
-        equipment_form.addRow(self.tr("Contraseña o PIN"), self._password)
-        equipment_form.addRow(self.tr("Problema reportado *"), self._problem)
-        equipment_form.addRow(self.tr("Estado físico"), self._physical_state)
-        equipment_form.addRow(self.tr("Observaciones de ingreso"), self._intake_notes)
+        equipment_form.addRow(self.tr("Brand"), self._brand)
+        equipment_form.addRow(self.tr("Model"), self._model)
+        equipment_form.addRow(self.tr("Serial number"), self._serial)
+        equipment_form.addRow(self.tr("Colour"), self._color)
+        equipment_form.addRow(self.tr("Operating system"), self._os)
+        equipment_form.addRow(self.tr("Password or PIN"), self._password)
+        equipment_form.addRow(self.tr("Reported problem *"), self._problem)
+        equipment_form.addRow(self.tr("Physical condition"), self._physical_state)
+        equipment_form.addRow(self.tr("Intake notes"), self._intake_notes)
 
         order_form = QFormLayout()
-        order_form.addRow(self.tr("Número de orden"), self._number_label)
-        order_form.addRow(self.tr("Fecha y hora de ingreso"), self._entry)
-        order_form.addRow(self.tr("Fecha estimada de entrega"), self._estimate)
-        order_form.addRow(self.tr("Prioridad"), self._priority)
-        order_form.addRow(self.tr("Técnico responsable"), self._technician)
-        order_form.addRow(self.tr("Costo inicial de diagnóstico"), self._diagnosis_cost)
-        order_form.addRow(self.tr("Anticipo recibido"), self._deposit)
+        order_form.addRow(self.tr("Order number"), self._number_label)
+        order_form.addRow(self.tr("Received date and time"), self._entry)
+        order_form.addRow(self.tr("Estimated delivery date"), self._estimate)
+        order_form.addRow(self.tr("Priority"), self._priority)
+        order_form.addRow(self.tr("Technician in charge"), self._technician)
+        order_form.addRow(self.tr("Initial diagnosis cost"), self._diagnosis_cost)
+        order_form.addRow(self.tr("Deposit received"), self._deposit)
 
-        accessories_group = QGroupBox(self.tr("Accesorios recibidos"))
+        accessories_group = QGroupBox(self.tr("Accessories received"))
         accessories_layout = QVBoxLayout(accessories_group)
         accessories_layout.addLayout(self._accessories_grid)
-        accessories_layout.addWidget(QLabel(self.tr("Otros accesorios:")))
+        accessories_layout.addWidget(QLabel(self.tr("Other accessories:")))
         accessories_layout.addWidget(self._manual_accessories)
 
         left_column = QVBoxLayout()
-        left_column.addWidget(_section(self.tr("Cliente"), customer_form))
+        left_column.addWidget(_section(self.tr("Customer"), customer_form))
         left_column.addWidget(self._new_group)
-        left_column.addWidget(_section(self.tr("Equipo"), equipment_form))
+        left_column.addWidget(_section(self.tr("Equipment"), equipment_form))
         left_column.addStretch(1)
 
         right_column = QVBoxLayout()
-        right_column.addWidget(_section(self.tr("Recepción"), order_form))
+        right_column.addWidget(_section(self.tr("Reception"), order_form))
         right_column.addWidget(accessories_group)
         right_column.addStretch(1)
 
@@ -198,7 +200,7 @@ class ReceptionDialog(QDialog):
 
     def _load_choices(self) -> None:
         with self._session_factory() as session:
-            self._customer_combo.addItem(self.tr("— Cliente nuevo —"), NEW_CUSTOMER_KEY)
+            self._customer_combo.addItem(self.tr("— New customer —"), NEW_CUSTOMER_KEY)
             for customer in CustomerRepository(session).list_all():
                 self._customer_combo.addItem(customer.nombre_completo, customer.id)
             self._type.addItems(equipment_types(session))
@@ -216,7 +218,7 @@ class ReceptionDialog(QDialog):
         for row, name in enumerate(suggested_accessories(tipo)):
             check = QCheckBox(name)
             detail = QLineEdit()
-            detail.setPlaceholderText(self.tr("Modelo o detalle"))
+            detail.setPlaceholderText(self.tr("Model or details"))
             detail.setEnabled(False)
             check.toggled.connect(detail.setEnabled)
             self._accessory_checks[name] = check
@@ -232,7 +234,7 @@ class ReceptionDialog(QDialog):
     def _reload_equipment_choices(self) -> None:
         self._equipment_combo.blockSignals(True)
         self._equipment_combo.clear()
-        self._equipment_combo.addItem(self.tr("— Equipo nuevo —"), NEW_EQUIPMENT_KEY)
+        self._equipment_combo.addItem(self.tr("— New equipment —"), NEW_EQUIPMENT_KEY)
         customer_id = self._customer_combo.currentData()
         if customer_id is not None and customer_id != NEW_CUSTOMER_KEY:
             with self._session_factory() as session:
@@ -325,7 +327,7 @@ class ReceptionDialog(QDialog):
             equipment_id=reuse_id,
             fecha_ingreso=self._entry.dateTime().toPyDateTime(),
             fecha_estimada_entrega=self._estimate.dateTime().toPyDateTime(),
-            prioridad=self._priority.currentText(),
+            prioridad=self._priority.currentData(),
             tecnico_responsable=self._technician.text().strip() or None,
             costo_diagnostico=_decimal(self._diagnosis_cost.value()),
             anticipo=_decimal(self._deposit.value()),
@@ -354,7 +356,7 @@ class ReceptionDialog(QDialog):
             QMessageBox.critical(
                 self,
                 self.windowTitle(),
-                self.tr("No se pudo registrar la recepción. Intente de nuevo."),
+                self.tr("The reception could not be recorded. Please try again."),
             )
             return
         self.accept()
@@ -362,10 +364,12 @@ class ReceptionDialog(QDialog):
     def _confirm_warnings(self, warnings: ReceptionWarnings) -> bool:
         lines: list[str] = []
         for customer in warnings.duplicate_customers:
-            lines.append(self.tr("Cliente parecido: %1").replace("%1", _customer_label(customer)))
+            lines.append(self.tr("Similar customer: %1").replace("%1", _customer_label(customer)))
         for order in warnings.serial_orders:
-            lines.append(self.tr("Mismo número de serie en la orden %1").replace("%1", order.numero_orden))
-        message = "\n".join(lines) + "\n\n" + self.tr("¿Desea registrar la recepción de todos modos?")
+            lines.append(
+                self.tr("Same serial number on order %1").replace("%1", order.numero_orden)
+            )
+        message = "\n".join(lines) + "\n\n" + self.tr("Do you want to record the reception anyway?")
         answer = QMessageBox.question(
             self,
             self.windowTitle(),

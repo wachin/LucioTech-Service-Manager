@@ -6,6 +6,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime
 from decimal import Decimal
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy.orm import Session
 
 from luciotech.config import DEFAULT_USER
@@ -34,7 +35,7 @@ class ReceptionValidationError(ValueError):
     """Lleva un diccionario campo -> código de error para que la UI lo muestre."""
 
     def __init__(self, errors: dict[str, str]) -> None:
-        super().__init__("Datos de recepción no válidos.")
+        super().__init__(QCoreApplication.translate("LucioTech", "Invalid reception details."))
         self.errors = errors
 
 
@@ -141,7 +142,7 @@ def _resolve_customer(session: Session, data: ReceptionData) -> Customer:
         return save_customer(session, data.new_customer)
     customer = session.get(Customer, data.customer_id)
     if customer is None:
-        raise ValueError("Cliente no encontrado.")
+        raise ValueError(QCoreApplication.translate("LucioTech", "Customer not found."))
     return customer
 
 

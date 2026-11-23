@@ -1733,12 +1733,20 @@ Do not write visible texts directly in places that are hard to translate.
 
 ### Checklist §21
 
-- [ ] All user-visible strings wrapped with `self.tr(...)`
-- [ ] `pylupdate6` configuration
-- [ ] Spanish translation loaded by default
-- [ ] English translation prepared
-- [ ] Language selectable from Settings
-- [ ] Language change applies without restart (or documented restart requirement)
+- [x] All user-visible strings wrapped with `self.tr(...)`
+- [x] `pylupdate6` configuration
+- [x] Spanish translation loaded by default
+- [x] English translation prepared
+- [x] Language selectable from Settings
+- [x] Language change applies without restart (or documented restart requirement)
+
+Implementation notes: English is the source language of the code. The Spanish catalogue lives in
+`translations/luciotech_es.ts` and is compiled to `src/luciotech/ui/translations/luciotech_es.qm`
+with `lrelease`; `tools/update-translations.sh` runs `pylupdate6` and `lrelease`. The chosen
+language is stored in the `idioma` key of the `configuracion` table and is applied at startup,
+so a change requires reopening the application (documented in the README and in the Settings
+dialog). Domain values that are stored in Spanish in the database (states, priorities, payment
+types…) are translated for display by `ui/labels.py`, so existing records keep working.
 
 ---
 

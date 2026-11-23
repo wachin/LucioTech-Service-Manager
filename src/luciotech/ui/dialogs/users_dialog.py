@@ -39,8 +39,9 @@ from luciotech.services.user_service import (
     update_user,
 )
 from luciotech.ui.formatting import format_datetime
+from luciotech.ui.labels import role_label
 
-COLUMNS = ("Usuario", "Nombre completo", "Rol", "Estado", "Último acceso")
+COLUMNS = ("User", "Full name", "Role", "Status", "Last sign-in")
 ERROR_STYLE = "color: #b00020;"
 
 
@@ -57,29 +58,29 @@ class UserFormDialog(QDialog):
         self._session_factory = session_factory
         self._user_id = user_id
         self.setWindowTitle(
-            self.tr("Editar usuario") if user_id is not None else self.tr("Nuevo usuario")
+            self.tr("Edit user") if user_id is not None else self.tr("New user")
         )
         self.setMinimumWidth(440)
 
         self._full_name = QLineEdit()
-        self._full_name.setPlaceholderText(self.tr("Como debe salir en los documentos"))
+        self._full_name.setPlaceholderText(self.tr("As it should appear on documents"))
         self._username = QLineEdit()
-        self._username.setPlaceholderText(self.tr("Para entrar; sin espacios ni tildes"))
+        self._username.setPlaceholderText(self.tr("Used to sign in; no spaces or accents"))
         self._role = QComboBox()
         for role in UserRole:
-            self._role.addItem(role.value, role.value)
+            self._role.addItem(role_label(role.value), role.value)
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
         self._repeat = QLineEdit()
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
-        form.addRow(self.tr("Nombre completo") + " *", self._full_name)
-        form.addRow(self.tr("Usuario") + " *", self._username)
-        form.addRow(self.tr("Rol"), self._role)
+        form.addRow(self.tr("Full name") + " *", self._full_name)
+        form.addRow(self.tr("User") + " *", self._username)
+        form.addRow(self.tr("Role"), self._role)
         if user_id is None:
-            form.addRow(self.tr("Contraseña") + " *", self._password)
-            form.addRow(self.tr("Repetir contraseña") + " *", self._repeat)
+            form.addRow(self.tr("Password") + " *", self._password)
+            form.addRow(self.tr("Repeat password") + " *", self._repeat)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -109,7 +110,7 @@ class UserFormDialog(QDialog):
             # El nombre de acceso no se cambia: es la firma que queda en el historial.
             self._username.setReadOnly(True)
             self._username.setToolTip(
-                self.tr("El nombre de usuario no se puede cambiar una vez creado.")
+                self.tr("The user name cannot be changed once created.")
             )
             index = self._role.findData(user.rol)
             if index >= 0:
@@ -117,7 +118,7 @@ class UserFormDialog(QDialog):
 
     def _save(self) -> None:
         if self._user_id is None and self._password.text() != self._repeat.text():
-            self._message.setText(self.tr("Las dos contraseñas no coinciden."))
+            self._message.setText(self.tr("The two passwords do not match."))
             return
         try:
             with self._session_factory() as session:
@@ -132,7 +133,7 @@ class UserFormDialog(QDialog):
                 else:
                     user = session.get(User, self._user_id)
                     if user is None:
-                        self._message.setText(self.tr("El usuario ya no existe."))
+                        self._message.setText(self.tr("The user no longer exists."))
                         return
                     update_user(
                         session, user, full_name=self._full_name.text(), role=self._role.currentData()
@@ -142,7 +143,7 @@ class UserFormDialog(QDialog):
             self._message.setText(str(exc))
             return
         except SQLAlchemyError:
-            self._message.setText(self.tr("No se pudo guardar el usuario. Intente de nuevo."))
+            self._message.setText(self.tr("The user could not be saved. Please try again."))
             return
         self.accept()
 
@@ -159,7 +160,7 @@ class UsersDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._current_user = current_user
-        self.setWindowTitle(self.tr("Usuarios"))
+        self.setWindowTitle(self.tr("Users"))
         self.setMinimumSize(720, 420)
 
         self._table = QTableWidget(0, len(COLUMNS))
@@ -174,19 +175,19 @@ class UsersDialog(QDialog):
             header.setSectionResizeMode(
                 column,
                 QHeaderView.ResizeMode.Stretch
-                if COLUMNS[column] == "Nombre completo"
+                if COLUMNS[column] == "Full name"
                 else QHeaderView.ResizeMode.ResizeToContents,
             )
         self._table.doubleClicked.connect(lambda _index: self._edit_selected())
         self._user_ids: list[int] = []
 
-        self._new_button = QPushButton(self.tr("Nuevo usuario…"))
+        self._new_button = QPushButton(self.tr("New user…"))
         self._new_button.clicked.connect(self._new_user)
-        self._edit_button = QPushButton(self.tr("Editar…"))
+        self._edit_button = QPushButton(self.tr("Edit…"))
         self._edit_button.clicked.connect(self._edit_selected)
-        self._password_button = QPushButton(self.tr("Cambiar contraseña…"))
+        self._password_button = QPushButton(self.tr("Change password…"))
         self._password_button.clicked.connect(self._change_password)
-        self._active_button = QPushButton(self.tr("Desactivar"))
+        self._active_button = QPushButton(self.tr("Deactivate"))
         self._active_button.clicked.connect(self._toggle_active)
 
         top = QHBoxLayout()
@@ -198,8 +199,8 @@ class UsersDialog(QDialog):
 
         note = QLabel(
             self.tr(
-                "El nombre completo es el que aparece en el historial de las órdenes y en el "
-                "pie de los documentos que imprime cada usuario."
+                "The full name appears in the order history and in the footer of the documents "
+                "printed by each user."
             )
         )
         note.setWordWrap(True)
@@ -225,9 +226,9 @@ class UsersDialog(QDialog):
             cells = (
                 user.nombre_usuario,
                 user.nombre_completo,
-                user.rol,
-                self.tr("Activo") if user.activo else self.tr("Desactivado"),
-                format_datetime(user.ultimo_acceso) if user.ultimo_acceso else self.tr("Nunca"),
+                role_label(user.rol),
+                self.tr("Active") if user.activo else self.tr("Deactivated"),
+                format_datetime(user.ultimo_acceso) if user.ultimo_acceso else self.tr("Never"),
             )
             for column, value in enumerate(cells):
                 self._table.setItem(row, column, QTableWidgetItem(value))
@@ -251,12 +252,12 @@ class UsersDialog(QDialog):
         self._password_button.setEnabled(user_id is not None)
         self._active_button.setEnabled(user_id is not None)
         if user_id is None:
-            self._active_button.setText(self.tr("Desactivar"))
+            self._active_button.setText(self.tr("Deactivate"))
             return
         with self._session_factory() as session:
             user = session.get(User, user_id)
             active = bool(user and user.activo)
-        self._active_button.setText(self.tr("Desactivar") if active else self.tr("Activar"))
+        self._active_button.setText(self.tr("Deactivate") if active else self.tr("Activate"))
 
     def _new_user(self) -> None:
         if UserFormDialog(self._session_factory, parent=self).exec():
@@ -285,7 +286,7 @@ class UsersDialog(QDialog):
             QMessageBox.information(
                 self,
                 self.windowTitle(),
-                self.tr("No puede desactivar la cuenta con la que está trabajando."),
+                self.tr("You cannot deactivate the account you are working with."),
             )
             return
         try:
@@ -300,7 +301,7 @@ class UsersDialog(QDialog):
             return
         except SQLAlchemyError:
             QMessageBox.critical(
-                self, self.windowTitle(), self.tr("No se pudo cambiar el estado. Intente de nuevo.")
+                self, self.windowTitle(), self.tr("The status could not be changed. Please try again.")
             )
             return
         self.refresh()
@@ -318,7 +319,7 @@ class SetPasswordDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
-        self.setWindowTitle(self.tr("Cambiar contraseña"))
+        self.setWindowTitle(self.tr("Change password"))
         self.setMinimumWidth(420)
 
         self._password = QLineEdit()
@@ -327,8 +328,8 @@ class SetPasswordDialog(QDialog):
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
-        form.addRow(self.tr("Contraseña nueva"), self._password)
-        form.addRow(self.tr("Repetir la nueva"), self._repeat)
+        form.addRow(self.tr("New password"), self._password)
+        form.addRow(self.tr("Repeat the new password"), self._repeat)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -349,13 +350,13 @@ class SetPasswordDialog(QDialog):
 
     def _save(self) -> None:
         if self._password.text() != self._repeat.text():
-            self._message.setText(self.tr("Las dos contraseñas no coinciden."))
+            self._message.setText(self.tr("The two passwords do not match."))
             return
         try:
             with self._session_factory() as session:
                 user = session.get(User, self._user_id)
                 if user is None:
-                    self._message.setText(self.tr("El usuario ya no existe."))
+                    self._message.setText(self.tr("The user no longer exists."))
                     return
                 set_password(session, user, self._password.text())
                 session.commit()
@@ -363,6 +364,6 @@ class SetPasswordDialog(QDialog):
             self._message.setText(str(exc))
             return
         except SQLAlchemyError:
-            self._message.setText(self.tr("No se pudo cambiar la contraseña. Intente de nuevo."))
+            self._message.setText(self.tr("The password could not be changed. Please try again."))
             return
         self.accept()

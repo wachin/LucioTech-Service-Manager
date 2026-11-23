@@ -18,6 +18,7 @@ from luciotech.services.user_service import DEFAULT_CURRENT_USER, CurrentUser
 from luciotech.ui.dialogs.login_dialog import ChangePasswordDialog
 from luciotech.ui.dialogs.settings_dialog import SettingsDialog
 from luciotech.ui.dialogs.users_dialog import UsersDialog
+from luciotech.ui.labels import role_label
 from luciotech.ui.pages.customers_page import CustomersPage
 from luciotech.ui.pages.equipment_page import EquipmentPage
 from luciotech.ui.pages.home_page import HomePage
@@ -50,11 +51,11 @@ class MainWindow(QMainWindow):
         self._trash = TrashPage(session_factory, usuario=self._user.display_name)
 
         self._tabs = QTabWidget()
-        self._tabs.addTab(self._home, self.tr("Inicio"))
-        self._tabs.addTab(self._orders, self.tr("Órdenes"))
-        self._tabs.addTab(self._customers, self.tr("Clientes"))
-        self._tabs.addTab(self._equipment, self.tr("Equipos"))
-        self._tabs.addTab(self._trash, self.tr("Papelera"))
+        self._tabs.addTab(self._home, self.tr("Home"))
+        self._tabs.addTab(self._orders, self.tr("Orders"))
+        self._tabs.addTab(self._customers, self.tr("Customers"))
+        self._tabs.addTab(self._equipment, self.tr("Equipment"))
+        self._tabs.addTab(self._trash, self.tr("Trash"))
         self.setCentralWidget(self._tabs)
 
         self._customers.data_changed.connect(self.refresh_all)
@@ -102,38 +103,38 @@ class MainWindow(QMainWindow):
     def _show_session(self) -> None:
         """Quién está dentro, a la vista y sin ocupar sitio en la barra de pestañas."""
         label = QLabel(
-            self.tr("Sesión: %1 · %2")
+            self.tr("Signed in: %1 · %2")
             .replace("%1", self._user.display_name)
-            .replace("%2", self._user.role)
+            .replace("%2", role_label(self._user.role))
         )
         label.setToolTip(
             self.tr(
-                "Este nombre aparece en el historial de las órdenes y en el pie de los "
-                "documentos que imprima."
+                "This name appears in the order history and in the footer of the documents "
+                "you print."
             )
         )
         self.statusBar().addPermanentWidget(label)
 
     def _build_menu(self) -> None:
-        file_menu = self.menuBar().addMenu(self.tr("&Archivo"))
+        file_menu = self.menuBar().addMenu(self.tr("&File"))
         if self._user.id is not None:
-            password_action = QAction(self.tr("Cambiar &mi contraseña…"), self)
+            password_action = QAction(self.tr("Change &my password…"), self)
             password_action.triggered.connect(self._change_password)
             file_menu.addAction(password_action)
         if self._user.is_admin:
-            settings_action = QAction(self.tr("&Configuración…"), self)
+            settings_action = QAction(self.tr("&Settings…"), self)
             settings_action.triggered.connect(self._open_settings)
             file_menu.addAction(settings_action)
-            users_action = QAction(self.tr("&Usuarios…"), self)
+            users_action = QAction(self.tr("&Users…"), self)
             users_action.setShortcut(QKeySequence("Ctrl+U"))
             users_action.triggered.connect(self._open_users)
             file_menu.addAction(users_action)
         if self._user.id is not None:
-            logout_action = QAction(self.tr("&Cerrar sesión"), self)
+            logout_action = QAction(self.tr("&Sign out"), self)
             logout_action.triggered.connect(self._logout)
             file_menu.addAction(logout_action)
         file_menu.addSeparator()
-        quit_action = QAction(self.tr("&Salir"), self)
+        quit_action = QAction(self.tr("&Quit"), self)
         quit_action.setShortcut(QKeySequence("Ctrl+Q"))
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)

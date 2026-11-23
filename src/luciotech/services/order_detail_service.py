@@ -7,6 +7,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy.orm import Session
 
 from luciotech.database.enums import EventType, OrderState, PaymentMethod, PaymentType
@@ -21,7 +22,7 @@ class PaymentValidationError(ValueError):
     """Lleva un diccionario campo -> código de error para que la UI lo muestre."""
 
     def __init__(self, errors: dict[str, str]) -> None:
-        super().__init__("Datos de pago no válidos.")
+        super().__init__(QCoreApplication.translate("LucioTech", "Invalid payment details."))
         self.errors = errors
 
 
@@ -144,7 +145,7 @@ def add_note(
 ) -> OrderEvent:
     cleaned = titulo.strip()
     if not cleaned:
-        raise ValueError("El título de la nota es obligatorio.")
+        raise ValueError(QCoreApplication.translate("LucioTech", "The note title is required."))
     event = OrderEvent(
         order=order,
         tipo_evento=EventType(tipo).value,

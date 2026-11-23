@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import QCoreApplication, Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QComboBox,
@@ -55,6 +55,7 @@ from luciotech.services.order_detail_service import (
 from luciotech.services.settings_service import TaxSettings, tax_settings
 from luciotech.services.totals_service import order_totals
 from luciotech.ui.formatting import format_datetime, format_money
+from luciotech.ui.labels import budget_line_type_label, payment_method_label, payment_type_label
 from luciotech.ui.validation_texts import error_text
 
 CENT = Decimal("0.01")
@@ -65,8 +66,8 @@ ZERO = Decimal("0.00")
 SALDO_DUE_COLOR = "#A32D2D"
 SALDO_CLEAR_COLOR = "#0F6E56"
 
-LINE_COLUMNS = ("Tipo", "Descripción", "Cantidad", "Precio unitario", "Subtotal")
-PAYMENT_COLUMNS = ("Fecha", "Tipo", "Método", "Importe", "Referencia", "Estado")
+LINE_COLUMNS = ("Type", "Description", "Quantity", "Unit price", "Subtotal")
+PAYMENT_COLUMNS = ("Date", "Type", "Method", "Amount", "Reference", "Status")
 
 
 class BudgetLineDialog(QDialog):
@@ -74,19 +75,19 @@ class BudgetLineDialog(QDialog):
 
     def __init__(self, parent: QWidget | None = None, line: BudgetLine | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle(self.tr("Línea de presupuesto"))
+        self.setWindowTitle(self.tr("Budget line"))
         self._type = QComboBox()
         for kind in BudgetLineType:
-            self._type.addItem(kind.value, kind.value)
+            self._type.addItem(budget_line_type_label(kind.value), kind.value)
         self._description = QLineEdit()
         self._quantity = QLineEdit("1")
         self._price = QLineEdit("0.00")
 
         form = QFormLayout(self)
-        form.addRow(self.tr("Tipo"), self._type)
-        form.addRow(self.tr("Descripción"), self._description)
-        form.addRow(self.tr("Cantidad"), self._quantity)
-        form.addRow(self.tr("Precio unitario"), self._price)
+        form.addRow(self.tr("Type"), self._type)
+        form.addRow(self.tr("Description"), self._description)
+        form.addRow(self.tr("Quantity"), self._quantity)
+        form.addRow(self.tr("Unit price"), self._price)
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
@@ -116,23 +117,23 @@ class PaymentDialog(QDialog):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle(self.tr("Registrar pago"))
+        self.setWindowTitle(self.tr("Record payment"))
         self._type = QComboBox()
         for kind in PaymentType:
-            self._type.addItem(kind.value, kind.value)
+            self._type.addItem(payment_type_label(kind.value), kind.value)
         self._method = QComboBox()
         for method in PaymentMethod:
-            self._method.addItem(method.value, method.value)
+            self._method.addItem(payment_method_label(method.value), method.value)
         self._amount = QLineEdit("0.00")
         self._reference = QLineEdit()
         self._observations = QLineEdit()
 
         form = QFormLayout(self)
-        form.addRow(self.tr("Tipo"), self._type)
-        form.addRow(self.tr("Método"), self._method)
-        form.addRow(self.tr("Importe"), self._amount)
-        form.addRow(self.tr("Referencia"), self._reference)
-        form.addRow(self.tr("Observaciones"), self._observations)
+        form.addRow(self.tr("Type"), self._type)
+        form.addRow(self.tr("Method"), self._method)
+        form.addRow(self.tr("Amount"), self._amount)
+        form.addRow(self.tr("Reference"), self._reference)
+        form.addRow(self.tr("Notes"), self._observations)
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
@@ -172,14 +173,14 @@ class BudgetPaymentsTab(QWidget):
 
         self._lines = _table(LINE_COLUMNS)
         self._lines.itemDoubleClicked.connect(lambda _item: self._edit_line())
-        add_button = QPushButton(self.tr("Añadir línea"))
+        add_button = QPushButton(self.tr("Add line"))
         add_button.clicked.connect(self._add_line)
-        edit_button = QPushButton(self.tr("Editar línea"))
+        edit_button = QPushButton(self.tr("Edit line"))
         edit_button.clicked.connect(self._edit_line)
-        remove_button = QPushButton(self.tr("Quitar línea"))
+        remove_button = QPushButton(self.tr("Remove line"))
         remove_button.clicked.connect(self._remove_line)
 
-        budget_box = QGroupBox(self.tr("Presupuesto"))
+        budget_box = QGroupBox(self.tr("Budget"))
         budget_layout = QVBoxLayout(budget_box)
         budget_layout.addWidget(self._lines)
         budget_buttons = QHBoxLayout()
@@ -195,31 +196,31 @@ class BudgetPaymentsTab(QWidget):
 
         self._totals_labels: dict[str, QLabel] = {}
         self._totals_values: dict[str, QLabel] = {}
-        totals_box = QGroupBox(self.tr("Totales"))
+        totals_box = QGroupBox(self.tr("Totals"))
         totals_grid = QGridLayout(totals_box)
         totals_grid.setColumnStretch(1, 1)
         row = 0
         row = self._add_total_row(totals_grid, row, "subtotal", self.tr("Subtotal"))
-        discount_label = QLabel(self.tr("Descuento"))
+        discount_label = QLabel(self.tr("Discount"))
         self._totals_labels["descuento"] = discount_label
         totals_grid.addWidget(discount_label, row, 0)
         totals_grid.addWidget(self._discount, row, 1)
         row += 1
-        row = self._add_total_row(totals_grid, row, "iva", self.tr("IVA"))
-        row = self._add_total_row(totals_grid, row, "anticipo", self.tr("Anticipo (recepción)"))
-        row = self._add_total_row(totals_grid, row, "pagos", self.tr("Pagos recibidos"))
+        row = self._add_total_row(totals_grid, row, "iva", self.tr("Tax"))
+        row = self._add_total_row(totals_grid, row, "anticipo", self.tr("Deposit (reception)"))
+        row = self._add_total_row(totals_grid, row, "pagos", self.tr("Payments received"))
         totals_grid.addWidget(_separator(), row, 0, 1, 2)
         row += 1
         row = self._add_total_row(totals_grid, row, "total", self.tr("Total"), points=12)
-        self._add_total_row(totals_grid, row, "saldo", self.tr("Saldo pendiente"), points=16)
+        self._add_total_row(totals_grid, row, "saldo", self.tr("Outstanding balance"), points=16)
 
         self._payments = _table(PAYMENT_COLUMNS)
-        pay_button = QPushButton(self.tr("Registrar pago"))
+        pay_button = QPushButton(self.tr("Record payment"))
         pay_button.clicked.connect(self._register_payment)
-        void_button = QPushButton(self.tr("Anular pago"))
+        void_button = QPushButton(self.tr("Void payment"))
         void_button.clicked.connect(self._void_payment)
 
-        payments_box = QGroupBox(self.tr("Pagos"))
+        payments_box = QGroupBox(self.tr("Payments"))
         payments_layout = QVBoxLayout(payments_box)
         payments_layout.addWidget(self._payments)
         payment_buttons = QHBoxLayout()
@@ -249,7 +250,7 @@ class BudgetPaymentsTab(QWidget):
         with self._session_factory() as session:
             order = session.get(ServiceOrder, self._order_id)
             if order is None:
-                self._message.setText(self.tr("La orden ya no existe."))
+                self._message.setText(self.tr("The order no longer exists."))
                 return
             tax = tax_settings(session)
             self._fill_lines(lines_for_order(session, self._order_id))
@@ -276,7 +277,7 @@ class BudgetPaymentsTab(QWidget):
         self._lines.setRowCount(len(lines))
         for row, line in enumerate(lines):
             cells = (
-                line.tipo_linea,
+                budget_line_type_label(line.tipo_linea),
                 line.descripcion,
                 _plain(line.cantidad),
                 _plain(line.precio_unitario),
@@ -290,11 +291,11 @@ class BudgetPaymentsTab(QWidget):
         for row, payment in enumerate(payments):
             cells = (
                 format_datetime(payment.fecha),
-                payment.tipo_pago,
-                payment.metodo_pago,
+                payment_type_label(payment.tipo_pago),
+                payment_method_label(payment.metodo_pago),
                 format_money(payment.monto),
                 payment.referencia or "-",
-                self.tr("Anulado") if payment.anulado else self.tr("Vigente"),
+                self.tr("Voided") if payment.anulado else self.tr("Current"),
             )
             for column, value in enumerate(cells):
                 self._payments.setItem(row, column, QTableWidgetItem(value))
@@ -302,7 +303,7 @@ class BudgetPaymentsTab(QWidget):
     def _show_totals(self, order: ServiceOrder, tax: TaxSettings) -> None:
         totals = order_totals(order, tax)
         self._totals_labels["iva"].setText(
-            (self.tr("IVA") + f" ({tax.percent}%)") if tax.enabled else self.tr("IVA (desactivado)")
+            (self.tr("Tax") + f" ({tax.percent}%)") if tax.enabled else self.tr("Tax (disabled)")
         )
         self._totals_values["subtotal"].setText(format_money(totals.subtotal))
         self._totals_values["iva"].setText(format_money(totals.impuestos))
@@ -358,7 +359,7 @@ class BudgetPaymentsTab(QWidget):
         self._message.clear()
         line = self._selected_line()
         if line is None:
-            self._message.setText(self.tr("Seleccione una línea."))
+            self._message.setText(self.tr("Select a line."))
             return
         dialog = BudgetLineDialog(self, line)
         if dialog.exec() != QDialog.DialogCode.Accepted:
@@ -379,7 +380,7 @@ class BudgetPaymentsTab(QWidget):
         self._message.clear()
         line = self._selected_line()
         if line is None:
-            self._message.setText(self.tr("Seleccione una línea."))
+            self._message.setText(self.tr("Select a line."))
             return
         self._run(lambda session, order: remove_line(session, _line_of(session, line.id)))
 
@@ -424,12 +425,12 @@ class BudgetPaymentsTab(QWidget):
         self._message.clear()
         payment = self._selected_payment()
         if payment is None:
-            self._message.setText(self.tr("Seleccione un pago."))
+            self._message.setText(self.tr("Select a payment."))
             return
         motivo, accepted = QInputDialog.getText(
             self,
-            self.tr("Anular pago"),
-            self.tr("Motivo de la anulación (opcional):"),
+            self.tr("Void payment"),
+            self.tr("Reason for voiding (optional):"),
         )
         if not accepted:
             return
@@ -448,7 +449,7 @@ class BudgetPaymentsTab(QWidget):
             with self._session_factory() as session:
                 order = session.get(ServiceOrder, self._order_id)
                 if order is None:
-                    raise ValueError(self.tr("La orden ya no existe."))
+                    raise ValueError(self.tr("The order no longer exists."))
                 action(session, order)
                 session.commit()
         except (BudgetLineValidationError, PaymentValidationError) as exc:
@@ -459,11 +460,11 @@ class BudgetPaymentsTab(QWidget):
             return False
         except SQLAlchemyError:
             QMessageBox.critical(
-                self, self.windowTitle(), self.tr("No se pudo guardar. Intente de nuevo.")
+                self, self.windowTitle(), self.tr("Could not save. Please try again.")
             )
             return False
         self.refresh()
-        self._message.setText(self.tr("Guardado."))
+        self._message.setText(self.tr("Saved."))
         self.changed.emit()
         return True
 
@@ -497,14 +498,14 @@ def _set_points(widget: QWidget, points: float, weight: QFont.Weight) -> None:
 def _line_of(session: Session, line_id: int) -> BudgetLine:
     line = session.get(BudgetLine, line_id)
     if line is None:
-        raise ValueError("La línea ya no existe.")
+        raise ValueError(QCoreApplication.translate("LucioTech", "The line no longer exists."))
     return line
 
 
 def _payment_of(session: Session, payment_id: int) -> Payment:
     payment = session.get(Payment, payment_id)
     if payment is None:
-        raise ValueError("El pago ya no existe.")
+        raise ValueError(QCoreApplication.translate("LucioTech", "The payment no longer exists."))
     return payment
 
 

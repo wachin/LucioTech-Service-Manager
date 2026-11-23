@@ -574,7 +574,7 @@ def test_chooser_lists_every_document_and_returns_the_selected_one(qtbot: QtBot)
 
     assert dialog._list.count() == len(DocumentKind)
     assert dialog.selected_kind() == DocumentKind.RECEPCION
-    assert dialog._description.text() == DESCRIPTIONS[DocumentKind.RECEPCION]
+    assert dialog._description.text() == dialog.tr(DESCRIPTIONS[DocumentKind.RECEPCION])
 
     dialog.select(DocumentKind.INFORME)
     assert dialog.selected_kind() == DocumentKind.INFORME

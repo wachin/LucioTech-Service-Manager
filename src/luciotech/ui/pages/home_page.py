@@ -22,7 +22,7 @@ class HomePage(QWidget):
         self._session_factory = session_factory
         self._values: dict[str, QLabel] = {}
 
-        title = QLabel(self.tr("Resumen del taller"))
+        title = QLabel(self.tr("Workshop summary"))
         title_font = title.font()
         title_font.setPointSizeF(title_font.pointSizeF() * 1.4)
         title_font.setBold(True)
@@ -50,14 +50,14 @@ class HomePage(QWidget):
 
     def _card_specs(self) -> list[tuple[str, str]]:
         return [
-            ("received_today", self.tr("Equipos recibidos hoy")),
-            ("pending_diagnosis", self.tr("Pendientes de diagnóstico")),
-            ("under_repair", self.tr("En reparación")),
-            ("awaiting_approval", self.tr("Esperando aprobación")),
-            ("ready_for_delivery", self.tr("Listos para entregar")),
-            ("delivered_this_month", self.tr("Entregados este mes")),
-            ("outstanding_balance", self.tr("Saldo pendiente")),
-            ("monthly_income", self.tr("Ingresos del mes")),
+            ("received_today", self.tr("Equipment received today")),
+            ("pending_diagnosis", self.tr("Pending diagnosis")),
+            ("under_repair", self.tr("Under repair")),
+            ("awaiting_approval", self.tr("Awaiting approval")),
+            ("ready_for_delivery", self.tr("Ready for delivery")),
+            ("delivered_this_month", self.tr("Delivered this month")),
+            ("outstanding_balance", self.tr("Outstanding balance")),
+            ("monthly_income", self.tr("Income this month")),
         ]
 
     def _make_card(self, caption: str) -> tuple[QFrame, QLabel]:

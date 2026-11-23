@@ -3,7 +3,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
-[![Tests](https://img.shields.io/badge/tests-477%2F477-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-481%2F481-brightgreen.svg)](#testing)
 [![Status](https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg)](ROADMAP.md)
 
 A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
@@ -192,6 +192,37 @@ On Linux, `./run.sh` from the project folder does the same without activating an
 > Both paths start the program straight from the `src/` folder on disk, so any change you save in the code is picked up the next time you launch. Nothing is copied or frozen.
 > - **Activated + `pip install -e .`** (the steps above): the editable install registers a live link between the `luciotech` package and `src/`, and puts the `.venv` interpreter (with all the dependencies) first on your `PATH`. After that you can just run `python -m luciotech.main` from any prompt, with no `PYTHONPATH` needed.
 > - **`PYTHONPATH=src`** (below): points the current `python` at `src/` for that one command only. No link is registered and nothing is written, so you must repeat `PYTHONPATH=src` every time you launch. Good for a quick one-off run, but the Python you use still has to have the dependencies — normally the `.venv` one.
+
+## Languages
+
+The program is written in English and ships with a Spanish translation; the language can be changed at **File ▸ Settings ▸ Language**. The change is saved in the database and takes effect the next time the application starts. If no catalogue exists for the chosen language, the program shows its English source texts.
+
+Translations use the standard Qt workflow:
+
+| File | Purpose |
+| ---- | ------- |
+| `translations/luciotech_es.ts` | Editable catalogue, opened and reviewed in **Qt Linguist** |
+| `src/luciotech/ui/translations/luciotech_es.qm` | Compiled catalogue the application loads at startup |
+| `tools/update-translations.sh` | Runs `pylupdate6` and `lrelease` for every `.ts` |
+
+To add a language:
+
+1. Create the catalogue with `pylupdate6` (or copy an existing `.ts` and translate it in Qt Linguist):
+
+   ```bash
+   .venv/bin/pylupdate6 $(find src/luciotech -name '*.py') -ts translations/luciotech_fr.ts
+   ```
+
+2. Translate the messages in **Qt Linguist** (`linguist translations/luciotech_fr.ts`) and save.
+3. Compile it into the package folder:
+
+   ```bash
+   lrelease translations/luciotech_fr.ts -qm src/luciotech/ui/translations/luciotech_fr.qm
+   ```
+
+4. Reopen the program: the new language appears in the Settings list. The `.qm` file has to travel with the application.
+
+Any language that is added this way is listed automatically; `ui/translations.py` only carries the native names used for the common ones. `lrelease` comes from the Qt tools (`qt6-linguist-tools` on Debian/Ubuntu), and `pylupdate6` is included with PyQt6.
 
 ## To run without installing the package
 
@@ -412,7 +443,7 @@ The suite uses a temporary SQLite database for each test and runs the Qt interfa
 
 ### Windows test status
 
-Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **477 of 477 tests pass** (about 1 minute). On Linux the same suite passes as well: **477 of 477** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 55 seconds).
+Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **481 of 481 tests pass** (about 1 minute). On Linux the same suite passes as well: **481 of 481** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 55 seconds).
 
 Previously one test failed on Windows only: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. The cause was not a product bug but a platform-dependent assumption in the test. The test resized the rich-text editor to a fixed 900 px and expected both toolbar rows to fit without horizontal scrolling. On Windows the toolbar font metrics are wider, so the action row needs **976 px** and legitimately scrolls at 900 px — its height (47 px, toolbar plus scrollbar) was therefore correct, and only the format row (657 px) returned to the compact 33 px. On Linux the same row is narrower than 900 px, so the assumption held.
 
@@ -423,7 +454,7 @@ Two changes were made:
 
 The compact height (33 px) and the expanded height (47 px) are unchanged; the fix only removes the stale-height risk and makes the test platform-independent.
 
-One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`477 passed`) is the one that counts.
+One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`481 passed`) is the one that counts.
 
 There is a real trap next to it, and it cost a segfault: `QPrintPreviewDialog` does **not** take ownership of the `QPrinter` it is given, it keeps a raw pointer. Passing a temporary (`QPrintPreviewDialog(_printer(), None)`) leaves the preview pointing at freed memory and the process dies later, far from the cause. The tests keep the printer in a variable, and `print_document` does the same.
 

@@ -34,6 +34,9 @@ PYTHONPATH=src python3 -m luciotech.main
 # Pruebas completas
 .venv/bin/python -m pytest
 
+# Traducciones: extrae los textos y compila cada .ts (pylupdate6 + lrelease)
+./tools/update-translations.sh
+
 # Migraciones (la base por defecto está en ~/.local/share/luciotech-service-manager/)
 .venv/bin/alembic upgrade head
 
@@ -79,7 +82,9 @@ src/luciotech/
 │   ├── documents.py          # Los cinco documentos imprimibles (§13.1)
 │   ├── order_actions.py      # Siguiente paso de una orden según su estado (§9)
 │   ├── print_support.py      # Tamaño de la vista previa, hoja, encabezado, pie y PDF (§13.2)
-│   ├── translations.py       # Diálogos de Qt en español (qtbase_es, qt_es)
+│   ├── translations.py       # Carga el idioma elegido y las traducciones de Qt (§21)
+│   ├── labels.py             # Etiquetas traducidas de los valores que la base guarda en español
+│   ├── translations/         # Catálogos compilados (luciotech_es.qm)
 │   ├── dialogs/login_dialog.py   # Acceso y creación del primer usuario (§19)
 │   ├── dialogs/users_dialog.py   # Alta, edición, contraseña y baja de cuentas
 │   ├── dialogs/settings_dialog.py # Configuración: taller, documentos, términos y garantía
@@ -90,6 +95,8 @@ src/luciotech/
 └── utils/
     ├── paths.py              # Rutas XDG de datos, adjuntos y logs
     └── validators.py         # Cédula (módulo 10), teléfono y correo
+translations/                 # Catálogos .ts editables en Qt Linguist
+tools/update-translations.sh  # pylupdate6 + lrelease
 tests/                        # pytest y pytest-qt; base temporal por prueba
 ```
 
@@ -100,7 +107,8 @@ tests/                        # pytest y pytest-qt; base temporal por prueba
 - Importes monetarios con `Decimal`, nunca `float`. Redondeo a centavos con `ROUND_HALF_UP`.
 - Consultas solo con SQLAlchemy. No concatenar SQL.
 - La UI nunca escribe SQL directamente; pasa por servicios o repositorios.
-- Textos visibles al usuario en español y envueltos en `self.tr(...)` cuando haya UI (§21).
+- El **inglés es el idioma fuente** del código. Los textos visibles van en inglés y envueltos en `self.tr(...)` (o `QCoreApplication.translate` en servicios y documentos). El español vive en `translations/luciotech_es.ts`; no se escriben textos visibles en español directamente en el código (§21).
+- Los valores del dominio que se guardan en español en la base (estados, prioridades, tipos de pago…) se traducen al mostrarlos con `ui/labels.py`. No se cambian los valores guardados sin una migración.
 - Sin comentarios salvo que expliquen un porqué no evidente.
 
 ## Reglas de dominio que no se deben romper
@@ -142,5 +150,6 @@ Las rutas de datos son XDG (`~/.local/share/...` y `~/.local/state/.../logs/`). 
 - Bloque 12 (rama `feat/usuarios`, 2026-11-09): el acceso diario **muestra los usuarios activos en una lista desplegable** por su nombre completo en vez de pedir teclear el nombre de usuario; la cuenta del último acceso va primera (`list_login_users`) y las desactivadas no aparecen. El primer arranque sigue pidiendo crear el administrador.
 - Bloque 13 (rama `feat/usuarios`, 2026-11-10): **pantalla de Configuración** (`ui/dialogs/settings_dialog.py`, solo administradores) con tres pestañas. Nuevas claves `condiciones_garantia` y `garantia_dias` en `settings_service.py`, marcadores `{dias}`, `{orden}` y `{meses}`, y `_legal_html` en `ui/documents.py` para que los términos y la garantía salgan en los cuatro documentos al cliente. Las órdenes nuevas heredan los días de garantía configurados y las antiguas sin días propios los toman como respaldo (`effective_warranty_days`).
 - Cierre de la Fase 3 (2026-11-14): los checklists de §26 y §30 se copiaron desde «Seguimiento de fase activa» (regla 9 del ROADMAP). El **resumen previo al guardado** de §7.5 queda trasladado a la Fase 4 (regla 7), no se marca como hecho. Las pruebas de PDF no extraen texto porque el entorno no tiene lector de PDF: verifican la maqueta, el encabezado, el pie y el número de hojas (§13). Los checklists de §2 a §25 son espejos históricos de la especificación, no estado de avance.
-- 477 pruebas pasan con `.venv/Scripts/python.exe -m pytest` en Windows (`.venv/bin/python -m pytest` en Linux/macOS).
+- 481 pruebas pasan con `.venv/Scripts/python.exe -m pytest` en Windows (`.venv/bin/python -m pytest` en Linux/macOS).
+- La interfaz es multilingüe (§21): inglés como idioma fuente y español traducido en `translations/luciotech_es.ts`; el idioma se elige en Configuración y se aplica al reabrir.
 - El punto de entrada es `luciotech.main`; ejecútalo con `PYTHONPATH=src` o con el paquete instalado. La aplicación migra la base al arrancar.

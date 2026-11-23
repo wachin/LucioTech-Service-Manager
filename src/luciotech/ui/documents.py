@@ -37,6 +37,14 @@ from luciotech.services.settings_service import (
 )
 from luciotech.services.totals_service import OrderTotals, order_totals
 from luciotech.ui.formatting import format_datetime, format_money
+from luciotech.ui.labels import (
+    budget_line_type_label,
+    event_title_label,
+    history_detail_label,
+    payment_method_label,
+    payment_type_label,
+    state_label,
+)
 from luciotech.ui.print_support import (
     PageFurniture,
     add_pdf_action,
@@ -77,6 +85,21 @@ class DocumentKind(StrEnum):
         return _FILE_STEMS[self]
 
 
+_DOCUMENT_SOURCES: dict[DocumentKind, str] = {
+    DocumentKind.RECEPCION: "Reception receipt",
+    DocumentKind.PRESUPUESTO: "Budget",
+    DocumentKind.INFORME: "Technical report",
+    DocumentKind.ENTREGA: "Delivery receipt",
+    DocumentKind.HISTORIAL: "Full history",
+}
+
+
+def document_label(kind: DocumentKind | str) -> str:
+    """Nombre traducido del documento; el valor guardado sigue siendo el español."""
+    document = DocumentKind(kind)
+    return QCoreApplication.translate("LucioTech", _DOCUMENT_SOURCES[document])
+
+
 _FILE_STEMS: dict[DocumentKind, str] = {
     DocumentKind.RECEPCION: "Comprobante-Recepcion",
     DocumentKind.PRESUPUESTO: "Presupuesto",
@@ -104,7 +127,7 @@ def document_html(session: Session, order: ServiceOrder, kind: DocumentKind | st
     try:
         build = builders[DocumentKind(kind)]
     except ValueError as exc:
-        raise ValueError(f"Documento desconocido: {kind!r}") from exc
+        raise ValueError(QCoreApplication.translate("LucioTech", "Unknown document: {kind}").format(kind=repr(kind))) from exc
     return build(session, order)
 
 
@@ -116,48 +139,48 @@ def receipt_html(session: Session, order: ServiceOrder) -> str:
     parts = [_header(session, order, DocumentKind.RECEPCION)]
     parts.append(
         _section(
-            "Cliente",
+            QCoreApplication.translate("LucioTech", "Customer"),
             [
-                ("Nombre", customer.nombre_completo),
-                ("Identificación", customer.numero_identificacion or EMPTY),
-                ("Teléfono", customer.telefono_principal or EMPTY),
-                ("Correo", customer.correo_electronico or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Name"), customer.nombre_completo),
+                (QCoreApplication.translate("LucioTech", "ID number"), customer.numero_identificacion or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Phone"), customer.telefono_principal or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Email"), customer.correo_electronico or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Equipo recibido",
+            QCoreApplication.translate("LucioTech", "Equipment received"),
             [
-                ("Tipo", equipment.tipo_equipo),
-                ("Marca y modelo", _brand_model(order) or EMPTY),
-                ("Número de serie", equipment.numero_serie or EMPTY),
-                ("Color", equipment.color or EMPTY),
-                ("Sistema operativo", equipment.sistema_operativo or EMPTY),
-                ("Accesorios recibidos", equipment.accesorios_recibidos or EMPTY),
-                ("Estado físico", equipment.estado_fisico or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Type"), equipment.tipo_equipo),
+                (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Colour"), equipment.color or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Operating system"), equipment.sistema_operativo or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Accessories received"), equipment.accesorios_recibidos or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Physical condition"), equipment.estado_fisico or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Recepción",
+            QCoreApplication.translate("LucioTech", "Reception"),
             [
-                ("Fecha de ingreso", format_datetime(order.fecha_ingreso)),
-                ("Entrega estimada", format_datetime(order.fecha_estimada_entrega) or EMPTY),
-                ("Técnico responsable", order.tecnico_responsable or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
+                (QCoreApplication.translate("LucioTech", "Estimated delivery"), format_datetime(order.fecha_estimada_entrega) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Technician in charge"), order.tecnico_responsable or EMPTY),
                 (
-                    "Problema reportado",
+                    QCoreApplication.translate("LucioTech", "Reported problem"),
                     order.problema_reportado or equipment.problema_reportado_cliente or EMPTY,
                 ),
-                ("Observaciones de ingreso", equipment.observaciones_ingreso or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Intake notes"), equipment.observaciones_ingreso or EMPTY),
             ],
         )
     )
     parts.append(_values_html(session, order))
     parts.append(_photos_html(order))
     parts.append(_legal_html(session, order))
-    parts.append(_signatures("Firma del cliente", "Firma del taller"))
+    parts.append(_signatures(QCoreApplication.translate("LucioTech", "Customer signature"), QCoreApplication.translate("LucioTech", "Workshop signature")))
     parts.append("</div>")
     return "".join(parts)
 
@@ -171,22 +194,22 @@ def budget_html(session: Session, order: ServiceOrder) -> str:
     parts = [_header(session, order, DocumentKind.PRESUPUESTO)]
     parts.append(
         _section(
-            "Cliente",
+            QCoreApplication.translate("LucioTech", "Customer"),
             [
-                ("Nombre", order.customer.nombre_completo),
-                ("Identificación", order.customer.numero_identificacion or EMPTY),
-                ("Teléfono", order.customer.telefono_principal or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Name"), order.customer.nombre_completo),
+                (QCoreApplication.translate("LucioTech", "ID number"), order.customer.numero_identificacion or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Phone"), order.customer.telefono_principal or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Equipo",
+            QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                ("Tipo", order.equipment.tipo_equipo),
-                ("Marca y modelo", _brand_model(order) or EMPTY),
-                ("Número de serie", order.equipment.numero_serie or EMPTY),
-                ("Problema reportado", order.problema_reportado or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Type"), order.equipment.tipo_equipo),
+                (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Serial number"), order.equipment.numero_serie or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Reported problem"), order.problema_reportado or EMPTY),
             ],
         )
     )
@@ -195,8 +218,8 @@ def budget_html(session: Session, order: ServiceOrder) -> str:
     if rows:
         parts.append(
             _table_section(
-                "Detalle del presupuesto",
-                ("Concepto", "Cant.", "Precio unitario", "Importe"),
+                QCoreApplication.translate("LucioTech", "Budget details"),
+                (QCoreApplication.translate("LucioTech", "Item"), QCoreApplication.translate("LucioTech", "Qty."), QCoreApplication.translate("LucioTech", "Unit price"), QCoreApplication.translate("LucioTech", "Amount")),
                 rows,
                 widths=("46%", "8%", "23%", "23%"),
                 align_right=(1, 2, 3),
@@ -204,20 +227,23 @@ def budget_html(session: Session, order: ServiceOrder) -> str:
         )
     else:
         parts.append(
-            '<p style="margin: 10pt 0 2pt 0;"><b>Detalle del presupuesto</b></p>'
+            f'<p style="margin: 10pt 0 2pt 0;"><b>{QCoreApplication.translate("LucioTech", "Budget details")}</b></p>'
             f'<p style="margin: 0;">{EMPTY}</p>'
         )
 
     parts.append(_totals_section(totals, order, tax, with_payments=False))
     parts.append(
-        f'<p style="margin: 12pt 0 0 0;">Presupuesto válido por {days} días desde el '
-        f"{format_datetime(order.fecha_ingreso)}. El trabajo se inicia una vez aprobado.</p>"
+        '<p style="margin: 12pt 0 0 0;">'
+        + QCoreApplication.translate("LucioTech", "Budget valid for {days} days from {date}. Work starts once approved.").format(
+            days=days, date=format_datetime(order.fecha_ingreso)
+        )
+        + "</p>"
     )
     parts.append(_legal_html(session, order))
     parts.append(
-        '<p style="margin: 18pt 0 2pt 0;"><b>Aprobación del cliente</b></p>'
-        f'<p style="margin: 0;">Nombre: {SIGNATURE} &nbsp;&nbsp; Fecha: ______________</p>'
-        f'<p style="margin: 14pt 0 0 0;">Firma: {SIGNATURE}</p>'
+        f'<p style="margin: 18pt 0 2pt 0;"><b>{QCoreApplication.translate("LucioTech", "Customer approval")}</b></p>'
+        f'<p style="margin: 0;">{QCoreApplication.translate("LucioTech", "Name: {signature}   Date: ______________").format(signature=SIGNATURE)}</p>'
+        f'<p style="margin: 14pt 0 0 0;">{QCoreApplication.translate("LucioTech", "Signature: {signature}").format(signature=SIGNATURE)}</p>'
     )
     parts.append("</div>")
     return "".join(parts)
@@ -232,47 +258,51 @@ def technical_report_html(session: Session, order: ServiceOrder) -> str:
     parts = [_header(session, order, DocumentKind.INFORME)]
     parts.append(
         _section(
-            "Cliente",
+            QCoreApplication.translate("LucioTech", "Customer"),
             [
-                ("Nombre", order.customer.nombre_completo),
-                ("Identificación", order.customer.numero_identificacion or EMPTY),
-                ("Teléfono", order.customer.telefono_principal or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Name"), order.customer.nombre_completo),
+                (QCoreApplication.translate("LucioTech", "ID number"), order.customer.numero_identificacion or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Phone"), order.customer.telefono_principal or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Equipo",
+            QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                ("Tipo", equipment.tipo_equipo),
-                ("Marca y modelo", _brand_model(order) or EMPTY),
-                ("Número de serie", equipment.numero_serie or EMPTY),
-                ("Estado físico al recibir", equipment.estado_fisico or EMPTY),
-                ("Accesorios recibidos", equipment.accesorios_recibidos or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Type"), equipment.tipo_equipo),
+                (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Physical condition on arrival"), equipment.estado_fisico or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Accessories received"), equipment.accesorios_recibidos or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Orden",
+            QCoreApplication.translate("LucioTech", "Order"),
             [
-                ("Fecha de ingreso", format_datetime(order.fecha_ingreso)),
-                ("Estado actual", order.estado),
-                ("Técnico responsable", order.tecnico_responsable or EMPTY),
-                ("Problema reportado", order.problema_reportado or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
+                (QCoreApplication.translate("LucioTech", "Current status"), state_label(order.estado)),
+                (QCoreApplication.translate("LucioTech", "Technician in charge"), order.tecnico_responsable or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Reported problem"), order.problema_reportado or EMPTY),
             ],
         )
     )
-    parts.append(_rich_section("Diagnóstico técnico", order.diagnostico_html))
-    parts.append(_rich_section("Trabajo realizado", order.trabajo_realizado_html))
-    parts.append(_rich_section("Repuestos utilizados", _lines(_parts_used(order))))
-    parts.append(_rich_section("Recomendaciones", order.recomendaciones_html))
-    parts.append(_photos_html(order, only=_BEFORE, title="Fotografías del equipo al recibir"))
-    parts.append(_photos_html(order, only=_AFTER, title="Fotografías del equipo reparado"))
+    parts.append(_rich_section(QCoreApplication.translate("LucioTech", "Technical diagnosis"), order.diagnostico_html))
+    parts.append(_rich_section(QCoreApplication.translate("LucioTech", "Work performed"), order.trabajo_realizado_html))
+    parts.append(_rich_section(QCoreApplication.translate("LucioTech", "Parts used"), _lines(_parts_used(order))))
+    parts.append(_rich_section(QCoreApplication.translate("LucioTech", "Recommendations"), order.recomendaciones_html))
+    parts.append(
+        _photos_html(order, only=_BEFORE, title=QCoreApplication.translate("LucioTech", "Photographs of the equipment on arrival"))
+    )
+    parts.append(
+        _photos_html(order, only=_AFTER, title=QCoreApplication.translate("LucioTech", "Photographs of the repaired equipment"))
+    )
     parts.append(_totals_section(totals, order, tax))
-    parts.append(_section("Garantía", [("Garantía", _warranty(session, order))]))
+    parts.append(_section(QCoreApplication.translate("LucioTech", "Warranty"), [(QCoreApplication.translate("LucioTech", "Warranty"), _warranty(session, order))]))
     parts.append(_legal_html(session, order))
-    parts.append(_signatures("Firma del técnico", "Firma del cliente"))
+    parts.append(_signatures(QCoreApplication.translate("LucioTech", "Technician signature"), QCoreApplication.translate("LucioTech", "Customer signature")))
     parts.append("</div>")
     return "".join(parts)
 
@@ -285,54 +315,56 @@ def delivery_html(session: Session, order: ServiceOrder) -> str:
     parts = [_header(session, order, DocumentKind.ENTREGA)]
     parts.append(
         _section(
-            "Orden",
+            QCoreApplication.translate("LucioTech", "Order"),
             [
-                ("Fecha de ingreso", format_datetime(order.fecha_ingreso)),
-                ("Fecha de entrega", format_datetime(order.fecha_entrega) or EMPTY),
-                ("Estado final", order.estado),
-                ("Técnico responsable", order.tecnico_responsable or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
+                (QCoreApplication.translate("LucioTech", "Delivery date"), format_datetime(order.fecha_entrega) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Final status"), state_label(order.estado)),
+                (QCoreApplication.translate("LucioTech", "Technician in charge"), order.tecnico_responsable or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Cliente",
+            QCoreApplication.translate("LucioTech", "Customer"),
             [
-                ("Nombre", order.customer.nombre_completo),
-                ("Identificación", order.customer.numero_identificacion or EMPTY),
-                ("Teléfono", order.customer.telefono_principal or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Name"), order.customer.nombre_completo),
+                (QCoreApplication.translate("LucioTech", "ID number"), order.customer.numero_identificacion or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Phone"), order.customer.telefono_principal or EMPTY),
             ],
         )
     )
     parts.append(
         _section(
-            "Equipo",
+            QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                ("Tipo", order.equipment.tipo_equipo),
-                ("Marca y modelo", _brand_model(order) or EMPTY),
-                ("Número de serie", order.equipment.numero_serie or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Type"), order.equipment.tipo_equipo),
+                (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
+                (QCoreApplication.translate("LucioTech", "Serial number"), order.equipment.numero_serie or EMPTY),
             ],
         )
     )
-    parts.append(_rich_section("Trabajo realizado", order.trabajo_realizado_html))
+    parts.append(_rich_section(QCoreApplication.translate("LucioTech", "Work performed"), order.trabajo_realizado_html))
     parts.append(_payments_section(order))
     parts.append(_totals_section(totals, order, tax))
     parts.append(
         _section(
-            "Garantía",
+            QCoreApplication.translate("LucioTech", "Warranty"),
             [
-                ("Cobertura", _warranty(session, order)),
-                ("Alcance", "Cubre únicamente el trabajo realizado y los repuestos facturados."),
+                (QCoreApplication.translate("LucioTech", "Coverage"), _warranty(session, order)),
+                (
+                    QCoreApplication.translate("LucioTech", "Scope"),
+                    QCoreApplication.translate("LucioTech", "Covers only the work performed and the parts invoiced."),
+                ),
             ],
         )
     )
     parts.append(_legal_html(session, order))
     parts.append(
-        '<p style="margin: 12pt 0 0 0;"><b>Declaración de conformidad</b></p>'
-        '<p style="margin: 0;">Recibí el equipo en las condiciones descritas, probado y '
-        "funcionando, y acepto el alcance de la garantía indicada.</p>"
+        f'<p style="margin: 12pt 0 0 0;"><b>{QCoreApplication.translate("LucioTech", "Declaration of conformity")}</b></p>'
+        f'<p style="margin: 0;">{QCoreApplication.translate("LucioTech", "I received the equipment in the condition described, tested and working, and I accept the warranty coverage stated above.")}</p>'
     )
-    parts.append(_signatures("Firma del cliente", "Firma del taller"))
+    parts.append(_signatures(QCoreApplication.translate("LucioTech", "Customer signature"), QCoreApplication.translate("LucioTech", "Workshop signature")))
     parts.append("</div>")
     return "".join(parts)
 
@@ -342,20 +374,20 @@ def history_html(session: Session, order: ServiceOrder) -> str:
     parts = [_header(session, order, DocumentKind.HISTORIAL)]
     parts.append(
         _section(
-            "Orden",
+            QCoreApplication.translate("LucioTech", "Order"),
             [
-                ("Cliente", order.customer.nombre_completo),
-                ("Equipo", f"{order.equipment.tipo_equipo} {_brand_model(order)}".strip()),
-                ("Fecha de ingreso", format_datetime(order.fecha_ingreso)),
-                ("Estado actual", order.estado),
+                (QCoreApplication.translate("LucioTech", "Customer"), order.customer.nombre_completo),
+                (QCoreApplication.translate("LucioTech", "Equipment"), f"{order.equipment.tipo_equipo} {_brand_model(order)}".strip()),
+                (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
+                (QCoreApplication.translate("LucioTech", "Current status"), state_label(order.estado)),
             ],
         )
     )
     rows = [
         (
             format_datetime(entry.fecha),
-            "Estado" if entry.kind == "estado" else "Evento",
-            f"{entry.titulo}. {entry.detalle}".strip(),
+            QCoreApplication.translate("LucioTech", "Status") if entry.kind == "estado" else QCoreApplication.translate("LucioTech", "Event"),
+            f"{event_title_label(entry.titulo)}. {history_detail_label(entry.detalle)}".strip(),
             entry.usuario,
         )
         for entry in order_timeline(order)
@@ -363,15 +395,15 @@ def history_html(session: Session, order: ServiceOrder) -> str:
     if rows:
         parts.append(
             _table_section(
-                "Movimientos",
-                ("Fecha", "Tipo", "Detalle", "Usuario"),
+                QCoreApplication.translate("LucioTech", "Movements"),
+                (QCoreApplication.translate("LucioTech", "Date"), QCoreApplication.translate("LucioTech", "Type"), QCoreApplication.translate("LucioTech", "Detail"), QCoreApplication.translate("LucioTech", "User")),
                 rows,
                 widths=("16%", "10%", "56%", "18%"),
             )
         )
     else:
         parts.append(
-            '<p style="margin: 10pt 0 2pt 0;"><b>Movimientos</b></p>'
+            f'<p style="margin: 10pt 0 2pt 0;"><b>{QCoreApplication.translate("LucioTech", "Movements")}</b></p>'
             f'<p style="margin: 0;">{EMPTY}</p>'
         )
     parts.append("</div>")
@@ -418,7 +450,7 @@ def print_order_document(
     preparar; si la orden ya no existe o falla la consulta, avisa al usuario y devuelve False.
     """
     document = DocumentKind(kind)
-    window_title = title or QCoreApplication.translate(_CONTEXT, str(document))
+    window_title = title or document_label(document)
     try:
         with session_factory() as session:
             order = session.get(ServiceOrder, order_id)
@@ -426,7 +458,7 @@ def print_order_document(
                 QMessageBox.warning(
                     parent,
                     window_title,
-                    QCoreApplication.translate(_CONTEXT, "La orden ya no existe."),
+                    QCoreApplication.translate("LucioTech", "The order no longer exists."),
                 )
                 return False
             html = document_html(session, order, document)
@@ -439,7 +471,7 @@ def print_order_document(
             parent,
             window_title,
             QCoreApplication.translate(
-                _CONTEXT, "No se pudo preparar el documento. Intente de nuevo."
+                _CONTEXT, "The document could not be prepared. Please try again."
             ),
         )
         return False
@@ -482,12 +514,12 @@ def _furniture(
     """
     name = workshop_name(session)
     contact = workshop_contact(session)
-    footer = f"Generado el {format_datetime(datetime.now())}"
+    footer = QCoreApplication.translate("LucioTech", "Generated on {date}").format(date=format_datetime(datetime.now()))
     if printed_by:
-        footer = f"{footer} por {printed_by}"
+        footer = QCoreApplication.translate("LucioTech", "{footer} by {user}").format(footer=footer, user=printed_by)
     return PageFurniture(
         header_left=f"{name} · {contact}" if contact else name,
-        header_right=f"{kind} · {order.numero_orden}",
+        header_right=f"{document_label(kind)} · {order.numero_orden}",
         footer_left=footer,
     )
 
@@ -520,21 +552,28 @@ def _values_html(session: Session, order: ServiceOrder) -> str:
     tax = tax_settings(session)
     totals = order_totals(order, tax)
     rows: list[tuple[str, str]] = [
-        ("Costo de diagnóstico", format_money(order.costo_diagnostico)),
+        (QCoreApplication.translate("LucioTech", "Diagnosis cost"), format_money(order.costo_diagnostico)),
     ]
     if _positive(totals.lineas_presupuesto):
-        rows.append(("Líneas de presupuesto", format_money(totals.lineas_presupuesto)))
-    rows.append(("Subtotal", format_money(totals.subtotal)))
+        rows.append((QCoreApplication.translate("LucioTech", "Budget lines"), format_money(totals.lineas_presupuesto)))
+    rows.append((QCoreApplication.translate("LucioTech", "Subtotal"), format_money(totals.subtotal)))
     if _positive(order.descuento):
-        rows.append(("Descuento", format_money(order.descuento)))
+        rows.append((QCoreApplication.translate("LucioTech", "Discount"), format_money(order.descuento)))
     if tax.enabled:
-        rows.append((f"IVA ({tax.percent}%)", format_money(totals.impuestos)))
-    rows.append(("Total", format_money(totals.total)))
-    rows.append(("Anticipo recibido", format_money(order.anticipo)))
+        rows.append((QCoreApplication.translate("LucioTech", "Tax ({percent}%)").format(percent=tax.percent), format_money(totals.impuestos)))
+    rows.append((QCoreApplication.translate("LucioTech", "Total"), format_money(totals.total)))
+    rows.append((QCoreApplication.translate("LucioTech", "Deposit received"), format_money(order.anticipo)))
     if totals.pagos_realizados != ZERO:
-        rows.append(("Pagos recibidos", format_money(totals.pagos_realizados)))
-    rows.append(("Saldo pendiente", format_money(totals.saldo_pendiente)))
-    return _section("Valores", rows, bold=("Total", "Saldo pendiente"))
+        rows.append((QCoreApplication.translate("LucioTech", "Payments received"), format_money(totals.pagos_realizados)))
+    rows.append((QCoreApplication.translate("LucioTech", "Outstanding balance"), format_money(totals.saldo_pendiente)))
+    return _section(
+        QCoreApplication.translate("LucioTech", "Values"),
+        rows,
+        bold=(
+            QCoreApplication.translate("LucioTech", "Total"),
+            QCoreApplication.translate("LucioTech", "Outstanding balance"),
+        ),
+    )
 
 
 def _totals_section(
@@ -544,26 +583,28 @@ def _totals_section(
 
     El presupuesto no imprime anticipos ni pagos: es una oferta, no un estado de cuenta.
     """
-    rows = [("Subtotal", format_money(totals.subtotal))]
+    rows = [(QCoreApplication.translate("LucioTech", "Subtotal"), format_money(totals.subtotal))]
     if _positive(order.descuento):
-        rows.append(("Descuento", format_money(order.descuento)))
+        rows.append((QCoreApplication.translate("LucioTech", "Discount"), format_money(order.descuento)))
     if tax.enabled:
-        rows.append((f"IVA ({tax.percent}%)", format_money(totals.impuestos)))
-    rows.append(("Total", format_money(totals.total)))
+        rows.append((QCoreApplication.translate("LucioTech", "Tax ({percent}%)").format(percent=tax.percent), format_money(totals.impuestos)))
+    rows.append((QCoreApplication.translate("LucioTech", "Total"), format_money(totals.total)))
     if with_payments:
         if _positive(order.anticipo):
-            rows.append(("Anticipo recibido", format_money(order.anticipo)))
+            rows.append((QCoreApplication.translate("LucioTech", "Deposit received"), format_money(order.anticipo)))
         if totals.pagos_realizados != ZERO:
-            rows.append(("Pagos recibidos", format_money(totals.pagos_realizados)))
-        rows.append(("Saldo pendiente", format_money(totals.saldo_pendiente)))
-        return _section("Importes", rows, bold=("Total", "Saldo pendiente"))
-    return _section("Importes", rows, bold=("Total",))
+            rows.append((QCoreApplication.translate("LucioTech", "Payments received"), format_money(totals.pagos_realizados)))
+        rows.append((QCoreApplication.translate("LucioTech", "Outstanding balance"), format_money(totals.saldo_pendiente)))
+        return _section(
+            QCoreApplication.translate("LucioTech", "Amounts"), rows, bold=(QCoreApplication.translate("LucioTech", "Total"), QCoreApplication.translate("LucioTech", "Outstanding balance"))
+        )
+    return _section(QCoreApplication.translate("LucioTech", "Amounts"), rows, bold=(QCoreApplication.translate("LucioTech", "Total"),))
 
 
 def _concept_rows(order: ServiceOrder) -> list[tuple[str, str, str, str]]:
     """Conceptos del presupuesto: el costo de diagnóstico (si tiene importe) y las líneas."""
     rows: list[tuple[str, str, str, str]] = []
-    fixed = (("Costo de diagnóstico", order.costo_diagnostico),)
+    fixed = ((QCoreApplication.translate("LucioTech", "Diagnosis cost"), order.costo_diagnostico),)
     for label, amount in fixed:
         if _positive(amount):
             rows.append((label, "1", format_money(amount), format_money(amount)))
@@ -571,7 +612,7 @@ def _concept_rows(order: ServiceOrder) -> list[tuple[str, str, str, str]]:
         amount = line.cantidad * line.precio_unitario
         rows.append(
             (
-                f"{line.tipo_linea}: {line.descripcion}",
+                f"{budget_line_type_label(line.tipo_linea)}: {line.descripcion}",
                 _quantity(line.cantidad),
                 format_money(line.precio_unitario),
                 format_money(amount),
@@ -584,18 +625,18 @@ def _payments_section(order: ServiceOrder) -> str:
     rows = [
         (
             format_datetime(payment.fecha),
-            payment.tipo_pago,
-            payment.metodo_pago,
+            payment_type_label(payment.tipo_pago),
+            payment_method_label(payment.metodo_pago),
             format_money(payment.monto),
-            "Anulado" if payment.anulado else "Vigente",
+            QCoreApplication.translate("LucioTech", "Voided") if payment.anulado else QCoreApplication.translate("LucioTech", "Current"),
         )
         for payment in payments_for_order(order)
     ]
     if not rows:
-        return _section("Pagos", [("Pagos recibidos", EMPTY)])
+        return _section(QCoreApplication.translate("LucioTech", "Payments"), [(QCoreApplication.translate("LucioTech", "Payments received"), EMPTY)])
     return _table_section(
-        "Pagos",
-        ("Fecha", "Tipo", "Método", "Importe", "Estado"),
+        QCoreApplication.translate("LucioTech", "Payments"),
+        (QCoreApplication.translate("LucioTech", "Date"), QCoreApplication.translate("LucioTech", "Type"), QCoreApplication.translate("LucioTech", "Method"), QCoreApplication.translate("LucioTech", "Amount"), QCoreApplication.translate("LucioTech", "Status")),
         rows,
         widths=("18%", "18%", "30%", "20%", "14%"),
         align_right=(3,),
@@ -616,7 +657,9 @@ def _parts_used(order: ServiceOrder) -> str:
 
 def _warranty(session: Session, order: ServiceOrder) -> str:
     days = effective_warranty_days(session, order)
-    return f"{days} días" if days > 0 else "Sin garantía registrada"
+    if days <= 0:
+        return QCoreApplication.translate("LucioTech", "No warranty recorded")
+    return QCoreApplication.translate("LucioTech", "{days} days").format(days=days)
 
 
 def _brand_model(order: ServiceOrder) -> str:
@@ -693,11 +736,12 @@ def _cell(label: str, value: str, bold: tuple[str, ...]) -> str:
 def _photos_html(
     order: ServiceOrder,
     only: tuple[PhotoType, ...] | None = None,
-    title: str = "Fotografías del equipo",
+    title: str | None = None,
 ) -> str:
     photos = _photos(order, only)
     if not photos:
         return ""
+    title = title or QCoreApplication.translate("LucioTech", "Photographs of the equipment")
     cells = "".join(
         f'<td style="padding: 0 6pt 0 0;">'
         f'<img src="{_escape(_file_uri(photo.ruta_archivo))}" width="110"></td>'
@@ -761,10 +805,10 @@ def _legal_html(session: Session, order: ServiceOrder) -> str:
     parts: list[str] = []
     terms = service_conditions(session)
     if terms:
-        parts.append(_text_block("Términos y condiciones", terms))
+        parts.append(_text_block(QCoreApplication.translate("LucioTech", "Terms and conditions"), terms))
     warranty = warranty_conditions(session, order)
     if warranty:
-        parts.append(_text_block("Condiciones de garantía", warranty))
+        parts.append(_text_block(QCoreApplication.translate("LucioTech", "Warranty conditions"), warranty))
     return "".join(parts)
 
 
@@ -780,3 +824,12 @@ def _escape(value: str) -> str:
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
+
+
+def _catalog() -> None:
+    """Mantiene los textos en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate("LucioTech", "Reception receipt")
+    QCoreApplication.translate("LucioTech", "Budget")
+    QCoreApplication.translate("LucioTech", "Technical report")
+    QCoreApplication.translate("LucioTech", "Delivery receipt")
+    QCoreApplication.translate("LucioTech", "Full history")

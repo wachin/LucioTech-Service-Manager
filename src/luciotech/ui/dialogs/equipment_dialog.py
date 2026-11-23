@@ -42,7 +42,7 @@ class EquipmentDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._equipment_id = equipment_id
-        self.setWindowTitle(self.tr("Editar equipo") if equipment_id else self.tr("Nuevo equipo"))
+        self.setWindowTitle(self.tr("Edit equipment") if equipment_id else self.tr("New equipment"))
         self.setMinimumWidth(520)
 
         self._customer = QComboBox()
@@ -54,10 +54,10 @@ class EquipmentDialog(QDialog):
         self._os = QLineEdit()
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
-        self._password.setPlaceholderText(self.tr("Opcional"))
+        self._password.setPlaceholderText(self.tr("Optional"))
         self._toggle_password = QToolButton()
         self._toggle_password.setCheckable(True)
-        self._toggle_password.setText(self.tr("Mostrar"))
+        self._toggle_password.setText(self.tr("Show"))
         self._toggle_password.toggled.connect(self._on_toggle_password)
         self._accessories = QPlainTextEdit()
         self._accessories.setFixedHeight(50)
@@ -75,16 +75,16 @@ class EquipmentDialog(QDialog):
         form = QFormLayout()
         form.addRow(field_label("cliente_id") + " *", self._customer)
         form.addRow(field_label("tipo_equipo") + " *", self._type)
-        form.addRow(self.tr("Marca"), self._brand)
-        form.addRow(self.tr("Modelo"), self._model)
-        form.addRow(self.tr("Número de serie"), self._serial)
-        form.addRow(self.tr("Color"), self._color)
-        form.addRow(self.tr("Sistema operativo"), self._os)
-        form.addRow(self.tr("Contraseña o PIN"), password_row)
-        form.addRow(self.tr("Accesorios recibidos"), self._accessories)
-        form.addRow(self.tr("Estado físico"), self._physical_state)
-        form.addRow(self.tr("Problema reportado"), self._reported_problem)
-        form.addRow(self.tr("Observaciones de ingreso"), self._intake_notes)
+        form.addRow(self.tr("Brand"), self._brand)
+        form.addRow(self.tr("Model"), self._model)
+        form.addRow(self.tr("Serial number"), self._serial)
+        form.addRow(self.tr("Colour"), self._color)
+        form.addRow(self.tr("Operating system"), self._os)
+        form.addRow(self.tr("Password or PIN"), password_row)
+        form.addRow(self.tr("Accessories received"), self._accessories)
+        form.addRow(self.tr("Physical condition"), self._physical_state)
+        form.addRow(self.tr("Reported problem"), self._reported_problem)
+        form.addRow(self.tr("Intake notes"), self._intake_notes)
 
         self._error_label = QLabel()
         self._error_label.setWordWrap(True)
@@ -143,7 +143,7 @@ class EquipmentDialog(QDialog):
     def _on_toggle_password(self, shown: bool) -> None:
         mode = QLineEdit.EchoMode.Normal if shown else QLineEdit.EchoMode.Password
         self._password.setEchoMode(mode)
-        self._toggle_password.setText(self.tr("Ocultar") if shown else self.tr("Mostrar"))
+        self._toggle_password.setText(self.tr("Hide") if shown else self.tr("Show"))
 
     def _collect(self) -> EquipmentData:
         customer_id = self._customer.currentData()
@@ -187,7 +187,7 @@ class EquipmentDialog(QDialog):
             QMessageBox.critical(
                 self,
                 self.windowTitle(),
-                self.tr("No se pudo guardar el equipo. Revise los datos e intente de nuevo."),
+                self.tr("The equipment could not be saved. Check the details and try again."),
             )
             return
         self.accept()
@@ -195,7 +195,8 @@ class EquipmentDialog(QDialog):
     def _confirm_serial(self, conflicts: list[ServiceOrder]) -> bool:
         numbers = ", ".join(order.numero_orden for order in conflicts)
         message = self.tr(
-            "El número de serie ya aparece en las órdenes: %1.\n\n¿Desea guardar de todos modos?"
+            "The serial number already appears in these orders: %1.\n\n"
+            "Do you want to save anyway?"
         ).replace("%1", numbers)
         answer = QMessageBox.question(
             self,

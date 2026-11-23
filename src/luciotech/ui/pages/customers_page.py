@@ -33,12 +33,12 @@ class CustomersPage(QWidget):
         self._rows: list[tuple[int, list[str]]] = []
 
         self._search = QLineEdit()
-        self._search.setPlaceholderText(self.tr("Buscar por nombre, identificación o teléfono"))
+        self._search.setPlaceholderText(self.tr("Search by name, ID or phone"))
         self._search.textChanged.connect(self._apply_filter)
 
-        new_button = QPushButton(self.tr("Nuevo cliente"))
+        new_button = QPushButton(self.tr("New customer"))
         new_button.clicked.connect(self._new_customer)
-        edit_button = QPushButton(self.tr("Editar"))
+        edit_button = QPushButton(self.tr("Edit"))
         edit_button.clicked.connect(self._edit_selected)
 
         toolbar = QHBoxLayout()
@@ -49,10 +49,10 @@ class CustomersPage(QWidget):
         self._table = QTableWidget(0, 4)
         self._table.setHorizontalHeaderLabels(
             [
-                self.tr("Nombre completo"),
-                self.tr("Identificación"),
-                self.tr("Teléfono"),
-                self.tr("Correo electrónico"),
+                self.tr("Full name"),
+                self.tr("ID number"),
+                self.tr("Phone"),
+                self.tr("Email"),
             ]
         )
         self._table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -116,7 +116,7 @@ class CustomersPage(QWidget):
         row = self._table.currentRow()
         if row < 0:
             QMessageBox.information(
-                self, self.tr("Editar cliente"), self.tr("Seleccione un cliente en la lista.")
+                self, self.tr("Edit customer"), self.tr("Select a customer from the list.")
             )
             return
         customer_id = self._table.item(row, 0).data(Qt.ItemDataRole.UserRole)

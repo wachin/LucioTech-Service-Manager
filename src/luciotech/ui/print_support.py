@@ -60,7 +60,7 @@ _CONTEXT = "LucioTech"
 FURNITURE_POINT_SIZE = 7
 FURNITURE_COLOR = "#333333"
 RULE_COLOR = "#AAAAAA"
-PDF_FILTER = "Documento PDF (*.pdf)"
+PDF_FILTER = "PDF document (*.pdf)"
 # Qt mide los px del HTML como píxeles CSS: 1 pt son 96/72 px, sin importar la impresora.
 POINTS_TO_PIXELS = 96 / 72
 # Márgenes y rellenos con unidad física; Qt los deja en cero si no se pasan a píxeles.
@@ -271,8 +271,8 @@ def add_pdf_action(
     toolbars = preview.findChildren(QToolBar)
     if not toolbars:
         return
-    action = toolbars[0].addAction(_tr("Guardar como PDF"))
-    action.setToolTip(_tr("Guardar el documento en un archivo PDF"))
+    action = toolbars[0].addAction(_tr("Save as PDF"))
+    action.setToolTip(_tr("Save the document to a PDF file"))
     action.triggered.connect(
         lambda _checked=False: _save_pdf_dialog(
             preview, printer, html, furniture, suggested_name
@@ -285,7 +285,7 @@ def ask_pdf_path(parent: QWidget | None, suggested_name: str) -> Path | None:
     folder = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)
     start = Path(folder) / suggested_name if folder else Path.home() / suggested_name
     chosen, _filter = QFileDialog.getSaveFileName(
-        parent, _tr("Guardar como PDF"), str(start), PDF_FILTER
+        parent, _tr("Save as PDF"), str(start), PDF_FILTER
     )
     if not chosen:
         return None
@@ -306,14 +306,14 @@ def _save_pdf_dialog(
     if save_as_pdf(printer, html, furniture, target):
         QMessageBox.information(
             preview,
-            _tr("Guardar como PDF"),
-            _tr("El documento se guardó en:\n{0}").format(str(target)),
+            _tr("Save as PDF"),
+            _tr("The document was saved to:\n{0}").format(str(target)),
         )
         return
     QMessageBox.warning(
         preview,
-        _tr("Guardar como PDF"),
-        _tr("No se pudo escribir el archivo PDF."),
+        _tr("Save as PDF"),
+        _tr("The PDF file could not be written."),
     )
 
 
@@ -366,10 +366,19 @@ def _draw_furniture(
     painter.drawText(
         bottom,
         Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
-        f"Página {page} de {pages}",
+        _tr("Page {page} of {pages}").format(page=page, pages=pages),
     )
 
 
 def _tr(text: str) -> str:
     """Traduce un texto de este módulo sin repetir el contexto en cada llamada."""
-    return QCoreApplication.translate(_CONTEXT, text)
+    return QCoreApplication.translate("LucioTech", text)
+
+
+def _catalog() -> None:
+    """Mantiene los textos en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate("LucioTech", "Save as PDF")
+    QCoreApplication.translate("LucioTech", "Save the document to a PDF file")
+    QCoreApplication.translate("LucioTech", "The document was saved to:\n{0}")
+    QCoreApplication.translate("LucioTech", "The PDF file could not be written.")
+    QCoreApplication.translate("LucioTech", "Page {page} of {pages}")

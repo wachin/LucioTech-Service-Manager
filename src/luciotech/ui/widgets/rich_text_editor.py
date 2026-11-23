@@ -172,81 +172,81 @@ class RichTextEditor(QWidget):
         self._editor.setTextCursor(cursor)
 
     def _build_toolbar(self) -> None:
-        bold = self._add_action("bold", self.tr("Negrita"), QKeySequence("Ctrl+B"), checkable=True)
+        bold = self._add_action("bold", self.tr("Bold"), QKeySequence("Ctrl+B"), checkable=True)
         bold.toggled.connect(self._apply_bold)
-        italic = self._add_action("italic", self.tr("Cursiva"), QKeySequence("Ctrl+I"), checkable=True)
+        italic = self._add_action("italic", self.tr("Italic"), QKeySequence("Ctrl+I"), checkable=True)
         italic.toggled.connect(self._apply_italic)
-        underline = self._add_action("underline", self.tr("Subrayado"), QKeySequence("Ctrl+U"), checkable=True)
+        underline = self._add_action("underline", self.tr("Underline"), QKeySequence("Ctrl+U"), checkable=True)
         underline.toggled.connect(self._apply_underline)
 
-        strike = self._add_action("strike", self.tr("Tachado"), checkable=True)
+        strike = self._add_action("strike", self.tr("Strikethrough"), checkable=True)
         strike.toggled.connect(self._apply_strikethrough)
 
         self._format_toolbar.addSeparator()
-        self._add_action("bullet", self.tr("Lista con viñetas")).triggered.connect(self._bullet_list)
-        self._add_action("numbered", self.tr("Lista numerada")).triggered.connect(self._numbered_list)
-        self._add_action("indent_more", self.tr("Aumentar sangría")).triggered.connect(
+        self._add_action("bullet", self.tr("Bullet list")).triggered.connect(self._bullet_list)
+        self._add_action("numbered", self.tr("Numbered list")).triggered.connect(self._numbered_list)
+        self._add_action("indent_more", self.tr("Increase indent")).triggered.connect(
             lambda: self._change_indent(1)
         )
-        self._add_action("indent_less", self.tr("Disminuir sangría")).triggered.connect(
+        self._add_action("indent_less", self.tr("Decrease indent")).triggered.connect(
             lambda: self._change_indent(-1)
         )
 
         self._format_toolbar.addSeparator()
-        self._add_action("left", self.tr("Alinear a la izquierda")).triggered.connect(
+        self._add_action("left", self.tr("Align left")).triggered.connect(
             lambda: self._editor.setAlignment(Qt.AlignmentFlag.AlignLeft)
         )
-        self._add_action("center", self.tr("Centrar")).triggered.connect(
+        self._add_action("center", self.tr("Centre")).triggered.connect(
             lambda: self._editor.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         )
-        self._add_action("right", self.tr("Alinear a la derecha")).triggered.connect(
+        self._add_action("right", self.tr("Align right")).triggered.connect(
             lambda: self._editor.setAlignment(Qt.AlignmentFlag.AlignRight)
         )
-        self._add_action("justify", self.tr("Justificar")).triggered.connect(
+        self._add_action("justify", self.tr("Justify")).triggered.connect(
             lambda: self._editor.setAlignment(Qt.AlignmentFlag.AlignJustify)
         )
 
         self._format_toolbar.addSeparator()
         self._format_toolbar.addWidget(self._build_font_family())
         self._format_toolbar.addWidget(self._build_font_size())
-        self._add_action("text_color", self.tr("Color del texto")).triggered.connect(self._choose_text_color)
-        self._add_action("background_color", self.tr("Color de fondo")).triggered.connect(
+        self._add_action("text_color", self.tr("Text colour")).triggered.connect(self._choose_text_color)
+        self._add_action("background_color", self.tr("Background colour")).triggered.connect(
             self._choose_background_color
         )
-        self._add_action("clear_format", self.tr("Quitar formato")).triggered.connect(self._clear_formatting)
+        self._add_action("clear_format", self.tr("Clear formatting")).triggered.connect(self._clear_formatting)
 
         self._actions_toolbar.addWidget(self._build_zoom_control())
-        self._add_action("cut", self.tr("Cortar"), QKeySequence.StandardKey.Cut).triggered.connect(
+        self._add_action("cut", self.tr("Cut"), QKeySequence.StandardKey.Cut).triggered.connect(
             self._editor.cut
         )
-        self._add_action("copy", self.tr("Copiar"), QKeySequence.StandardKey.Copy).triggered.connect(
+        self._add_action("copy", self.tr("Copy"), QKeySequence.StandardKey.Copy).triggered.connect(
             self._editor.copy
         )
-        self._add_action("paste", self.tr("Pegar"), QKeySequence.StandardKey.Paste).triggered.connect(
+        self._add_action("paste", self.tr("Paste"), QKeySequence.StandardKey.Paste).triggered.connect(
             self._editor.paste
         )
-        self._add_action("paste_plain", self.tr("Pegar como texto sin formato")).triggered.connect(
+        self._add_action("paste_plain", self.tr("Paste as plain text")).triggered.connect(
             self._paste_plain_text
         )
-        self._add_action("hline", self.tr("Insertar línea horizontal")).triggered.connect(
+        self._add_action("hline", self.tr("Insert horizontal line")).triggered.connect(
             self._insert_horizontal_rule
         )
-        self._add_action("table", self.tr("Insertar tabla")).triggered.connect(self._insert_table_dialog)
-        self._add_action("image", self.tr("Insertar imagen")).triggered.connect(self._insert_image_dialog)
+        self._add_action("table", self.tr("Insert table")).triggered.connect(self._insert_table_dialog)
+        self._add_action("image", self.tr("Insert image")).triggered.connect(self._insert_image_dialog)
         self._add_action(
-            "find_replace", self.tr("Buscar y reemplazar"), QKeySequence("Ctrl+F")
+            "find_replace", self.tr("Find and replace"), QKeySequence("Ctrl+F")
         ).triggered.connect(self.open_find_replace)
         self._add_action(
-            "print_preview", self.tr("Vista previa de impresión"), QKeySequence("Ctrl+Shift+P")
+            "print_preview", self.tr("Print preview"), QKeySequence("Ctrl+Shift+P")
         ).triggered.connect(self.print_preview)
 
         self._actions_toolbar.addSeparator()
         self._actions_toolbar.addWidget(self._build_predefined_menu())
 
         self._actions_toolbar.addSeparator()
-        undo = self._add_action("undo", self.tr("Deshacer"), QKeySequence.StandardKey.Undo)
+        undo = self._add_action("undo", self.tr("Undo"), QKeySequence.StandardKey.Undo)
         undo.triggered.connect(self._editor.undo)
-        redo = self._add_action("redo", self.tr("Rehacer"), QKeySequence.StandardKey.Redo)
+        redo = self._add_action("redo", self.tr("Redo"), QKeySequence.StandardKey.Redo)
         redo.triggered.connect(self._editor.redo)
 
         self._editor.cursorPositionChanged.connect(self._sync_format_actions)
@@ -254,14 +254,14 @@ class RichTextEditor(QWidget):
 
     def _build_font_family(self) -> QFontComboBox:
         combo = QFontComboBox()
-        combo.setToolTip(self.tr("Fuente"))
+        combo.setToolTip(self.tr("Font"))
         combo.setMaximumWidth(180)
         combo.currentFontChanged.connect(self._apply_font_family)
         return combo
 
     def _build_font_size(self) -> QComboBox:
         combo = QComboBox()
-        combo.setToolTip(self.tr("Tamaño"))
+        combo.setToolTip(self.tr("Size"))
         combo.setEditable(True)
         for size in FONT_SIZES:
             combo.addItem(str(size))
@@ -276,11 +276,11 @@ class RichTextEditor(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         zoom_out = QToolButton()
         zoom_out.setIcon(QIcon(str(ICON_DIR / "zoom-out.svg")))
-        zoom_out.setToolTip(self.tr("Alejar"))
+        zoom_out.setToolTip(self.tr("Zoom out"))
         zoom_out.clicked.connect(lambda: self._editor.zoomOut(ZOOM_STEP))
         zoom_in = QToolButton()
         zoom_in.setIcon(QIcon(str(ICON_DIR / "zoom-in.svg")))
-        zoom_in.setToolTip(self.tr("Acercar"))
+        zoom_in.setToolTip(self.tr("Zoom in"))
         zoom_in.clicked.connect(lambda: self._editor.zoomIn(ZOOM_STEP))
         layout.addWidget(zoom_out)
         layout.addWidget(zoom_in)
@@ -308,14 +308,14 @@ class RichTextEditor(QWidget):
         self._apply_format(fmt)
 
     def _choose_text_color(self) -> None:
-        color = QColorDialog.getColor(self._editor.textColor(), self, self.tr("Color del texto"))
+        color = QColorDialog.getColor(self._editor.textColor(), self, self.tr("Text colour"))
         if color.isValid():
             fmt = QTextCharFormat()
             fmt.setForeground(color)
             self._apply_format(fmt)
 
     def _choose_background_color(self) -> None:
-        color = QColorDialog.getColor(Qt.GlobalColor.white, self, self.tr("Color de fondo"))
+        color = QColorDialog.getColor(Qt.GlobalColor.white, self, self.tr("Background colour"))
         if color.isValid():
             fmt = QTextCharFormat()
             fmt.setBackground(color)
@@ -353,11 +353,11 @@ class RichTextEditor(QWidget):
         self._editor.setTextCursor(cursor)
 
     def _insert_table_dialog(self) -> None:
-        rows, ok = QInputDialog.getInt(self, self.tr("Insertar tabla"), self.tr("Filas:"), 3, 1, 50)
+        rows, ok = QInputDialog.getInt(self, self.tr("Insert table"), self.tr("Rows:"), 3, 1, 50)
         if not ok:
             return
         columns, ok = QInputDialog.getInt(
-            self, self.tr("Insertar tabla"), self.tr("Columnas:"), 3, 1, 50
+            self, self.tr("Insert table"), self.tr("Columns:"), 3, 1, 50
         )
         if not ok:
             return
@@ -377,14 +377,14 @@ class RichTextEditor(QWidget):
     def _insert_image_dialog(self) -> None:
         path, _filter = QFileDialog.getOpenFileName(
             self,
-            self.tr("Insertar imagen"),
+            self.tr("Insert image"),
             "",
-            self.tr("Imágenes (*.jpg *.jpeg *.png *.webp *.bmp)"),
+            self.tr("Images (*.jpg *.jpeg *.png *.webp *.bmp)"),
         )
         if not path:
             return
         if not self.insert_image(path):
-            QMessageBox.warning(self, self.tr("Insertar imagen"), self.tr("No se pudo cargar la imagen."))
+            QMessageBox.warning(self, self.tr("Insert image"), self.tr("The image could not be loaded."))
 
     def open_find_replace(self) -> None:
         from luciotech.ui.dialogs.find_replace_dialog import FindReplaceDialog
@@ -447,7 +447,7 @@ class RichTextEditor(QWidget):
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
         apply_page_setup(printer)
         dialog = QPrintPreviewDialog(printer, self)
-        dialog.setWindowTitle(self.tr("Vista previa de impresión"))
+        dialog.setWindowTitle(self.tr("Print preview"))
         size_preview(dialog, self)
         dialog.paintRequested.connect(self._print_document)
         dialog.exec()
@@ -465,8 +465,8 @@ class RichTextEditor(QWidget):
 
     def _build_predefined_menu(self) -> QToolButton:
         button = QToolButton()
-        button.setText(self.tr("Textos predefinidos"))
-        button.setToolTip(self.tr("Insertar una frase predefinida"))
+        button.setText(self.tr("Predefined texts"))
+        button.setToolTip(self.tr("Insert a predefined phrase"))
         button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self._predefined_menu = QMenu(button)
         button.setMenu(self._predefined_menu)
@@ -476,7 +476,7 @@ class RichTextEditor(QWidget):
     def _fill_predefined_menu(self) -> None:
         self._predefined_menu.clear()
         if not self._predefined:
-            disabled = self._predefined_menu.addAction(self.tr("(No hay textos configurados)"))
+            disabled = self._predefined_menu.addAction(self.tr("(No predefined texts configured)"))
             disabled.setEnabled(False)
             return
         for text in self._predefined:

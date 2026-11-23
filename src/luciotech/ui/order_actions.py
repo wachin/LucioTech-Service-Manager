@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from PyQt6.QtCore import QCoreApplication
+
 from luciotech.database.enums import OrderState
 from luciotech.ui.documents import DocumentKind
 
@@ -32,65 +34,65 @@ class NextAction:
 
 NEXT_ACTIONS: dict[OrderState, NextAction] = {
     OrderState.RECIBIDO: NextAction(
-        label="Iniciar diagnóstico",
-        hint="El equipo ya está en el taller: pásalo a la cola de diagnóstico.",
+        label="Start diagnosis",
+        hint="The equipment is already in the workshop: move it to the diagnosis queue.",
         state=OrderState.PENDIENTE_DIAGNOSTICO,
     ),
     OrderState.PENDIENTE_DIAGNOSTICO: NextAction(
-        label="Marcar como diagnosticado",
-        hint="Escribe antes el diagnóstico en la pestaña Diagnóstico.",
+        label="Mark as diagnosed",
+        hint="Write the diagnosis on the Work tab first.",
         state=OrderState.DIAGNOSTICADO,
     ),
     OrderState.DIAGNOSTICADO: NextAction(
-        label="Entregar presupuesto al cliente",
-        hint="La orden espera la aprobación y se abre el presupuesto para imprimir.",
+        label="Give the budget to the customer",
+        hint="The order awaits approval and the budget opens for printing.",
         state=OrderState.ESPERANDO_APROBACION,
         document=DocumentKind.PRESUPUESTO,
     ),
     OrderState.ESPERANDO_APROBACION: NextAction(
-        label="Iniciar reparación",
-        hint="Con el presupuesto aprobado, empieza el trabajo en el equipo.",
+        label="Start the repair",
+        hint="With the budget approved, start working on the equipment.",
         state=OrderState.EN_REPARACION,
     ),
     OrderState.ESPERANDO_REPUESTO: NextAction(
-        label="Reanudar la reparación",
-        hint="El repuesto llegó: vuelve al trabajo en el equipo.",
+        label="Resume the repair",
+        hint="The part has arrived: get back to work on the equipment.",
         state=OrderState.EN_REPARACION,
     ),
     OrderState.EN_REPARACION: NextAction(
-        label="Marcar como reparado",
-        hint="Cuando el equipo funcione, márcalo y entrega el informe técnico.",
+        label="Mark as repaired",
+        hint="When the equipment works, mark it and hand over the technical report.",
         state=OrderState.REPARADO,
         document=DocumentKind.INFORME,
     ),
     OrderState.REPARADO: NextAction(
-        label="Listo para entregar",
-        hint="Avisa al cliente de que puede recoger el equipo.",
+        label="Ready for delivery",
+        hint="Tell the customer the equipment is ready to be collected.",
         state=OrderState.LISTO_PARA_ENTREGAR,
     ),
     OrderState.LISTO_PARA_ENTREGAR: NextAction(
-        label="Entregar el equipo",
-        hint="Cobra lo que falte y entrega el comprobante con la fecha de entrega.",
+        label="Deliver the equipment",
+        hint="Collect any balance due and hand over the receipt with the delivery date.",
         delivers=True,
         document=DocumentKind.ENTREGA,
     ),
     OrderState.ENTREGADO: NextAction(
-        label="Imprimir comprobante de entrega",
-        hint="La orden está cerrada: reimprime el comprobante cuando haga falta.",
+        label="Print the delivery receipt",
+        hint="The order is closed: reprint the receipt whenever needed.",
         document=DocumentKind.ENTREGA,
     ),
     OrderState.NO_REPARABLE: NextAction(
-        label="Imprimir informe técnico",
-        hint="El equipo no se repara: entrega el informe y devuélvelo al cliente.",
+        label="Print the technical report",
+        hint="The equipment cannot be repaired: hand over the report and return it.",
         document=DocumentKind.INFORME,
     ),
     OrderState.CANCELADO: NextAction(
-        label="Sin acciones pendientes",
-        hint="La orden está cancelada: solo queda el historial.",
+        label="No pending actions",
+        hint="The order is cancelled: only the history remains.",
     ),
 }
 
-FALLBACK = NextAction(label="Sin acciones pendientes")
+FALLBACK = NextAction(label="No pending actions")
 
 
 def next_action(state: OrderState | str) -> NextAction:
@@ -99,3 +101,29 @@ def next_action(state: OrderState | str) -> NextAction:
         return NEXT_ACTIONS[OrderState(state)]
     except ValueError:
         return FALLBACK
+
+
+def _catalog() -> None:
+    """Mantiene los textos en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate("NextAction", 'No pending actions')
+    QCoreApplication.translate("NextAction", 'Start diagnosis')
+    QCoreApplication.translate("NextAction", 'The equipment is already in the workshop: move it to the diagnosis queue.')
+    QCoreApplication.translate("NextAction", 'Mark as diagnosed')
+    QCoreApplication.translate("NextAction", 'Write the diagnosis on the Work tab first.')
+    QCoreApplication.translate("NextAction", 'Give the budget to the customer')
+    QCoreApplication.translate("NextAction", 'The order awaits approval and the budget opens for printing.')
+    QCoreApplication.translate("NextAction", 'Start the repair')
+    QCoreApplication.translate("NextAction", 'With the budget approved, start working on the equipment.')
+    QCoreApplication.translate("NextAction", 'Resume the repair')
+    QCoreApplication.translate("NextAction", 'The part has arrived: get back to work on the equipment.')
+    QCoreApplication.translate("NextAction", 'Mark as repaired')
+    QCoreApplication.translate("NextAction", 'When the equipment works, mark it and hand over the technical report.')
+    QCoreApplication.translate("NextAction", 'Ready for delivery')
+    QCoreApplication.translate("NextAction", 'Tell the customer the equipment is ready to be collected.')
+    QCoreApplication.translate("NextAction", 'Deliver the equipment')
+    QCoreApplication.translate("NextAction", 'Collect any balance due and hand over the receipt with the delivery date.')
+    QCoreApplication.translate("NextAction", 'Print the delivery receipt')
+    QCoreApplication.translate("NextAction", 'The order is closed: reprint the receipt whenever needed.')
+    QCoreApplication.translate("NextAction", 'Print the technical report')
+    QCoreApplication.translate("NextAction", 'The equipment cannot be repaired: hand over the report and return it.')
+    QCoreApplication.translate("NextAction", 'The order is cancelled: only the history remains.')

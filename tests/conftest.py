@@ -9,6 +9,7 @@ from pathlib import Path
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest  # noqa: E402
+from PyQt6.QtWidgets import QApplication  # noqa: E402
 from sqlalchemy import Engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
@@ -18,6 +19,22 @@ from luciotech.services.settings_service import (  # noqa: E402
     KEY_TAX_ENABLED,
     set_value,
 )
+
+
+@pytest.fixture(autouse=True, scope="session")
+def spanish_interface(qapp: QApplication) -> Iterator[None]:
+    """Deja la interfaz en español, que es el idioma por defecto del taller.
+
+    Las pruebas escriben sus comprobaciones en español porque es lo que ve el usuario; el
+    inglés es el idioma fuente del código y vive en los literales de las llamadas `tr(...)`.
+    """
+    from luciotech.ui.translations import install_translations
+
+    translators = install_translations(qapp, "es")
+    assert translators, "falta el catálogo compilado luciotech_es.qm"
+    yield
+    for translator in translators:
+        qapp.removeTranslator(translator)
 
 
 @pytest.fixture

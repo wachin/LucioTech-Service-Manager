@@ -27,6 +27,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.database.enums import PhotoType
 from luciotech.database.models import Photograph, ServiceOrder
+from luciotech.ui.labels import photo_type_label
 from luciotech.services.photo_service import (
     PhotoImportError,
     import_clipboard_image,
@@ -41,7 +42,7 @@ from luciotech.services.photo_service import (
 )
 
 THUMBNAIL = 160
-IMAGE_FILTER = "Imágenes (*.jpg *.jpeg *.png *.webp *.bmp)"
+IMAGE_FILTER = "Images (*.jpg *.jpeg *.png *.webp *.bmp)"
 
 
 class _DropList(QListWidget):
@@ -110,17 +111,17 @@ class PhotoEditDialog(QDialog):
 
     def __init__(self, descripcion: str, tipo: str, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle(self.tr("Editar fotografía"))
+        self.setWindowTitle(self.tr("Edit photograph"))
         self._description = QLineEdit(descripcion)
         self._type = QComboBox()
         for photo_type in PhotoType:
-            self._type.addItem(photo_type.value, photo_type.value)
+            self._type.addItem(photo_type_label(photo_type.value), photo_type.value)
         index = self._type.findData(tipo)
         if index >= 0:
             self._type.setCurrentIndex(index)
         form = QFormLayout()
-        form.addRow(self.tr("Descripción"), self._description)
-        form.addRow(self.tr("Tipo"), self._type)
+        form.addRow(self.tr("Description"), self._description)
+        form.addRow(self.tr("Type"), self._type)
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
         )
@@ -156,26 +157,26 @@ class PhotographsTab(QWidget):
         self._list.itemSelectionChanged.connect(self._sync_actions)
         self._list.files_dropped.connect(self._import_paths)
 
-        self._import_button = QPushButton(self.tr("Importar…"))
+        self._import_button = QPushButton(self.tr("Import…"))
         self._import_button.clicked.connect(self._import_dialog)
-        self._paste_button = QPushButton(self.tr("Pegar"))
+        self._paste_button = QPushButton(self.tr("Paste"))
         self._paste_button.clicked.connect(self._paste_from_clipboard)
         paste_shortcut = QShortcut(QKeySequence("Ctrl+V"), self)
         paste_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
         paste_shortcut.activated.connect(self._paste_from_clipboard)
-        self._view_button = QPushButton(self.tr("Ver"))
+        self._view_button = QPushButton(self.tr("View"))
         self._view_button.clicked.connect(self.view_photo)
-        self._rotate_left = QPushButton(self.tr("Rotar izquierda"))
+        self._rotate_left = QPushButton(self.tr("Rotate left"))
         self._rotate_left.clicked.connect(lambda: self._rotate(-90))
-        self._rotate_right = QPushButton(self.tr("Rotar derecha"))
+        self._rotate_right = QPushButton(self.tr("Rotate right"))
         self._rotate_right.clicked.connect(lambda: self._rotate(90))
-        self._edit_button = QPushButton(self.tr("Editar…"))
+        self._edit_button = QPushButton(self.tr("Edit…"))
         self._edit_button.clicked.connect(self._edit_photo)
-        self._remove_button = QPushButton(self.tr("Quitar"))
+        self._remove_button = QPushButton(self.tr("Remove"))
         self._remove_button.clicked.connect(self._remove_photo)
-        self._up_button = QPushButton(self.tr("Subir"))
+        self._up_button = QPushButton(self.tr("Move up"))
         self._up_button.clicked.connect(lambda: self._move(-1))
-        self._down_button = QPushButton(self.tr("Bajar"))
+        self._down_button = QPushButton(self.tr("Move down"))
         self._down_button.clicked.connect(lambda: self._move(1))
 
         toolbar = QHBoxLayout()
@@ -219,7 +220,7 @@ class PhotographsTab(QWidget):
                 item = QListWidgetItem(name)
                 if not thumb.isNull():
                     item.setIcon(QIcon(QPixmap.fromImage(thumb)))
-                item.setToolTip(description or tipo)
+                item.setToolTip(description or photo_type_label(tipo))
                 item.setData(Qt.ItemDataRole.UserRole, photo_id)
                 self._list.addItem(item)
         self._sync_actions()
@@ -238,13 +239,13 @@ class PhotographsTab(QWidget):
             image = load_oriented(Path(photo.ruta_archivo))
             title = photo.nombre_archivo
         if image is None:
-            QMessageBox.warning(self, self.tr("Ver fotografía"), self.tr("No se pudo cargar la imagen."))
+            QMessageBox.warning(self, self.tr("View photograph"), self.tr("The image could not be loaded."))
             return
         PhotoViewerDialog(image, title, self).exec()
 
     def _import_dialog(self) -> None:
         files, _filter = QFileDialog.getOpenFileNames(
-            self, self.tr("Importar fotografías"), "", IMAGE_FILTER
+            self, self.tr("Import photographs"), "", IMAGE_FILTER
         )
         if files:
             self._import_paths(files)
@@ -264,7 +265,7 @@ class PhotographsTab(QWidget):
                     errors.append(f"{Path(file_path).name}: {exc.reason}")
             session.commit()
         if errors:
-            QMessageBox.warning(self, self.tr("Importar fotografías"), "\n".join(errors))
+            QMessageBox.warning(self, self.tr("Import photographs"), "\n".join(errors))
         self.refresh()
 
     def _paste_from_clipboard(self) -> None:
@@ -278,7 +279,7 @@ class PhotographsTab(QWidget):
                 import_clipboard_image(session, order)
                 session.commit()
         except PhotoImportError as exc:
-            QMessageBox.warning(self, self.tr("Pegar fotografía"), exc.reason)
+            QMessageBox.warning(self, self.tr("Paste photograph"), exc.reason)
         self.refresh()
 
     def _rotate(self, degrees: int) -> None:
@@ -292,7 +293,7 @@ class PhotographsTab(QWidget):
                     rotate_photo(photo, degrees)
                 session.commit()
         except PhotoImportError as exc:
-            QMessageBox.warning(self, self.tr("Rotar fotografía"), exc.reason)
+            QMessageBox.warning(self, self.tr("Rotate photograph"), exc.reason)
         self.refresh()
 
     def _edit_photo(self) -> None:
@@ -322,8 +323,8 @@ class PhotographsTab(QWidget):
             return
         answer = QMessageBox.question(
             self,
-            self.tr("Quitar fotografía"),
-            self.tr("¿Quitar la fotografía seleccionada? El archivo también se borrará."),
+            self.tr("Remove photograph"),
+            self.tr("Remove the selected photograph? The file will be deleted too."),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )

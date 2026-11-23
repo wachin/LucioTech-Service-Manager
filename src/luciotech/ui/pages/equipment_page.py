@@ -31,9 +31,9 @@ class EquipmentPage(QWidget):
         super().__init__(parent)
         self._session_factory = session_factory
 
-        new_button = QPushButton(self.tr("Nuevo equipo"))
+        new_button = QPushButton(self.tr("New equipment"))
         new_button.clicked.connect(self._new_equipment)
-        edit_button = QPushButton(self.tr("Editar"))
+        edit_button = QPushButton(self.tr("Edit"))
         edit_button.clicked.connect(self._edit_selected)
 
         toolbar = QHBoxLayout()
@@ -44,11 +44,11 @@ class EquipmentPage(QWidget):
         self._table = QTableWidget(0, 5)
         self._table.setHorizontalHeaderLabels(
             [
-                self.tr("Cliente"),
-                self.tr("Tipo de equipo"),
-                self.tr("Marca"),
-                self.tr("Modelo"),
-                self.tr("Número de serie"),
+                self.tr("Customer"),
+                self.tr("Equipment type"),
+                self.tr("Brand"),
+                self.tr("Model"),
+                self.tr("Serial number"),
             ]
         )
         self._table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -97,8 +97,8 @@ class EquipmentPage(QWidget):
         if not self._has_customers():
             QMessageBox.information(
                 self,
-                self.tr("Nuevo equipo"),
-                self.tr("Primero registre un cliente en la pestaña Clientes."),
+                self.tr("New equipment"),
+                self.tr("First register a customer on the Customers tab."),
             )
             return
         dialog = EquipmentDialog(self._session_factory, parent=self)
@@ -109,7 +109,7 @@ class EquipmentPage(QWidget):
         row = self._table.currentRow()
         if row < 0:
             QMessageBox.information(
-                self, self.tr("Editar equipo"), self.tr("Seleccione un equipo en la lista.")
+                self, self.tr("Edit equipment"), self.tr("Select a piece of equipment from the list.")
             )
             return
         equipment_id = self._table.item(row, 0).data(Qt.ItemDataRole.UserRole)

@@ -7,7 +7,7 @@ se abre su vista previa. Así el botón deja de llamarse «Imprimir comprobante�
 
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QCoreApplication, Qt
 from PyQt6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -18,27 +18,27 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from luciotech.ui.documents import DocumentKind
+from luciotech.ui.documents import DocumentKind, document_label
 
 DESCRIPTIONS: dict[DocumentKind, str] = {
     DocumentKind.RECEPCION: (
-        "Se entrega al cliente cuando deja el equipo: datos, estado físico, accesorios, "
-        "fotografías, valores y condiciones del servicio."
+        "Handed to the customer when the equipment is left: details, physical condition, "
+        "accessories, photographs, amounts and service conditions."
     ),
     DocumentKind.PRESUPUESTO: (
-        "Detalle de los conceptos con cantidades y precios, total, validez, términos y "
-        "garantía, y espacio para la aprobación del cliente."
+        "Itemised quantities and prices, total, validity, terms and warranty, plus room for "
+        "the customer's approval."
     ),
     DocumentKind.INFORME: (
-        "Diagnóstico, trabajo realizado, repuestos, recomendaciones, fotografías, garantía, "
-        "términos y condiciones de la garantía."
+        "Diagnosis, work performed, parts, recommendations, photographs, warranty coverage "
+        "and warranty terms."
     ),
     DocumentKind.ENTREGA: (
-        "Se entrega al devolver el equipo: trabajo realizado, pagos, saldo, garantía, "
-        "términos y declaración de conformidad."
+        "Handed over when the equipment is returned: work performed, payments, balance, "
+        "warranty, terms and declaration of conformity."
     ),
     DocumentKind.HISTORIAL: (
-        "Todos los cambios de estado, notas y pagos de la orden en orden cronológico."
+        "Every status change, note and payment of the order in chronological order."
     ),
 }
 
@@ -48,14 +48,14 @@ class DocumentChooserDialog(QDialog):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle(self.tr("Documentos de la orden"))
+        self.setWindowTitle(self.tr("Order documents"))
         self.setMinimumSize(520, 380)
 
         self._list = QListWidget()
         for kind in DocumentKind:
-            item = QListWidgetItem(kind.value)
+            item = QListWidgetItem(document_label(kind))
             item.setData(Qt.ItemDataRole.UserRole, kind.value)
-            item.setToolTip(DESCRIPTIONS[kind])
+            item.setToolTip(self.tr(DESCRIPTIONS[kind]))
             self._list.addItem(item)
         self._list.setCurrentRow(0)
         self._list.currentItemChanged.connect(self._show_description)
@@ -71,7 +71,7 @@ class DocumentChooserDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(self.tr("Elija el documento que quiere imprimir o guardar:")))
+        layout.addWidget(QLabel(self.tr("Choose the document to print or save:")))
         layout.addWidget(self._list, 1)
         layout.addWidget(self._description)
         layout.addWidget(buttons)
@@ -94,7 +94,8 @@ class DocumentChooserDialog(QDialog):
         if item is None:
             self._description.setText("")
             return
-        self._description.setText(DESCRIPTIONS[DocumentKind(item.data(Qt.ItemDataRole.UserRole))])
+        kind = DocumentKind(item.data(Qt.ItemDataRole.UserRole))
+        self._description.setText(self.tr(DESCRIPTIONS[kind]))
 
     @classmethod
     def choose(cls, parent: QWidget | None = None) -> DocumentKind | None:
@@ -103,3 +104,31 @@ class DocumentChooserDialog(QDialog):
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return None
         return dialog.selected_kind()
+
+
+def _catalog() -> None:
+    """Mantiene los textos en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate(
+        "DocumentChooserDialog",
+        "Handed to the customer when the equipment is left: details, physical condition, "
+        "accessories, photographs, amounts and service conditions.",
+    )
+    QCoreApplication.translate(
+        "DocumentChooserDialog",
+        "Itemised quantities and prices, total, validity, terms and warranty, plus room for "
+        "the customer's approval.",
+    )
+    QCoreApplication.translate(
+        "DocumentChooserDialog",
+        "Diagnosis, work performed, parts, recommendations, photographs, warranty coverage "
+        "and warranty terms.",
+    )
+    QCoreApplication.translate(
+        "DocumentChooserDialog",
+        "Handed over when the equipment is returned: work performed, payments, balance, "
+        "warranty, terms and declaration of conformity.",
+    )
+    QCoreApplication.translate(
+        "DocumentChooserDialog",
+        "Every status change, note and payment of the order in chronological order.",
+    )

@@ -24,7 +24,7 @@ def test_every_action_has_a_label_and_a_hint(state: OrderState) -> None:
 def test_a_new_order_goes_to_the_diagnosis_queue() -> None:
     action = next_action(OrderState.RECIBIDO)
 
-    assert action.label == "Iniciar diagnóstico"
+    assert action.label == "Start diagnosis"
     assert action.state == OrderState.PENDIENTE_DIAGNOSTICO
     assert action.document is None
     assert action.available
@@ -72,7 +72,7 @@ def test_an_unknown_state_falls_back_to_a_neutral_action() -> None:
     action = next_action("Estado que no existe")
 
     assert not action.available
-    assert action.label == "Sin acciones pendientes"
+    assert action.label == "No pending actions"
 
 
 def test_the_action_is_accepted_as_a_plain_string() -> None:

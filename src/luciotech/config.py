@@ -30,6 +30,10 @@ APP_CONFIG = AppConfig(
 
 APP_VERSION: str = APP_CONFIG.application_version
 
+# Idioma con el que arranca la aplicación: el español del taller. El inglés es el idioma
+# fuente del código; cada traducción vive en su archivo `.ts`/`.qm` (§21).
+DEFAULT_LANGUAGE = "es"
+
 DEFAULT_TAX_PERCENT = Decimal("15")
 # El taller trabaja con precios que ya llevan el IVA incluido, así que el impuesto nace
 # desactivado: el total es el subtotal. Sigue siendo configurable (§5.8) y el porcentaje se

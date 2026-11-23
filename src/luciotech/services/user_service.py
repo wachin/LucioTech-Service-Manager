@@ -21,6 +21,7 @@ import secrets
 from dataclasses import dataclass
 from datetime import datetime
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -103,16 +104,23 @@ def validate_username(username: str) -> str:
     value = normalize_username(username)
     if len(value) < MIN_USERNAME_LENGTH:
         raise ValueError(
-            f"El nombre de usuario debe tener al menos {MIN_USERNAME_LENGTH} caracteres."
+            QCoreApplication.translate(
+                "LucioTech", "The user name must have at least {count} characters."
+            ).format(count=MIN_USERNAME_LENGTH)
         )
     if len(value) > MAX_USERNAME_LENGTH:
         raise ValueError(
-            f"El nombre de usuario no puede pasar de {MAX_USERNAME_LENGTH} caracteres."
+            QCoreApplication.translate(
+                "LucioTech", "The user name cannot be longer than {count} characters."
+            ).format(count=MAX_USERNAME_LENGTH)
         )
     if not _USERNAME_PATTERN.match(value):
         raise ValueError(
-            "El nombre de usuario solo puede llevar letras sin tilde, números, punto, "
-            "guion y guion bajo."
+            QCoreApplication.translate(
+                "LucioTech",
+                "The user name may only contain unaccented letters, digits, dot, hyphen "
+                "and underscore.",
+            )
         )
     return value
 
@@ -120,20 +128,30 @@ def validate_username(username: str) -> str:
 def validate_password(password: str) -> None:
     if len(password) < MIN_PASSWORD_LENGTH:
         raise ValueError(
-            f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres."
+            QCoreApplication.translate(
+                "LucioTech", "The password must have at least {count} characters."
+            ).format(count=MIN_PASSWORD_LENGTH)
         )
     if len(password) > MAX_PASSWORD_LENGTH:
         raise ValueError(
-            f"La contraseña no puede pasar de {MAX_PASSWORD_LENGTH} caracteres."
+            QCoreApplication.translate(
+                "LucioTech", "The password cannot be longer than {count} characters."
+            ).format(count=MAX_PASSWORD_LENGTH)
         )
 
 
 def validate_full_name(full_name: str) -> str:
     value = " ".join(full_name.split())
     if not value:
-        raise ValueError("El nombre completo no puede estar vacío.")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "The full name cannot be empty.")
+        )
     if len(value) > 120:
-        raise ValueError("El nombre completo no puede pasar de 120 caracteres.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "The full name cannot be longer than 120 characters."
+            )
+        )
     return value
 
 
@@ -192,7 +210,11 @@ def create_user(
     validate_password(password)
     role_value = UserRole(role).value
     if get_user(session, value) is not None:
-        raise ValueError("Ya existe un usuario con ese nombre de acceso.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "A user with that sign-in name already exists."
+            )
+        )
     user = User(
         nombre_usuario=value,
         nombre_completo=name,
@@ -252,7 +274,9 @@ def set_password(session: Session, user: User, password: str) -> None:
 def change_own_password(session: Session, user: User, current: str, new: str) -> None:
     """Cambio de contraseña por el propio usuario: exige la contraseña actual."""
     if not verify_password(current, user.contrasena_hash):
-        raise ValueError("La contraseña actual no es correcta.")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "The current password is not correct.")
+        )
     set_password(session, user, new)
 
 
@@ -295,13 +319,21 @@ def _ensure_another_admin(session: Session, user: User) -> None:
         )
     )
     if not others:
-        raise ValueError("Debe quedar al menos un administrador activo.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "At least one active administrator must remain."
+            )
+        )
 
 
 def create_first_admin(session: Session, *, username: str, full_name: str, password: str) -> User:
     """Crea la cuenta de administrador de un equipo que todavía no tiene ninguna."""
     if has_users(session):
-        raise ValueError("Ya hay usuarios creados en este equipo.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "Users have already been created on this computer."
+            )
+        )
     return create_user(
         session,
         username=username,

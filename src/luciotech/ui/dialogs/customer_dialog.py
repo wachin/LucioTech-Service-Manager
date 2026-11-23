@@ -37,7 +37,7 @@ class CustomerDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._customer_id = customer_id
-        self.setWindowTitle(self.tr("Editar cliente") if customer_id else self.tr("Nuevo cliente"))
+        self.setWindowTitle(self.tr("Edit customer") if customer_id else self.tr("New customer"))
         self.setMinimumWidth(480)
 
         self._name = QLineEdit()
@@ -56,8 +56,8 @@ class CustomerDialog(QDialog):
         form.addRow(field_label("telefono_principal"), self._phone)
         form.addRow(field_label("telefono_secundario"), self._phone_secondary)
         form.addRow(field_label("correo_electronico"), self._email)
-        form.addRow(self.tr("Dirección"), self._address)
-        form.addRow(self.tr("Observaciones"), self._notes)
+        form.addRow(self.tr("Address"), self._address)
+        form.addRow(self.tr("Notes"), self._notes)
 
         self._error_label = QLabel()
         self._error_label.setWordWrap(True)
@@ -126,7 +126,7 @@ class CustomerDialog(QDialog):
             QMessageBox.critical(
                 self,
                 self.windowTitle(),
-                self.tr("No se pudo guardar el cliente. Revise los datos e intente de nuevo."),
+                self.tr("The customer could not be saved. Check the details and try again."),
             )
             return
         self.accept()
@@ -138,8 +138,8 @@ class CustomerDialog(QDialog):
             for customer in duplicates
         )
         message = self.tr(
-            "Ya existen clientes con la misma identificación o teléfono:\n\n%1\n\n"
-            "¿Desea guardar de todos modos?"
+            "Customers with the same ID or phone already exist:\n\n%1\n\n"
+            "Do you want to save anyway?"
         ).replace("%1", lines)
         answer = QMessageBox.question(
             self,

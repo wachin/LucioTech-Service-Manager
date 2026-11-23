@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 
+from PyQt6.QtCore import QCoreApplication
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,6 +13,7 @@ from luciotech.config import (
     APP_CONFIG,
     DEFAULT_BUDGET_VALIDITY_DAYS,
     DEFAULT_EQUIPMENT_TYPES,
+    DEFAULT_LANGUAGE,
     DEFAULT_PAGE_MARGIN_MM,
     DEFAULT_PAPER_SIZE,
     DEFAULT_RETENTION_MONTHS,
@@ -40,12 +42,24 @@ KEY_WORKSHOP_NAME = "nombre_taller"
 KEY_WORKSHOP_PHONE = "telefono_taller"
 KEY_WORKSHOP_ADDRESS = "direccion_taller"
 KEY_WORKSHOP_EMAIL = "correo_taller"
+KEY_LANGUAGE = "idioma"
 
 
 @dataclass(frozen=True)
 class TaxSettings:
     percent: Decimal
     enabled: bool
+
+
+def language(session: Session) -> str:
+    """Código del idioma elegido; si no hay ninguno guardado, el de `config.py`."""
+    raw = (get_value(session, KEY_LANGUAGE, DEFAULT_LANGUAGE) or "").strip()
+    return raw or DEFAULT_LANGUAGE
+
+
+def set_language(session: Session, code: str) -> None:
+    """Guarda el idioma elegido. Se aplica al volver a abrir la aplicación."""
+    set_value(session, KEY_LANGUAGE, code.strip() or DEFAULT_LANGUAGE)
 
 
 def get_value(session: Session, clave: str, default: str | None = None) -> str | None:
@@ -83,9 +97,15 @@ def tax_settings(session: Session) -> TaxSettings:
     try:
         percent = Decimal(raw_percent.strip())
     except InvalidOperation as exc:
-        raise ValueError(f"Porcentaje de impuesto no válido: {raw_percent!r}") from exc
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "Invalid tax percentage: {value}").format(
+                value=raw_percent
+            )
+        ) from exc
     if not Decimal("0") <= percent <= Decimal("100"):
-        raise ValueError("El porcentaje de impuesto debe estar entre 0 y 100.")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "The tax percentage must be between 0 and 100.")
+        )
 
     raw_enabled = get_value(session, KEY_TAX_ENABLED, str(DEFAULT_TAX_ENABLED).lower()) or ""
     return TaxSettings(percent=percent, enabled=raw_enabled.strip().lower() == "true")
@@ -93,7 +113,9 @@ def tax_settings(session: Session) -> TaxSettings:
 
 def set_tax_settings(session: Session, percent: Decimal, enabled: bool) -> None:
     if not Decimal("0") <= percent <= Decimal("100"):
-        raise ValueError("El porcentaje de impuesto debe estar entre 0 y 100.")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "The tax percentage must be between 0 and 100.")
+        )
     set_value(session, KEY_TAX_PERCENT, str(percent))
     set_value(session, KEY_TAX_ENABLED, str(bool(enabled)).lower())
 
@@ -159,7 +181,11 @@ def budget_validity_days(session: Session) -> int:
 
 def set_budget_validity_days(session: Session, days: int) -> None:
     if days <= 0:
-        raise ValueError("La validez del presupuesto debe ser mayor que cero días.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "Budget validity must be greater than zero days."
+            )
+        )
     set_value(session, KEY_BUDGET_VALIDITY_DAYS, str(int(days)))
 
 
@@ -185,14 +211,20 @@ def page_margin_mm(session: Session) -> int:
 def set_paper_size(session: Session, paper: str) -> None:
     name = paper.strip().title()
     if name not in PAPER_SIZES:
-        raise ValueError(f"Tamaño de papel no válido: {paper!r}")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "Invalid paper size: {value}").format(
+                value=paper
+            )
+        )
     set_value(session, KEY_PAPER_SIZE, name)
 
 
 def set_page_margin_mm(session: Session, margin: int) -> None:
     if not MIN_PAGE_MARGIN_MM <= margin <= MAX_PAGE_MARGIN_MM:
         raise ValueError(
-            f"Los márgenes deben estar entre {MIN_PAGE_MARGIN_MM} y {MAX_PAGE_MARGIN_MM} mm."
+            QCoreApplication.translate(
+                "LucioTech", "Margins must be between {min} and {max} mm."
+            ).format(min=MIN_PAGE_MARGIN_MM, max=MAX_PAGE_MARGIN_MM)
         )
     set_value(session, KEY_PAGE_MARGIN_MM, str(int(margin)))
 
@@ -238,7 +270,9 @@ def warranty_days(session: Session) -> int:
 
 def set_warranty_days(session: Session, days: int) -> None:
     if days < 0:
-        raise ValueError("Los días de garantía no pueden ser negativos.")
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "Warranty days cannot be negative.")
+        )
     set_value(session, KEY_WARRANTY_DAYS, str(int(days)))
 
 
@@ -275,5 +309,9 @@ def warranty_conditions(session: Session, order: ServiceOrder) -> str:
 
 def set_retention_months(session: Session, months: int) -> None:
     if months <= 0:
-        raise ValueError("El plazo de retirada debe ser mayor que cero.")
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech", "The collection deadline must be greater than zero."
+            )
+        )
     set_value(session, KEY_RETENTION_MONTHS, str(int(months)))

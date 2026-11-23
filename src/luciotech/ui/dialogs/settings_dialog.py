@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QSpinBox,
@@ -31,6 +32,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import (
+    DEFAULT_LANGUAGE,
     DEFAULT_SERVICE_TERMS,
     DEFAULT_WARRANTY_TERMS,
     MAX_PAGE_MARGIN_MM,
@@ -39,6 +41,7 @@ from luciotech.config import (
 )
 from luciotech.services.settings_service import (
     budget_validity_days,
+    language,
     equipment_types,
     page_margin_mm,
     paper_size,
@@ -46,6 +49,7 @@ from luciotech.services.settings_service import (
     service_terms,
     set_budget_validity_days,
     set_equipment_types,
+    set_language,
     set_page_margin_mm,
     set_paper_size,
     set_retention_months,
@@ -62,11 +66,12 @@ from luciotech.services.settings_service import (
     workshop_name,
     workshop_phone,
 )
+from luciotech.ui.translations import available_languages
 
 ERROR_STYLE = "color: #b00020;"
-TAB_TALLER = "Taller"
-TAB_DOCUMENTOS = "Documentos"
-TAB_LEGAL = "Términos y garantía"
+TAB_TALLER = "Workshop"
+TAB_DOCUMENTOS = "Documents"
+TAB_LEGAL = "Terms and warranty"
 
 
 class SettingsDialog(QDialog):
@@ -79,7 +84,9 @@ class SettingsDialog(QDialog):
     ) -> None:
         super().__init__(parent)
         self._session_factory = session_factory
-        self.setWindowTitle(self.tr("Configuración"))
+        self._language_changed = False
+        self._saved_language = DEFAULT_LANGUAGE
+        self.setWindowTitle(self.tr("Settings"))
         self.setMinimumSize(720, 580)
 
         self._tabs = QTabWidget()
@@ -113,20 +120,24 @@ class SettingsDialog(QDialog):
         self._tax_percent.setRange(0, 100)
         self._tax_percent.setDecimals(2)
         self._tax_percent.setSuffix(" %")
-        self._tax_enabled = QCheckBox(self.tr("IVA activo"))
+        self._tax_enabled = QCheckBox(self.tr("Tax enabled"))
+        self._language = QComboBox()
+        for code, name in available_languages().items():
+            self._language.addItem(name, code)
 
         form = QFormLayout()
-        form.addRow(self.tr("Nombre del taller"), self._name)
-        form.addRow(self.tr("Teléfono"), self._phone)
-        form.addRow(self.tr("Correo"), self._email)
-        form.addRow(self.tr("Dirección"), self._address)
-        form.addRow(self.tr("Porcentaje de IVA"), self._tax_percent)
+        form.addRow(self.tr("Workshop name"), self._name)
+        form.addRow(self.tr("Phone"), self._phone)
+        form.addRow(self.tr("Email"), self._email)
+        form.addRow(self.tr("Address"), self._address)
+        form.addRow(self.tr("Tax percentage"), self._tax_percent)
         form.addRow("", self._tax_enabled)
+        form.addRow(self.tr("Language"), self._language)
 
         note = QLabel(
             self.tr(
-                "Estos datos salen en la cabecera de todos los documentos. Los precios del "
-                "taller ya llevan el impuesto incluido, así que el IVA nace desactivado."
+                "These details appear in the header of every document. Workshop prices "
+                "already include tax, so tax starts disabled."
             )
         )
         note.setWordWrap(True)
@@ -145,25 +156,24 @@ class SettingsDialog(QDialog):
         self._margin.setSuffix(" mm")
         self._budget_days = QSpinBox()
         self._budget_days.setRange(1, 365)
-        self._budget_days.setSuffix(self.tr(" días"))
+        self._budget_days.setSuffix(self.tr(" days"))
         self._retention = QSpinBox()
         self._retention.setRange(1, 120)
-        self._retention.setSuffix(self.tr(" meses"))
+        self._retention.setSuffix(self.tr(" months"))
         self._equipment_types = QPlainTextEdit()
         self._equipment_types.setMaximumHeight(110)
 
         form = QFormLayout()
-        form.addRow(self.tr("Tamaño de papel"), self._paper)
-        form.addRow(self.tr("Márgenes de la hoja"), self._margin)
-        form.addRow(self.tr("Validez del presupuesto"), self._budget_days)
-        form.addRow(self.tr("Plazo para retirar un equipo"), self._retention)
-        form.addRow(self.tr("Tipos de equipo (uno por línea)"), self._equipment_types)
+        form.addRow(self.tr("Paper size"), self._paper)
+        form.addRow(self.tr("Page margins"), self._margin)
+        form.addRow(self.tr("Budget validity"), self._budget_days)
+        form.addRow(self.tr("Deadline to collect equipment"), self._retention)
+        form.addRow(self.tr("Equipment types (one per line)"), self._equipment_types)
 
         note = QLabel(
             self.tr(
-                "El plazo de retirada sustituye al marcador {meses} de los términos y "
-                "condiciones. Si la lista de tipos se deja vacía, vuelven los valores "
-                "por defecto."
+                "The collection deadline replaces the {meses} placeholder in the terms and "
+                "conditions. If the type list is left empty, the default values return."
             )
         )
         note.setWordWrap(True)
@@ -176,40 +186,40 @@ class SettingsDialog(QDialog):
     def _legal_tab(self) -> QWidget:
         self._warranty_days = QSpinBox()
         self._warranty_days.setRange(0, 3650)
-        self._warranty_days.setSuffix(self.tr(" días"))
+        self._warranty_days.setSuffix(self.tr(" days"))
 
         self._service_terms = QPlainTextEdit()
         self._service_terms.setMinimumHeight(150)
         self._warranty_terms = QPlainTextEdit()
         self._warranty_terms.setMinimumHeight(150)
 
-        self._reset_terms = QPushButton(self.tr("Restablecer texto por defecto"))
+        self._reset_terms = QPushButton(self.tr("Restore default text"))
         self._reset_terms.clicked.connect(self._restore_service_terms)
-        self._reset_warranty = QPushButton(self.tr("Restablecer texto por defecto"))
+        self._reset_warranty = QPushButton(self.tr("Restore default text"))
         self._reset_warranty.clicked.connect(self._restore_warranty_terms)
 
         days_form = QFormLayout()
         days_form.addRow(
-            self.tr("Días de garantía (órdenes nuevas y sin plazo propio)"),
+            self.tr("Warranty days (new orders and orders without their own warranty)"),
             self._warranty_days,
         )
 
         terms_hint = QLabel(
             self.tr(
-                "Términos y condiciones: se imprimen en los cuatro documentos que se entregan "
-                "al cliente. El marcador {meses} se sustituye por el plazo de Documentos."
+                "Terms and conditions: printed on the four documents handed to the customer. "
+                "The {meses} placeholder is replaced by the deadline from Documents."
             )
         )
         warranty_hint = QLabel(
             self.tr(
-                "Condiciones de garantía: mismos documentos, marcadores {dias}, {orden} y "
-                "{meses}. Dejar el texto vacío quita el apartado."
+                "Warranty conditions: same documents, placeholders {dias}, {orden} and "
+                "{meses}. Leaving the text empty removes the section."
             )
         )
         note = QLabel(
             self.tr(
-                "Una orden con días propios conserva su plazo; la que no tiene usa el de aquí. "
-                "Poner 0 días quita la garantía de todos los documentos."
+                "An order with its own days keeps its warranty; one without uses the value "
+                "here. Setting 0 days removes the warranty from every document."
             )
         )
         for label in (terms_hint, warranty_hint, note):
@@ -244,9 +254,13 @@ class SettingsDialog(QDialog):
                 self._warranty_days.setValue(warranty_days(session))
                 self._service_terms.setPlainText(service_terms(session))
                 self._warranty_terms.setPlainText(warranty_terms(session))
+                self._saved_language = language(session)
+                index = self._language.findData(self._saved_language)
+                if index >= 0:
+                    self._language.setCurrentIndex(index)
         except (ValueError, SQLAlchemyError) as exc:
             self._message.setText(
-                self.tr("No se pudo leer la configuración: %1").replace("%1", str(exc))
+                self.tr("The settings could not be read: %1").replace("%1", str(exc))
             )
 
     def _save(self) -> None:
@@ -272,12 +286,20 @@ class SettingsDialog(QDialog):
                 set_warranty_days(session, self._warranty_days.value())
                 set_service_terms(session, self._service_terms.toPlainText())
                 set_warranty_terms(session, self._warranty_terms.toPlainText())
+                set_language(session, self._language.currentData())
                 session.commit()
         except (ValueError, SQLAlchemyError) as exc:
             self._message.setText(
-                self.tr("No se pudo guardar la configuración: %1").replace("%1", str(exc))
+                self.tr("The settings could not be saved: %1").replace("%1", str(exc))
             )
             return
+        self._language_changed = self._language.currentData() != self._saved_language
+        if self._language_changed:
+            QMessageBox.information(
+                self,
+                self.windowTitle(),
+                self.tr("The language takes effect the next time the application starts."),
+            )
         self.accept()
 
     def _restore_service_terms(self) -> None:

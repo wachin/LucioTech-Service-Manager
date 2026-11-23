@@ -30,8 +30,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import APP_CONFIG, DEFAULT_USER
-from luciotech.database.enums import UserRole
 from luciotech.database.models import User
+from luciotech.ui.labels import role_label
 from luciotech.services.user_service import (
     CurrentUser,
     authenticate,
@@ -57,7 +57,7 @@ class LoginDialog(QDialog):
         self.user: CurrentUser | None = None
         self.attempts = 0
 
-        self.setWindowTitle(self.tr("Entrar"))
+        self.setWindowTitle(self.tr("Sign in"))
         self.setMinimumWidth(420)
 
         title = QLabel(APP_CONFIG.app_name)
@@ -67,7 +67,7 @@ class LoginDialog(QDialog):
         title.setFont(title_font)
 
         subtitle = QLabel(
-            self.tr("Elija su usuario y escriba su contraseña para abrir el taller.")
+            self.tr("Choose your user and enter your password to open the workshop.")
         )
         subtitle.setWordWrap(True)
 
@@ -77,25 +77,22 @@ class LoginDialog(QDialog):
             for index, user in enumerate(list_login_users(session)):
                 label = user.nombre_completo or user.nombre_usuario
                 self._user_combo.addItem(label, user.nombre_usuario)
-                role = (
-                    self.tr("Administrador")
-                    if user.rol == UserRole.ADMINISTRADOR.value
-                    else self.tr("Técnico")
-                )
                 self._user_combo.setItemData(
-                    index, f"{user.nombre_usuario} · {role}", Qt.ItemDataRole.ToolTipRole
+                    index,
+                    f"{user.nombre_usuario} · {role_label(user.rol)}",
+                    Qt.ItemDataRole.ToolTipRole,
                 )
         self._user_combo.setCurrentIndex(0)
 
         self._password = QLineEdit()
-        self._password.setPlaceholderText(self.tr("Contraseña"))
+        self._password.setPlaceholderText(self.tr("Password"))
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
-        self._show_password = QCheckBox(self.tr("Mostrar contraseña"))
+        self._show_password = QCheckBox(self.tr("Show password"))
         self._show_password.toggled.connect(self._on_show_password)
 
         form = QFormLayout()
-        form.addRow(self.tr("Usuario"), self._user_combo)
-        form.addRow(self.tr("Contraseña"), self._password)
+        form.addRow(self.tr("User"), self._user_combo)
+        form.addRow(self.tr("Password"), self._password)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -103,10 +100,10 @@ class LoginDialog(QDialog):
 
         buttons = QDialogButtonBox()
         self._enter_button = buttons.addButton(
-            self.tr("Entrar"), QDialogButtonBox.ButtonRole.AcceptRole
+            self.tr("Sign in"), QDialogButtonBox.ButtonRole.AcceptRole
         )
         self._enter_button.setDefault(True)
-        buttons.addButton(self.tr("Salir"), QDialogButtonBox.ButtonRole.RejectRole)
+        buttons.addButton(self.tr("Quit"), QDialogButtonBox.ButtonRole.RejectRole)
         buttons.accepted.connect(self._attempt_login)
         buttons.rejected.connect(self.reject)
 
@@ -129,17 +126,17 @@ class LoginDialog(QDialog):
         username = self._user_combo.currentData()
         password = self._password.text()
         if not username:
-            self._message.setText(self.tr("No hay ningún usuario activo para entrar."))
+            self._message.setText(self.tr("There is no active user to sign in."))
             return
         if not password:
-            self._message.setText(self.tr("Escriba la contraseña."))
+            self._message.setText(self.tr("Enter your password."))
             return
         self.attempts += 1
         try:
             with self._session_factory() as session:
                 user = authenticate(session, username, password)
                 if user is None:
-                    self._message.setText(self.tr("Usuario o contraseña incorrectos."))
+                    self._message.setText(self.tr("Incorrect user or password."))
                     self._password.clear()
                     self._password.setFocus(Qt.FocusReason.OtherFocusReason)
                     return
@@ -147,7 +144,7 @@ class LoginDialog(QDialog):
                 session.commit()
                 self.user = current_user_of(user)
         except SQLAlchemyError:
-            self._message.setText(self.tr("No se pudo comprobar el acceso. Intente de nuevo."))
+            self._message.setText(self.tr("Could not check the credentials. Please try again."))
             return
         self.accept()
 
@@ -162,10 +159,10 @@ class FirstUserDialog(QDialog):
         self._session_factory = session_factory
         self.user: CurrentUser | None = None
 
-        self.setWindowTitle(self.tr("Crear el primer usuario"))
+        self.setWindowTitle(self.tr("Create the first user"))
         self.setMinimumWidth(460)
 
-        title = QLabel(self.tr("Bienvenido a %1").replace("%1", APP_CONFIG.app_name))
+        title = QLabel(self.tr("Welcome to %1").replace("%1", APP_CONFIG.app_name))
         title_font = title.font()
         title_font.setPointSize(title_font.pointSize() + 4)
         title_font.setBold(True)
@@ -173,27 +170,27 @@ class FirstUserDialog(QDialog):
 
         explanation = QLabel(
             self.tr(
-                "Todavía no hay ninguna cuenta en este equipo. Cree la del administrador del "
-                "taller: será la que aparezca en los documentos que imprima y la que podrá "
-                "añadir a los demás técnicos después, desde Archivo ▸ Usuarios."
+                "There is no account on this computer yet. Create the workshop administrator "
+                "account: it will appear on the documents you print and it can add the other "
+                "technicians later from File ▸ Users."
             )
         )
         explanation.setWordWrap(True)
 
         self._full_name = QLineEdit(DEFAULT_USER)
-        self._full_name.setPlaceholderText(self.tr("Nombre y apellido, como debe salir impreso"))
+        self._full_name.setPlaceholderText(self.tr("First and last name, as it should be printed"))
         self._username = QLineEdit()
-        self._username.setPlaceholderText(self.tr("Para entrar; sin espacios ni tildes"))
+        self._username.setPlaceholderText(self.tr("Used to sign in; no spaces or accents"))
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
         self._repeat = QLineEdit()
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
-        form.addRow(self.tr("Nombre completo"), self._full_name)
-        form.addRow(self.tr("Usuario"), self._username)
-        form.addRow(self.tr("Contraseña"), self._password)
-        form.addRow(self.tr("Repetir contraseña"), self._repeat)
+        form.addRow(self.tr("Full name"), self._full_name)
+        form.addRow(self.tr("User"), self._username)
+        form.addRow(self.tr("Password"), self._password)
+        form.addRow(self.tr("Repeat password"), self._repeat)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -216,7 +213,7 @@ class FirstUserDialog(QDialog):
 
     def _save(self) -> None:
         if self._password.text() != self._repeat.text():
-            self._message.setText(self.tr("Las dos contraseñas no coinciden."))
+            self._message.setText(self.tr("The two passwords do not match."))
             self._repeat.clear()
             self._repeat.setFocus(Qt.FocusReason.OtherFocusReason)
             return
@@ -234,7 +231,7 @@ class FirstUserDialog(QDialog):
             self._message.setText(str(exc))
             return
         except SQLAlchemyError:
-            self._message.setText(self.tr("No se pudo crear el usuario. Intente de nuevo."))
+            self._message.setText(self.tr("The user could not be created. Please try again."))
             return
         self.accept()
 
@@ -251,7 +248,7 @@ class ChangePasswordDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
-        self.setWindowTitle(self.tr("Cambiar mi contraseña"))
+        self.setWindowTitle(self.tr("Change my password"))
         self.setMinimumWidth(420)
 
         self._current = QLineEdit()
@@ -262,9 +259,9 @@ class ChangePasswordDialog(QDialog):
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
-        form.addRow(self.tr("Contraseña actual"), self._current)
-        form.addRow(self.tr("Contraseña nueva"), self._new)
-        form.addRow(self.tr("Repetir la nueva"), self._repeat)
+        form.addRow(self.tr("Current password"), self._current)
+        form.addRow(self.tr("New password"), self._new)
+        form.addRow(self.tr("Repeat the new password"), self._repeat)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -285,13 +282,13 @@ class ChangePasswordDialog(QDialog):
 
     def _save(self) -> None:
         if self._new.text() != self._repeat.text():
-            self._message.setText(self.tr("Las dos contraseñas nuevas no coinciden."))
+            self._message.setText(self.tr("The two new passwords do not match."))
             return
         try:
             with self._session_factory() as session:
                 user = session.get(User, self._user_id)
                 if user is None:
-                    self._message.setText(self.tr("El usuario ya no existe."))
+                    self._message.setText(self.tr("The user no longer exists."))
                     return
                 change_own_password(session, user, self._current.text(), self._new.text())
                 session.commit()
@@ -299,7 +296,7 @@ class ChangePasswordDialog(QDialog):
             self._message.setText(str(exc))
             return
         except SQLAlchemyError:
-            self._message.setText(self.tr("No se pudo cambiar la contraseña. Intente de nuevo."))
+            self._message.setText(self.tr("The password could not be changed. Please try again."))
             return
         self.accept()
 
