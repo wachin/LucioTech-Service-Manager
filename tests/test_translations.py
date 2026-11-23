@@ -60,6 +60,7 @@ from luciotech.services.settings_service import (
     set_language,
 )
 from luciotech.ui.labels import (
+    accessories_label,
     equipment_type_label,
     equipment_type_value,
     priority_label,
@@ -162,7 +163,9 @@ def _spanish_remains(texts: list[str]) -> list[tuple[str, str]]:
     return found
 
 
-def _english_order(session_factory: sessionmaker[Session]) -> int:
+def _english_order(
+    session_factory: sessionmaker[Session], accessories: str = "charger"
+) -> int:
     """Una orden con datos en inglés para imprimir los documentos sin ruido español."""
     with session_factory() as session:
         order = register_reception(
@@ -175,7 +178,7 @@ def _english_order(session_factory: sessionmaker[Session]) -> int:
                     modelo="Inspiron",
                     numero_serie="SN-1",
                     estado_fisico="Minor scratch",
-                    accesorios_recibidos="charger",
+                    accesorios_recibidos=accessories,
                 ),
                 new_customer=CustomerData(
                     nombre_completo="Jane Roe",
@@ -286,6 +289,51 @@ def test_default_texts_follow_the_chosen_language(
     finally:
         for translator in installed:
             qapp.installTranslator(translator)
+
+
+def test_stored_accessories_are_translated_only_when_displayed(
+    qapp: QApplication,
+    qtbot,
+    session_factory: sessionmaker[Session],
+    spanish_translators: list,
+) -> None:
+    """«Cargador, Otro» se guarda en español y se muestra traducido, sin migrar el dato."""
+    order_id = _english_order(session_factory, accessories="Cargador, Otro")
+    assert accessories_label("Cargador, Otro") == "Cargador, Otro"
+
+    installed = spanish_translators
+    for translator in installed:
+        qapp.removeTranslator(translator)
+    try:
+        assert accessories_label("Cargador, Otro") == "Charger, Other"
+        assert accessories_label("Batería (Dell XPS 13), Otro") == (
+            "Battery (Dell XPS 13), Other"
+        )
+
+        dialog = OrderDetailDialog(session_factory, order_id, "Jane Roe")
+        qtbot.addWidget(dialog)
+        detail_texts = " ".join(_visible_texts(dialog))
+        assert "Charger, Other" in detail_texts
+        assert "Cargador" not in detail_texts
+
+        with session_factory() as session:
+            order = session.get(documents.ServiceOrder, order_id)
+            assert order is not None
+            assert order.equipment.accesorios_recibidos == "Cargador, Otro"
+            receipt = documents.receipt_html(session, order)
+            technical = documents.technical_report_html(session, order)
+        for html in (receipt, technical):
+            assert "Charger, Other" in html
+            assert "Cargador" not in html
+    finally:
+        for translator in installed:
+            qapp.installTranslator(translator)
+
+    with session_factory() as session:
+        order = session.get(documents.ServiceOrder, order_id)
+        assert order is not None
+        assert order.equipment.accesorios_recibidos == "Cargador, Otro"
+        assert "Charger" not in documents.receipt_html(session, order)
 
 
 def test_the_language_is_stored_in_the_settings(

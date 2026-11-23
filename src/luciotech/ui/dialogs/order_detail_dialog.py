@@ -69,6 +69,7 @@ from luciotech.ui.dialogs.photographs_tab import PhotographsTab
 from luciotech.ui.documents import DocumentKind, document_label, print_order_document
 from luciotech.ui.formatting import format_datetime, format_money
 from luciotech.ui.labels import (
+    accessories_label,
     equipment_type_label,
     event_title_label,
     history_detail_label,
@@ -612,7 +613,10 @@ def _equipment_html(view: EquipmentView, reveal: bool) -> str:
         (QCoreApplication.translate("LucioTech", "Colour"), view.color or "-"),
         (QCoreApplication.translate("LucioTech", "Operating system"), view.sistema_operativo or "-"),
         (QCoreApplication.translate("LucioTech", "Password or PIN"), password),
-        (QCoreApplication.translate("LucioTech", "Accessories received"), view.accesorios_recibidos or "-"),
+        (
+            QCoreApplication.translate("LucioTech", "Accessories received"),
+            accessories_label(view.accesorios_recibidos) or "-",
+        ),
         (QCoreApplication.translate("LucioTech", "Physical condition"), view.estado_fisico or "-"),
         (QCoreApplication.translate("LucioTech", "Reported problem"), view.problema_reportado_cliente or "-"),
         (QCoreApplication.translate("LucioTech", "Intake notes"), view.observaciones_ingreso or "-"),

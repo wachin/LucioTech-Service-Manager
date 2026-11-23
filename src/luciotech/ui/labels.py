@@ -8,6 +8,7 @@ para que `QTranslator` los muestre en el idioma elegido.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 
 from PyQt6.QtCore import QCoreApplication
@@ -160,6 +161,25 @@ def equipment_type_label(value: str | None) -> str:
 def accessory_label(value: str | None) -> str:
     """Accesorio sugerido para mostrar; la selección se sigue guardando en español."""
     return _label(_ACCESSORIES, value)
+
+
+def accessories_label(value: str | None) -> str:
+    """Lista de accesorios guardada en español, traducida al mostrarla.
+
+    Solo se traduce el nombre conocido; el detalle entre paréntesis y los accesorios
+    escritos a mano se dejan tal como los guardó el usuario.
+    """
+    text = (value or "").strip()
+    if not text:
+        return ""
+    items: list[str] = []
+    for item in text.split(", "):
+        match = re.fullmatch(r"(.+?) \((.+)\)", item)
+        if match:
+            items.append(f"{accessory_label(match.group(1))} ({match.group(2)})")
+        else:
+            items.append(accessory_label(item))
+    return ", ".join(items)
 
 
 def equipment_type_value(label: str | None) -> str:

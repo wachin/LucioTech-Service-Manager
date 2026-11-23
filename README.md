@@ -3,7 +3,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
-[![Tests](https://img.shields.io/badge/tests-483%2F483-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-484%2F484-brightgreen.svg)](#testing)
 [![Status](https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg)](ROADMAP.md)
 
 A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
@@ -197,7 +197,7 @@ On Linux, `./run.sh` from the project folder does the same without activating an
 
 The program is written in English and ships with a Spanish translation; the language can be changed at **File ▸ Settings ▸ Language**. The change is saved in the database and takes effect the next time the application starts. If no catalogue exists for the chosen language, the program shows its English source texts.
 
-The default texts that ship with the program also follow the chosen language: the equipment types, the predefined phrases and the terms and warranty conditions. Equipment types are stored with their original value and translated only on screen, so existing orders, custom types and the accessories suggestion keep working when the language changes.
+The default texts that ship with the program also follow the chosen language: the equipment types, the predefined phrases and the terms and warranty conditions. Equipment types, accessories and the generated history notes are stored with their original value and translated only on screen, so existing orders, custom types and the accessories suggestion keep working when the language changes.
 
 Translations use the standard Qt workflow:
 
@@ -445,7 +445,7 @@ The suite uses a temporary SQLite database for each test and runs the Qt interfa
 
 ### Windows test status
 
-Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **483 of 483 tests pass** (about 1 minute). On Linux the same suite passes as well: **483 of 483** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 55 seconds).
+Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **484 of 484 tests pass** (about 1 minute). On Linux the same suite passes as well: **484 of 484** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 55 seconds).
 
 Previously one test failed on Windows only: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. The cause was not a product bug but a platform-dependent assumption in the test. The test resized the rich-text editor to a fixed 900 px and expected both toolbar rows to fit without horizontal scrolling. On Windows the toolbar font metrics are wider, so the action row needs **976 px** and legitimately scrolls at 900 px — its height (47 px, toolbar plus scrollbar) was therefore correct, and only the format row (657 px) returned to the compact 33 px. On Linux the same row is narrower than 900 px, so the assumption held.
 
@@ -456,7 +456,7 @@ Two changes were made:
 
 The compact height (33 px) and the expanded height (47 px) are unchanged; the fix only removes the stale-height risk and makes the test platform-independent.
 
-One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`483 passed`) is the one that counts.
+One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`484 passed`) is the one that counts.
 
 There is a real trap next to it, and it cost a segfault: `QPrintPreviewDialog` does **not** take ownership of the `QPrinter` it is given, it keeps a raw pointer. Passing a temporary (`QPrintPreviewDialog(_printer(), None)`) leaves the preview pointing at freed memory and the process dies later, far from the cause. The tests keep the printer in a variable, and `print_document` does the same.
 

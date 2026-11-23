@@ -38,6 +38,7 @@ from luciotech.services.settings_service import (
 from luciotech.services.totals_service import OrderTotals, order_totals
 from luciotech.ui.formatting import format_datetime, format_money
 from luciotech.ui.labels import (
+    accessories_label,
     budget_line_type_label,
     equipment_type_label,
     event_title_label,
@@ -161,7 +162,10 @@ def receipt_html(session: Session, order: ServiceOrder) -> str:
                 (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Colour"), equipment.color or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Operating system"), equipment.sistema_operativo or EMPTY),
-                (QCoreApplication.translate("LucioTech", "Accessories received"), equipment.accesorios_recibidos or EMPTY),
+                (
+                    QCoreApplication.translate("LucioTech", "Accessories received"),
+                    accessories_label(equipment.accesorios_recibidos) or EMPTY,
+                ),
                 (QCoreApplication.translate("LucioTech", "Physical condition"), equipment.estado_fisico or EMPTY),
             ],
         )
@@ -284,7 +288,10 @@ def technical_report_html(session: Session, order: ServiceOrder) -> str:
                 (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Physical condition on arrival"), equipment.estado_fisico or EMPTY),
-                (QCoreApplication.translate("LucioTech", "Accessories received"), equipment.accesorios_recibidos or EMPTY),
+                (
+                    QCoreApplication.translate("LucioTech", "Accessories received"),
+                    accessories_label(equipment.accesorios_recibidos) or EMPTY,
+                ),
             ],
         )
     )
