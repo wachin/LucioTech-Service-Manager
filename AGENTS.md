@@ -25,6 +25,9 @@ La especificación completa está en `ROADMAP.md`. Es la fuente de verdad para r
 # Activar el entorno (desde la raíz del proyecto)
 source .venv/bin/activate
 
+# Ejecutar la aplicación en Linux (usa el .venv y PYTHONPATH=src)
+./run.sh
+
 # Pruebas completas
 .venv/bin/python -m pytest
 

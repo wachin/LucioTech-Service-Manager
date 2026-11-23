@@ -3,7 +3,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
-[![Tests](https://img.shields.io/badge/tests-477%2F477%20on%20Windows-brightgreen.svg)](#windows-test-status)
+[![Tests](https://img.shields.io/badge/tests-477%2F477-brightgreen.svg)](#testing)
 [![Status](https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg)](ROADMAP.md)
 
 A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
@@ -17,6 +17,7 @@ The application works fully offline and does not send data to any external serve
 ## Contents
 
 - [Requirements](#requirements)
+- [Installation on Linux](#installation-on-linux)
 - [Installation on Windows](#installation-on-windows)
 - [Running the application](#running-the-application)
 - [Trying the interface](#trying-the-interface)
@@ -47,6 +48,46 @@ The application works fully offline and does not send data to any external serve
    ```
 
    You should see something like `Python 3.13.x`. If `py` is not found, reinstall Python with the launcher option enabled.
+
+## Installation on Linux
+
+Linux (Debian, Ubuntu, MX Linux or a derivative) is the primary target platform. Run these commands in a terminal from the project folder.
+
+### 1. System libraries for Qt 6
+
+PyQt6 brings its own Qt runtime inside the wheel, but the `xcb` platform plugin still needs a few system libraries. On Debian, Ubuntu or MX Linux:
+
+```bash
+sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1
+```
+
+`libxcb-cursor0` is the one missing most often: without it the application stops with `Could not load the Qt platform plugin "xcb"` even though PyQt6 imported fine.
+
+### 2. Create the virtual environment and install the dependencies
+
+You only need to do this the first time:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+Calling `.venv/bin/python` directly takes the place of activating the environment, so there is no `source` command to get wrong. `PyQt6` is around 75 MB, so this step may take a few minutes.
+
+### 3. Run it
+
+```bash
+./run.sh
+```
+
+`run.sh` uses the `.venv` interpreter, points `PYTHONPATH` at `src/` for that command only and starts the application, so nothing has to be installed into the environment beyond the requirements. The equivalent one-liner is:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m luciotech.main
+```
+
+If git did not keep the executable bit, run `chmod +x run.sh` once. To get the `luciotech-service-manager` command instead, install the package itself in editable mode once: `.venv/bin/python -m pip install -e .`.
 
 ## Installation on Windows
 
@@ -121,6 +162,8 @@ With the virtual environment activated, from the project folder:
 python -m luciotech.main
 ```
 
+On Linux, `./run.sh` from the project folder does the same without activating anything.
+
 > **Installed vs. run-without-installing — will my edits show up?**
 > Both paths start the program straight from the `src/` folder on disk, so any change you save in the code is picked up the next time you launch. Nothing is copied or frozen.
 > - **Activated + `pip install -e .`** (the steps above): the editable install registers a live link between the `luciotech` package and `src/`, and puts the `.venv` interpreter (with all the dependencies) first on your `PATH`. After that you can just run `python -m luciotech.main` from any prompt, with no `PYTHONPATH` needed.
@@ -166,7 +209,21 @@ The main window opens maximized and adapts to the screen size. If you make it sm
 
 ### Use a temporary database
 
-To keep test data apart from real data, start the application with a temporary database. On Windows, use a path inside the project or a temporary folder:
+To keep test data apart from real data, start the application with a temporary database.
+
+On Linux:
+
+```bash
+LUCIOTECH_DATABASE_URL=sqlite:////tmp/luciotech-prueba.sqlite3 ./run.sh
+```
+
+Delete `/tmp/luciotech-prueba.sqlite3` to start from scratch. With the virtual environment, the same command is:
+
+```bash
+LUCIOTECH_DATABASE_URL=sqlite:////tmp/luciotech-prueba.sqlite3 PYTHONPATH=src .venv/bin/python -m luciotech.main
+```
+
+On Windows, use a path inside the project or a temporary folder:
 
 ```bat
 :: cmd.exe
@@ -325,7 +382,7 @@ The suite uses a temporary SQLite database for each test and runs the Qt interfa
 
 ### Windows test status
 
-Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **477 of 477 tests pass** (about 1 minute).
+Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: **477 of 477 tests pass** (about 1 minute). On Linux the same suite passes as well: **477 of 477** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 55 seconds).
 
 Previously one test failed on Windows only: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. The cause was not a product bug but a platform-dependent assumption in the test. The test resized the rich-text editor to a fixed 900 px and expected both toolbar rows to fit without horizontal scrolling. On Windows the toolbar font metrics are wider, so the action row needs **976 px** and legitimately scrolls at 900 px — its height (47 px, toolbar plus scrollbar) was therefore correct, and only the format row (657 px) returned to the compact 33 px. On Linux the same row is narrower than 900 px, so the assumption held.
 
@@ -456,7 +513,9 @@ Passwords must be at least 8 characters. Usernames are stored in lowercase, so `
 
 ### Linux
 
-- **`source: no such file`**: the `source` command must be on its own line or joined with `&&` on the same line. Type the commands exactly as shown above.
+- **`Could not load the Qt platform plugin "xcb"`**: a system library is missing. Install them with `sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1` and run the application again.
+- **`./run.sh: Permission denied`**: the executable bit is missing. Run `chmod +x run.sh` once.
+- **`source: no such file`**: the `source` command must be on its own line or joined with `&&` on the same line. Type the commands exactly as shown above, or call `.venv/bin/python` directly and skip activation.
 - **`ModuleNotFoundError: No module named 'luciotech'`**: the package is not installed. Run `pip install -e .` with the virtual environment activated, or use `PYTHONPATH=src` as shown above.
 - **`ModuleNotFoundError` for another module**: check that the virtual environment is active; the prompt must show `(.venv)`.
 - **No window appears in a remote or headless session**: run with `QT_QPA_PLATFORM=offscreen` only for automated tests; no window is shown.
