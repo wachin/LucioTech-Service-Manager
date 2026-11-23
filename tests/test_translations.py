@@ -309,6 +309,9 @@ def test_stored_accessories_are_translated_only_when_displayed(
         assert accessories_label("Batería (Dell XPS 13), Otro") == (
             "Battery (Dell XPS 13), Other"
         )
+        assert accessories_label("Batería (Dell, 65W), Otro") == (
+            "Battery (Dell, 65W), Other"
+        )
 
         dialog = OrderDetailDialog(session_factory, order_id, "Jane Roe")
         qtbot.addWidget(dialog)

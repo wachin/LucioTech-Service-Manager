@@ -163,6 +163,29 @@ def accessory_label(value: str | None) -> str:
     return _label(_ACCESSORIES, value)
 
 
+def _split_accessories(text: str) -> list[str]:
+    """Separa la lista por las comas de primer nivel y respeta los paréntesis."""
+    items: list[str] = []
+    current: list[str] = []
+    depth = 0
+    for char in text:
+        if char == "(":
+            depth += 1
+        elif char == ")" and depth:
+            depth -= 1
+        if char == "," and depth == 0:
+            item = "".join(current).strip()
+            if item:
+                items.append(item)
+            current = []
+        else:
+            current.append(char)
+    item = "".join(current).strip()
+    if item:
+        items.append(item)
+    return items
+
+
 def accessories_label(value: str | None) -> str:
     """Lista de accesorios guardada en español, traducida al mostrarla.
 
@@ -173,7 +196,7 @@ def accessories_label(value: str | None) -> str:
     if not text:
         return ""
     items: list[str] = []
-    for item in text.split(", "):
+    for item in _split_accessories(text):
         match = re.fullmatch(r"(.+?) \((.+)\)", item)
         if match:
             items.append(f"{accessory_label(match.group(1))} ({match.group(2)})")
