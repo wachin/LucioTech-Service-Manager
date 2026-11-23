@@ -7,13 +7,51 @@ llegan traducidos y que el idioma elegido se guarda en la configuración.
 
 from __future__ import annotations
 
+import re
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 
 from PyQt6.QtCore import QCoreApplication
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QDialog,
+    QFontComboBox,
+    QListWidget,
+    QPlainTextEdit,
+    QTabWidget,
+    QTableWidget,
+    QTextEdit,
+    QWidget,
+)
 from sqlalchemy.orm import Session, sessionmaker
 
+from luciotech.database.enums import PhotoType, UserRole
+from luciotech.services.customer_service import CustomerData
+from luciotech.services.equipment_service import EquipmentData
 from luciotech.services.predefined_text_service import default_predefined_texts
+from luciotech.services.reception_service import ReceptionData, register_reception
+from luciotech.services.user_service import CurrentUser
+from luciotech.ui import documents
+from luciotech.ui.dialogs.budget_payments_tab import BudgetLineDialog, PaymentDialog
+from luciotech.ui.dialogs.customer_dialog import CustomerDialog
+from luciotech.ui.dialogs.document_chooser_dialog import (
+    DESCRIPTIONS,
+    DocumentChooserDialog,
+)
+from luciotech.ui.dialogs.equipment_dialog import EquipmentDialog
+from luciotech.ui.dialogs.find_replace_dialog import FindReplaceDialog
+from luciotech.ui.dialogs.login_dialog import FirstUserDialog, LoginDialog
+from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
+from luciotech.ui.dialogs.photographs_tab import PhotoEditDialog
+from luciotech.ui.dialogs.reception_dialog import ReceptionDialog
+from luciotech.ui.dialogs.settings_dialog import SettingsDialog
+from luciotech.ui.dialogs.users_dialog import UsersDialog
+from luciotech.ui.documents import DocumentKind, document_label
+from luciotech.ui.widgets.rich_text_editor import RichTextEditor
 from luciotech.services.settings_service import (
     default_service_terms,
     default_warranty_terms,
@@ -68,6 +106,92 @@ def test_installing_another_language_returns_the_loaded_files(qapp: QApplication
             qapp.removeTranslator(translator)
 
 
+def _visible_texts(root: QWidget) -> list[str]:
+    """Todo el texto que puede leer una persona en un diálogo: títulos, botones, tablas…"""
+    texts = [root.windowTitle()]
+    for action in root.findChildren(QAction):
+        texts.extend((action.text(), action.toolTip()))
+    for widget in root.findChildren(QWidget):
+        for attribute in ("text", "title", "placeholderText"):
+            getter = getattr(widget, attribute, None)
+            if callable(getter):
+                texts.append(getter())
+        if isinstance(widget, QComboBox) and not isinstance(widget, QFontComboBox):
+            # El selector de fuente lista nombres del sistema, no textos del programa.
+            texts.extend(widget.itemText(index) for index in range(widget.count()))
+        if isinstance(widget, QTabWidget):
+            texts.extend(
+                widget.tabText(index) for index in range(widget.count())
+            )
+        if isinstance(widget, QTableWidget):
+            header = widget.horizontalHeader()
+            texts.extend(
+                header.model().headerData(column, header.orientation())
+                for column in range(widget.columnCount())
+            )
+        if isinstance(widget, QListWidget):
+            texts.extend(widget.item(index).text() for index in range(widget.count()))
+        if isinstance(widget, (QPlainTextEdit, QTextEdit)):
+            texts.append(widget.toPlainText())
+    return [text for text in texts if isinstance(text, str) and text.strip()]
+
+
+def _spanish_phrases() -> list[str]:
+    """Traducciones del catálogo que se diferencian del texto inglés fuente."""
+    tree = ET.parse(Path(__file__).parents[1] / "translations" / "luciotech_es.ts")
+    phrases: set[str] = set()
+    for message in tree.iter("message"):
+        source = message.findtext("source") or ""
+        translation = message.findtext("translation") or ""
+        if translation.strip() and translation != source and len(translation.strip()) >= 3:
+            phrases.add(translation.strip())
+    return sorted(phrases, key=len, reverse=True)
+
+
+def _spanish_remains(texts: list[str]) -> list[tuple[str, str]]:
+    """Parejas (texto mostrado, frase española encontrada) que delatan una traducción."""
+    pattern = re.compile(
+        r"(?<!\w)(" + "|".join(re.escape(phrase) for phrase in _spanish_phrases()) + r")(?!\w)"
+    )
+    found: list[tuple[str, str]] = []
+    for text in texts:
+        # Los marcadores ({meses}, {dias}, {orden}) se comparten entre idiomas.
+        for match in pattern.finditer(re.sub(r"\{[^}]*\}", " ", text)):
+            found.append((text, match.group(1)))
+            break
+    return found
+
+
+def _english_order(session_factory: sessionmaker[Session]) -> int:
+    """Una orden con datos en inglés para imprimir los documentos sin ruido español."""
+    with session_factory() as session:
+        order = register_reception(
+            session,
+            ReceptionData(
+                equipment=EquipmentData(
+                    cliente_id=None,
+                    tipo_equipo="Laptop",
+                    marca="Dell",
+                    modelo="Inspiron",
+                    numero_serie="SN-1",
+                    estado_fisico="Minor scratch",
+                    accesorios_recibidos="charger",
+                ),
+                new_customer=CustomerData(
+                    nombre_completo="Jane Roe",
+                    numero_identificacion="1301206320",
+                    telefono_principal="0991234567",
+                ),
+                fecha_ingreso=datetime(2026, 3, 10, 9, 0),
+                tecnico_responsable="Jane Roe",
+                costo_diagnostico=Decimal("100"),
+                anticipo=Decimal("20"),
+            ),
+        )
+        session.commit()
+        return order.id
+
+
 def test_the_interface_speaks_english_without_the_spanish_catalogue(
     qapp: QApplication,
     qtbot,
@@ -90,6 +214,46 @@ def test_the_interface_speaks_english_without_the_spanish_catalogue(
         tabs = [window._tabs.tabText(index) for index in range(window._tabs.count())]
         assert tabs == ["Home", "Orders", "Customers", "Equipment", "Trash"]
         assert window.menuBar().actions()[0].text() == "&File"
+
+        order_id = _english_order(session_factory)
+        admin = CurrentUser(1, "admin", "Jane Roe", UserRole.ADMINISTRADOR.value)
+        dialogs: list[QDialog] = [
+            LoginDialog(session_factory),
+            FirstUserDialog(session_factory),
+            CustomerDialog(session_factory),
+            EquipmentDialog(session_factory),
+            ReceptionDialog(session_factory, "Jane Roe"),
+            SettingsDialog(session_factory),
+            DocumentChooserDialog(),
+            BudgetLineDialog(),
+            PaymentDialog(),
+            PhotoEditDialog("", PhotoType.EQUIPO_REPARADO.value),
+            FindReplaceDialog(RichTextEditor()),
+            OrderDetailDialog(session_factory, order_id, "Jane Roe"),
+            UsersDialog(session_factory, admin),
+        ]
+        for dialog in dialogs:
+            qtbot.addWidget(dialog)
+            leftovers = _spanish_remains(_visible_texts(dialog))
+            assert not leftovers, f"{type(dialog).__name__}: {leftovers[:1]}"
+
+        with session_factory() as session:
+            order = session.get(documents.ServiceOrder, order_id)
+            assert order is not None
+            htmls = {
+                "receipt": documents.receipt_html(session, order),
+                "budget": documents.budget_html(session, order),
+                "technical": documents.technical_report_html(session, order),
+                "delivery": documents.delivery_html(session, order),
+                "history": documents.history_html(session, order),
+            }
+        for name, html in htmls.items():
+            visible = re.sub(r"<[^>]+>", " ", html)
+            leftovers = _spanish_remains([visible])
+            assert not leftovers, f"{name}: {leftovers[:1]}"
+        doc_texts = [document_label(kind) for kind in DocumentKind]
+        doc_texts += [dialog.tr(DESCRIPTIONS[kind.value]) for kind in DocumentKind]
+        assert not _spanish_remains(doc_texts)
     finally:
         for translator in installed:
             qapp.installTranslator(translator)

@@ -44,7 +44,7 @@ from luciotech.services.reception_service import (
     register_reception,
 )
 from luciotech.services.settings_service import equipment_types
-from luciotech.ui.labels import equipment_type_label, priority_label
+from luciotech.ui.labels import accessory_label, equipment_type_label, priority_label
 from luciotech.ui.validation_texts import error_text, field_label
 
 NEW_CUSTOMER_KEY = -1
@@ -217,7 +217,7 @@ class ReceptionDialog(QDialog):
         self._accessory_checks = {}
         self._accessory_details = {}
         for row, name in enumerate(suggested_accessories(tipo)):
-            check = QCheckBox(name)
+            check = QCheckBox(accessory_label(name))
             detail = QLineEdit()
             detail.setPlaceholderText(self.tr("Model or details"))
             detail.setEnabled(False)

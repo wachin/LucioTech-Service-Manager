@@ -98,6 +98,34 @@ _EQUIPMENT_TYPES: dict[str, str] = {
     "Otro": "Other",
 }
 
+_ACCESSORIES: dict[str, str] = {
+    "Fuente de alimentación": "Power supply",
+    "Adaptador": "Adapter",
+    "Cable": "Cable",
+    "Disco duro": "Hard drive",
+    "Control remoto": "Remote control",
+    "Mouse": "Mouse",
+    "Antena": "Antenna",
+    "Cargador": "Charger",
+    "Batería": "Battery",
+    "Bolso": "Bag",
+    "Memoria USB": "USB drive",
+    "Cable de corriente": "Power cable",
+    "Monitor": "Monitor",
+    "Teclado": "Keyboard",
+    "Parlantes": "Speakers",
+    "Adaptador Wi-Fi": "Wi-Fi adapter",
+    "Cable USB": "USB cable",
+    "Cartuchos": "Cartridges",
+    "Botellas de tinta": "Ink bottles",
+    "Bandejas": "Trays",
+    "Otro": "Other",
+}
+
+_GENERATED_DETAILS: dict[str, str] = {
+    "Orden creada": "Order created",
+}
+
 _EVENT_TITLES: dict[str, str] = {
     EventType.LLAMADA_CLIENTE.value: "Call to customer",
     EventType.MENSAJE_ENVIADO.value: "Message sent",
@@ -127,6 +155,11 @@ def _label(mapping: Mapping[str, str], value: str | None) -> str:
 def equipment_type_label(value: str | None) -> str:
     """Tipo de equipo para mostrar; el valor guardado sigue siendo el original."""
     return _label(_EQUIPMENT_TYPES, value)
+
+
+def accessory_label(value: str | None) -> str:
+    """Accesorio sugerido para mostrar; la selección se sigue guardando en español."""
+    return _label(_ACCESSORIES, value)
 
 
 def equipment_type_value(label: str | None) -> str:
@@ -186,8 +219,11 @@ def _t_source(source: str) -> str:
 
 
 def history_detail_label(detail: str) -> str:
-    """Traduce los estados que aparecen en el detalle de un cambio de estado."""
+    """Traduce los estados y los comentarios que genera el programa en el historial."""
     text = detail
+    for value, source in _GENERATED_DETAILS.items():
+        if value in text:
+            text = text.replace(value, QCoreApplication.translate("LucioTech", source))
     for value, source in _STATES.items():
         if value in text:
             text = text.replace(value, QCoreApplication.translate("LucioTech", source))
@@ -260,3 +296,22 @@ def _catalog() -> None:
     QCoreApplication.translate("LucioTech", "Monitor")
     QCoreApplication.translate("LucioTech", "Router")
     QCoreApplication.translate("LucioTech", "Power supply")
+    QCoreApplication.translate("LucioTech", "Power supply")
+    QCoreApplication.translate("LucioTech", "Adapter")
+    QCoreApplication.translate("LucioTech", "Cable")
+    QCoreApplication.translate("LucioTech", "Hard drive")
+    QCoreApplication.translate("LucioTech", "Remote control")
+    QCoreApplication.translate("LucioTech", "Antenna")
+    QCoreApplication.translate("LucioTech", "Charger")
+    QCoreApplication.translate("LucioTech", "Battery")
+    QCoreApplication.translate("LucioTech", "Bag")
+    QCoreApplication.translate("LucioTech", "USB drive")
+    QCoreApplication.translate("LucioTech", "Power cable")
+    QCoreApplication.translate("LucioTech", "Keyboard")
+    QCoreApplication.translate("LucioTech", "Speakers")
+    QCoreApplication.translate("LucioTech", "Wi-Fi adapter")
+    QCoreApplication.translate("LucioTech", "USB cable")
+    QCoreApplication.translate("LucioTech", "Cartridges")
+    QCoreApplication.translate("LucioTech", "Ink bottles")
+    QCoreApplication.translate("LucioTech", "Trays")
+    QCoreApplication.translate("LucioTech", "Order created")

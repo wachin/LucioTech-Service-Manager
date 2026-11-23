@@ -550,9 +550,10 @@ def _header(session: Session, order: ServiceOrder, title: DocumentKind | str) ->
     contact = workshop_contact(session)
     if contact:
         parts.append(f'<p style="margin: 0;">{_escape(contact)}</p>')
+    title_text = document_label(title) if isinstance(title, DocumentKind) else str(title)
     parts.append(
         '<p style="margin: 10pt 0 4pt 0; font-size: 12pt;">'
-        f"<b>{_escape(str(title))}</b> &nbsp;&nbsp; {_escape(order.numero_orden)}</p>"
+        f"<b>{_escape(title_text)}</b> &nbsp;&nbsp; {_escape(order.numero_orden)}</p>"
     )
     return "".join(parts)
 
