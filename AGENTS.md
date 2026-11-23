@@ -28,6 +28,9 @@ source .venv/bin/activate
 # Ejecutar la aplicación en Linux (usa el .venv y PYTHONPATH=src)
 ./run.sh
 
+# Ejecutar con los paquetes de Debian/Ubuntu, sin .venv (Python del sistema)
+PYTHONPATH=src python3 -m luciotech.main
+
 # Pruebas completas
 .venv/bin/python -m pytest
 

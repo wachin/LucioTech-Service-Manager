@@ -51,7 +51,7 @@ The application works fully offline and does not send data to any external serve
 
 ## Installation on Linux
 
-Linux (Debian, Ubuntu, MX Linux or a derivative) is the primary target platform. Run these commands in a terminal from the project folder.
+Linux (Debian, Ubuntu, MX Linux or a derivative) is the primary target platform. Run these commands in a terminal from the project folder. There are two ways to install it: the distribution packages (Option A, no virtual environment) or a virtual environment with `pip` (Option B).
 
 ### 1. System libraries for Qt 6
 
@@ -63,7 +63,31 @@ sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1
 
 `libxcb-cursor0` is the one missing most often: without it the application stops with `Could not load the Qt platform plugin "xcb"` even though PyQt6 imported fine.
 
-### 2. Create the virtual environment and install the dependencies
+### 2. Option A — distribution packages (no virtual environment)
+
+Debian 13 (trixie), Ubuntu 25.04 and newer ship the four dependencies as distribution packages. Install them with `apt`:
+
+```bash
+sudo apt install python3-pyqt6 python3-sqlalchemy python3-alembic python3-reportlab qt6-translations-l10n
+```
+
+`qt6-translations-l10n` is optional: it brings the Spanish texts of Qt's own dialogs (print preview, file dialogs and warnings). Then start the program from the project folder:
+
+```bash
+PYTHONPATH=src python3 -m luciotech.main
+```
+
+No virtual environment, no activation and nothing installed with `pip`: `PYTHONPATH` points that single command at `src/`, and the modules come from the packages in `/usr/lib/python3/dist-packages`, so `sudo apt upgrade` keeps the application up to date together with the rest of the system.
+
+The application needs **SQLAlchemy 2.0 or newer**. Debian 13 and Ubuntu 25.04 or newer ship 2.0.x, but Debian 12 (bookworm) and Ubuntu 24.04 LTS still ship 1.4.50, where the application does not start. Check it with:
+
+```bash
+python3 -c "import sqlalchemy; print(sqlalchemy.__version__)"
+```
+
+If the answer starts with `1.4`, use Option B.
+
+### 3. Option B — virtual environment
 
 You only need to do this the first time:
 
@@ -75,7 +99,7 @@ python3 -m venv .venv
 
 Calling `.venv/bin/python` directly takes the place of activating the environment, so there is no `source` command to get wrong. `PyQt6` is around 75 MB, so this step may take a few minutes.
 
-### 3. Run it
+### 4. Run it with the virtual environment
 
 ```bash
 ./run.sh
@@ -162,7 +186,7 @@ With the virtual environment activated, from the project folder:
 python -m luciotech.main
 ```
 
-On Linux, `./run.sh` from the project folder does the same without activating anything.
+On Linux, `./run.sh` from the project folder does the same without activating anything. With the distribution packages of Option A there is no `.venv` to use: `PYTHONPATH=src python3 -m luciotech.main`, as shown in [Installation on Linux](#installation-on-linux).
 
 > **Installed vs. run-without-installing — will my edits show up?**
 > Both paths start the program straight from the `src/` folder on disk, so any change you save in the code is picked up the next time you launch. Nothing is copied or frozen.
@@ -221,6 +245,12 @@ Delete `/tmp/luciotech-prueba.sqlite3` to start from scratch. With the virtual e
 
 ```bash
 LUCIOTECH_DATABASE_URL=sqlite:////tmp/luciotech-prueba.sqlite3 PYTHONPATH=src .venv/bin/python -m luciotech.main
+```
+
+With the distribution packages (Option A), it is:
+
+```bash
+LUCIOTECH_DATABASE_URL=sqlite:////tmp/luciotech-prueba.sqlite3 PYTHONPATH=src python3 -m luciotech.main
 ```
 
 On Windows, use a path inside the project or a temporary folder:
@@ -517,6 +547,8 @@ Passwords must be at least 8 characters. Usernames are stored in lowercase, so `
 - **`./run.sh: Permission denied`**: the executable bit is missing. Run `chmod +x run.sh` once.
 - **`source: no such file`**: the `source` command must be on its own line or joined with `&&` on the same line. Type the commands exactly as shown above, or call `.venv/bin/python` directly and skip activation.
 - **`ModuleNotFoundError: No module named 'luciotech'`**: the package is not installed. Run `pip install -e .` with the virtual environment activated, or use `PYTHONPATH=src` as shown above.
+- **`ModuleNotFoundError: No module named 'PyQt6'`** (or `sqlalchemy`, `alembic`, `reportlab`) when using `python3 -m luciotech.main` directly: the system Python does not have the packages. Install them with `sudo apt install python3-pyqt6 python3-sqlalchemy python3-alembic python3-reportlab`, or use the `.venv` interpreter instead.
+- **`AttributeError` on `mapped_column` or a SQLAlchemy 1.4 deprecation warning at startup**: the distribution ships SQLAlchemy 1.4 (Debian 12, Ubuntu 24.04 LTS). Use Option B, the virtual environment.
 - **`ModuleNotFoundError` for another module**: check that the virtual environment is active; the prompt must show `(.venv)`.
 - **No window appears in a remote or headless session**: run with `QT_QPA_PLATFORM=offscreen` only for automated tests; no window is shown.
 
