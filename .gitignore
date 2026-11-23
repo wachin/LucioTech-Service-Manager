@@ -53,3 +53,7 @@ packaging/**/dist/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Personal
+8vo/
+
