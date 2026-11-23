@@ -39,6 +39,7 @@ from luciotech.services.totals_service import OrderTotals, order_totals
 from luciotech.ui.formatting import format_datetime, format_money
 from luciotech.ui.labels import (
     budget_line_type_label,
+    equipment_type_label,
     event_title_label,
     history_detail_label,
     payment_method_label,
@@ -152,7 +153,10 @@ def receipt_html(session: Session, order: ServiceOrder) -> str:
         _section(
             QCoreApplication.translate("LucioTech", "Equipment received"),
             [
-                (QCoreApplication.translate("LucioTech", "Type"), equipment.tipo_equipo),
+                (
+                    QCoreApplication.translate("LucioTech", "Type"),
+                    equipment_type_label(equipment.tipo_equipo),
+                ),
                 (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Colour"), equipment.color or EMPTY),
@@ -206,7 +210,10 @@ def budget_html(session: Session, order: ServiceOrder) -> str:
         _section(
             QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                (QCoreApplication.translate("LucioTech", "Type"), order.equipment.tipo_equipo),
+                (
+                    QCoreApplication.translate("LucioTech", "Type"),
+                    equipment_type_label(order.equipment.tipo_equipo),
+                ),
                 (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Serial number"), order.equipment.numero_serie or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Reported problem"), order.problema_reportado or EMPTY),
@@ -270,7 +277,10 @@ def technical_report_html(session: Session, order: ServiceOrder) -> str:
         _section(
             QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                (QCoreApplication.translate("LucioTech", "Type"), equipment.tipo_equipo),
+                (
+                    QCoreApplication.translate("LucioTech", "Type"),
+                    equipment_type_label(equipment.tipo_equipo),
+                ),
                 (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Physical condition on arrival"), equipment.estado_fisico or EMPTY),
@@ -338,7 +348,10 @@ def delivery_html(session: Session, order: ServiceOrder) -> str:
         _section(
             QCoreApplication.translate("LucioTech", "Equipment"),
             [
-                (QCoreApplication.translate("LucioTech", "Type"), order.equipment.tipo_equipo),
+                (
+                    QCoreApplication.translate("LucioTech", "Type"),
+                    equipment_type_label(order.equipment.tipo_equipo),
+                ),
                 (QCoreApplication.translate("LucioTech", "Brand and model"), _brand_model(order) or EMPTY),
                 (QCoreApplication.translate("LucioTech", "Serial number"), order.equipment.numero_serie or EMPTY),
             ],
@@ -377,7 +390,11 @@ def history_html(session: Session, order: ServiceOrder) -> str:
             QCoreApplication.translate("LucioTech", "Order"),
             [
                 (QCoreApplication.translate("LucioTech", "Customer"), order.customer.nombre_completo),
-                (QCoreApplication.translate("LucioTech", "Equipment"), f"{order.equipment.tipo_equipo} {_brand_model(order)}".strip()),
+                (
+                    QCoreApplication.translate("LucioTech", "Equipment"),
+                    f"{equipment_type_label(order.equipment.tipo_equipo)} "
+                    f"{_brand_model(order)}".strip(),
+                ),
                 (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),
                 (QCoreApplication.translate("LucioTech", "Current status"), state_label(order.estado)),
             ],

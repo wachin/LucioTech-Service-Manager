@@ -29,6 +29,7 @@ from luciotech.services.equipment_service import (
     save_equipment,
 )
 from luciotech.services.settings_service import equipment_types
+from luciotech.ui.labels import equipment_type_label
 from luciotech.ui.validation_texts import error_text, field_label
 
 
@@ -108,7 +109,8 @@ class EquipmentDialog(QDialog):
         with self._session_factory() as session:
             for customer in CustomerRepository(session).list_all():
                 self._customer.addItem(customer.nombre_completo, customer.id)
-            self._type.addItems(equipment_types(session))
+            for tipo in equipment_types(session):
+                self._type.addItem(equipment_type_label(tipo), tipo)
 
     def _load(self, equipment_id: int) -> None:
         with self._session_factory() as session:
@@ -134,9 +136,9 @@ class EquipmentDialog(QDialog):
             self._customer.setCurrentIndex(index)
 
     def _select_or_add_type(self, tipo: str) -> None:
-        index = self._type.findText(tipo)
+        index = self._type.findData(tipo)
         if index < 0:
-            self._type.addItem(tipo)
+            self._type.addItem(equipment_type_label(tipo), tipo)
             index = self._type.count() - 1
         self._type.setCurrentIndex(index)
 
@@ -149,7 +151,7 @@ class EquipmentDialog(QDialog):
         customer_id = self._customer.currentData()
         return EquipmentData(
             cliente_id=int(customer_id) if customer_id is not None else None,
-            tipo_equipo=self._type.currentText(),
+            tipo_equipo=self._type.currentData(),
             marca=self._brand.text(),
             modelo=self._model.text(),
             numero_serie=self._serial.text(),

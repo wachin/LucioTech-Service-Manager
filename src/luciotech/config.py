@@ -55,37 +55,39 @@ DEFAULT_PAGE_MARGIN_MM = 15
 MIN_PAGE_MARGIN_MM = 5
 MAX_PAGE_MARGIN_MM = 40
 
-# El marcador {meses} se sustituye por el plazo configurado al imprimir el comprobante.
+# English is the source language: these defaults are translated when they are shown (§21).
+# The {meses} placeholder is replaced by the configured deadline when printing.
 DEFAULT_SERVICE_TERMS = (
-    "1. La reparación se inicia solo con el presupuesto aprobado por el cliente.\n"
-    "2. El equipo reparado queda con garantía sobre el trabajo realizado.\n"
-    "3. Si el equipo no es retirado dentro de {meses} meses contados desde la fecha de ingreso, "
-    "se considerará abandonado y el taller podrá darlo de baja y disponer de él."
+    "1. The repair starts only with the budget approved by the customer.\n"
+    "2. The repaired equipment is covered by a warranty on the work performed.\n"
+    "3. If the equipment is not collected within {meses} months from the date of receipt, it "
+    "will be considered abandoned and the workshop may dispose of it."
 )
 
 # Días de garantía que recibe cada orden nueva; se cambia en la pantalla de Configuración.
 DEFAULT_WARRANTY_DAYS = 30
 
-# Los marcadores {dias}, {orden} y {meses} se sustituyen al imprimir (§13.1.2 y §13.1.4).
+# The {dias}, {orden} and {meses} placeholders are replaced when printing (§13.1.2 and §13.1.4).
 DEFAULT_WARRANTY_TERMS = (
-    "1. La garantía cubre el trabajo realizado y los repuestos facturados durante {dias} días "
-    "contados desde la entrega del equipo.\n"
-    "2. No cubre daños por golpes, líquidos, descargas eléctricas, software instalado por el "
-    "cliente ni intervenciones de terceros.\n"
-    "3. Para hacer valer la garantía, el cliente debe presentar este documento con la orden "
-    "{orden}."
+    "1. The warranty covers the work performed and the parts invoiced for {dias} days from "
+    "the delivery of the equipment.\n"
+    "2. It does not cover damage from knocks, liquids, electrical surges, software installed "
+    "by the customer or third-party work.\n"
+    "3. To claim the warranty, the customer must present this document with order {orden}."
 )
 
 DEFAULT_PREDEFINED_TEXTS: tuple[str, ...] = (
-    "Se realizó inspección visual del equipo.",
-    "Se realizaron pruebas de encendido.",
-    "Se verificó el estado del almacenamiento.",
-    "Se verificó la memoria RAM.",
-    "Se recomienda realizar mantenimiento preventivo.",
-    "Se recomienda reemplazar el componente defectuoso.",
-    "El equipo fue probado y funciona correctamente.",
+    "A visual inspection of the equipment was performed.",
+    "Power-on tests were performed.",
+    "The storage condition was checked.",
+    "The RAM was checked.",
+    "Preventive maintenance is recommended.",
+    "Replacing the faulty component is recommended.",
+    "The equipment was tested and works correctly.",
 )
 
+# Los tipos de equipo son datos editables del taller y se guardan tal cual; la interfaz los
+# muestra traducidos con `ui/labels.py`.
 DEFAULT_EQUIPMENT_TYPES: tuple[str, ...] = (
     "Laptop",
     "Computadora de escritorio",

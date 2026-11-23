@@ -229,10 +229,20 @@ def set_page_margin_mm(session: Session, margin: int) -> None:
     set_value(session, KEY_PAGE_MARGIN_MM, str(int(margin)))
 
 
+def default_service_terms() -> str:
+    """Términos por defecto en el idioma elegido (el inglés es el texto fuente)."""
+    return QCoreApplication.translate("LucioTech", DEFAULT_SERVICE_TERMS)
+
+
+def default_warranty_terms() -> str:
+    """Condiciones de garantía por defecto en el idioma elegido."""
+    return QCoreApplication.translate("LucioTech", DEFAULT_WARRANTY_TERMS)
+
+
 def service_terms(session: Session) -> str:
     """Términos y condiciones tal como se guardaron, con `{meses}` sin sustituir."""
     text = (get_value(session, KEY_SERVICE_TERMS) or "").strip()
-    return text or DEFAULT_SERVICE_TERMS
+    return text or default_service_terms()
 
 
 def service_conditions(session: Session) -> str:
@@ -251,7 +261,7 @@ def warranty_terms(session: Session) -> str:
     hace volver a los valores por defecto.
     """
     raw = get_value(session, KEY_WARRANTY_TERMS)
-    return DEFAULT_WARRANTY_TERMS if raw is None else raw.strip()
+    return default_warranty_terms() if raw is None else raw.strip()
 
 
 def set_warranty_terms(session: Session, text: str) -> None:
@@ -304,6 +314,26 @@ def warranty_conditions(session: Session, order: ServiceOrder) -> str:
         text.replace("{dias}", str(days))
         .replace("{orden}", order.numero_orden)
         .replace("{meses}", str(retention_months(session)))
+    )
+
+
+def _catalog() -> None:
+    """Mantiene los textos por defecto en el catálogo de pylupdate6; no se ejecuta nunca."""
+    QCoreApplication.translate(
+        "LucioTech",
+        "1. The repair starts only with the budget approved by the customer.\n"
+        "2. The repaired equipment is covered by a warranty on the work performed.\n"
+        "3. If the equipment is not collected within {meses} months from the date of receipt, "
+        "it will be considered abandoned and the workshop may dispose of it.",
+    )
+    QCoreApplication.translate(
+        "LucioTech",
+        "1. The warranty covers the work performed and the parts invoiced for {dias} days "
+        "from the delivery of the equipment.\n"
+        "2. It does not cover damage from knocks, liquids, electrical surges, software "
+        "installed by the customer or third-party work.\n"
+        "3. To claim the warranty, the customer must present this document with order "
+        "{orden}.",
     )
 
 

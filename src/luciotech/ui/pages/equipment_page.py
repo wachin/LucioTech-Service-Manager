@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.database.repositories import CustomerRepository, EquipmentRepository
 from luciotech.ui.dialogs.equipment_dialog import EquipmentDialog
+from luciotech.ui.labels import equipment_type_label
 
 
 class EquipmentPage(QWidget):
@@ -70,7 +71,7 @@ class EquipmentPage(QWidget):
                     equipment.id,
                     [
                         equipment.customer.nombre_completo,
-                        equipment.tipo_equipo,
+                        equipment_type_label(equipment.tipo_equipo),
                         equipment.marca or "",
                         equipment.modelo or "",
                         equipment.numero_serie or "",

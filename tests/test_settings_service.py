@@ -19,7 +19,11 @@ from luciotech.services import settings_service as settings
 from luciotech.services.customer_service import CustomerData
 from luciotech.services.equipment_service import EquipmentData
 from luciotech.services.reception_service import ReceptionData, register_reception
-from luciotech.services.settings_service import TaxSettings
+from luciotech.services.settings_service import (
+    TaxSettings,
+    default_service_terms,
+    default_warranty_terms,
+)
 
 ENTRY = datetime(2026, 3, 10, 9, 0)
 
@@ -44,7 +48,7 @@ def _order(session: Session) -> ServiceOrder:
 
 
 def test_service_terms_keep_the_marker_until_the_document_is_printed(session: Session) -> None:
-    assert settings.service_terms(session) == DEFAULT_SERVICE_TERMS
+    assert settings.service_terms(session) == default_service_terms()
     assert "{meses}" in settings.service_terms(session)
     assert "dentro de 6 meses" in settings.service_conditions(session)
 
@@ -58,14 +62,14 @@ def test_retention_months_change_every_printed_condition(session: Session) -> No
 
 def test_an_empty_service_terms_value_falls_back_to_the_default(session: Session) -> None:
     settings.set_service_terms(session, "   ")
-    assert settings.service_conditions(session) == DEFAULT_SERVICE_TERMS.replace("{meses}", "6")
+    assert settings.service_conditions(session) == default_service_terms().replace("{meses}", "6")
 
 
 # Texto de garantía
 
 
 def test_warranty_terms_fall_back_to_the_default_text(session: Session) -> None:
-    assert settings.warranty_terms(session) == DEFAULT_WARRANTY_TERMS
+    assert settings.warranty_terms(session) == default_warranty_terms()
     assert "{dias}" in settings.warranty_terms(session)
 
 

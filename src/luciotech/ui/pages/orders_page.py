@@ -29,7 +29,7 @@ from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
 from luciotech.ui.dialogs.reception_dialog import ReceptionDialog
 from luciotech.ui.documents import print_order_receipt
 from luciotech.ui.formatting import format_datetime, format_money
-from luciotech.ui.labels import priority_label, state_label
+from luciotech.ui.labels import equipment_type_label, priority_label, state_label
 
 # El nombre del técnico sale de la sesión abierta (`MainWindow`), no de una constante: es el
 # que queda en el historial y el que se imprime. `DEFAULT_USER` solo cubre las llamadas
@@ -121,7 +121,7 @@ class OrdersPage(QWidget):
         self._equipment_type.clear()
         self._equipment_type.addItem(self.tr("All types"), ANY)
         for tipo in types:
-            self._equipment_type.addItem(tipo, tipo)
+            self._equipment_type.addItem(equipment_type_label(tipo), tipo)
 
     def current_filter(self) -> OrderFilter:
         return OrderFilter(
@@ -141,7 +141,7 @@ class OrdersPage(QWidget):
                     order.numero_orden,
                     format_datetime(order.fecha_ingreso),
                     order.customer.nombre_completo,
-                    order.equipment.tipo_equipo,
+                    equipment_type_label(order.equipment.tipo_equipo),
                     " ".join(part for part in (order.equipment.marca, order.equipment.modelo) if part),
                     state_label(order.estado),
                     priority_label(order.prioridad),

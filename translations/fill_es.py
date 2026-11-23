@@ -680,6 +680,54 @@ EXTRA: dict[str, str] = {
     "Every status change, note and payment of the order in chronological order.": (
         "Todos los cambios de estado, notas y pagos de la orden en orden cronológico."
     ),
+    "Laptop": "Laptop",
+    "DVR": "DVR",
+    "NVR": "NVR",
+    "Monitor": "Monitor",
+    "Router": "Router",
+    "Desktop computer": "Computadora de escritorio",
+    "Printer": "Impresora",
+    "Security camera": "Cámara de seguridad",
+    "Power supply": "Fuente de poder",
+    "The list of predefined texts cannot be empty.": (
+        "La lista de textos predefinidos no puede quedar vacía."
+    ),
+    "1. The repair starts only with the budget approved by the customer.\n"
+    "2. The repaired equipment is covered by a warranty on the work performed.\n"
+    "3. If the equipment is not collected within {meses} months from the date of receipt, it "
+    "will be considered abandoned and the workshop may dispose of it.": (
+        "1. La reparación se inicia solo con el presupuesto aprobado por el cliente.\n"
+        "2. El equipo reparado queda con garantía sobre el trabajo realizado.\n"
+        "3. Si el equipo no es retirado dentro de {meses} meses contados desde la fecha de "
+        "ingreso, se considerará abandonado y el taller podrá darlo de baja y disponer de él."
+    ),
+    "1. The warranty covers the work performed and the parts invoiced for {dias} days from "
+    "the delivery of the equipment.\n"
+    "2. It does not cover damage from knocks, liquids, electrical surges, software installed "
+    "by the customer or third-party work.\n"
+    "3. To claim the warranty, the customer must present this document with order {orden}.": (
+        "1. La garantía cubre el trabajo realizado y los repuestos facturados durante {dias} "
+        "días contados desde la entrega del equipo.\n"
+        "2. No cubre daños por golpes, líquidos, descargas eléctricas, software instalado por "
+        "el cliente ni intervenciones de terceros.\n"
+        "3. Para hacer valer la garantía, el cliente debe presentar este documento con la "
+        "orden {orden}."
+    ),
+    "A visual inspection of the equipment was performed.": (
+        "Se realizó inspección visual del equipo."
+    ),
+    "Power-on tests were performed.": "Se realizaron pruebas de encendido.",
+    "The storage condition was checked.": "Se verificó el estado del almacenamiento.",
+    "The RAM was checked.": "Se verificó la memoria RAM.",
+    "Preventive maintenance is recommended.": (
+        "Se recomienda realizar mantenimiento preventivo."
+    ),
+    "Replacing the faulty component is recommended.": (
+        "Se recomienda reemplazar el componente defectuoso."
+    ),
+    "The equipment was tested and works correctly.": (
+        "El equipo fue probado y funciona correctamente."
+    ),
 }
 
 MISSING = object()

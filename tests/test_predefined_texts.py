@@ -6,6 +6,7 @@ import pytest
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import DEFAULT_PREDEFINED_TEXTS
+from luciotech.services.predefined_text_service import default_predefined_texts
 from luciotech.services.predefined_text_service import (
     predefined_texts,
     save_predefined_texts,
@@ -14,9 +15,9 @@ from luciotech.services.predefined_text_service import (
 
 def test_defaults_come_from_the_specification(session_factory: sessionmaker[Session]) -> None:
     with session_factory() as session:
-        assert predefined_texts(session) == list(DEFAULT_PREDEFINED_TEXTS)
+        assert predefined_texts(session) == default_predefined_texts()
     assert len(DEFAULT_PREDEFINED_TEXTS) == 7
-    assert DEFAULT_PREDEFINED_TEXTS[0] == "Se realizó inspección visual del equipo."
+    assert default_predefined_texts()[0] == "Se realizó inspección visual del equipo."
 
 
 def test_custom_list_is_saved_and_reloaded(session_factory: sessionmaker[Session]) -> None:

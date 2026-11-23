@@ -8,13 +8,10 @@ from PyQt6.QtWidgets import QDialog, QLabel
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
-from luciotech.config import (
-    DEFAULT_SERVICE_TERMS,
-    DEFAULT_WARRANTY_DAYS,
-    DEFAULT_WARRANTY_TERMS,
-)
+from luciotech.config import DEFAULT_WARRANTY_DAYS
 from luciotech.database.enums import UserRole
 from luciotech.services import settings_service as settings
+from luciotech.services.settings_service import default_service_terms, default_warranty_terms
 from luciotech.services.user_service import CurrentUser
 from luciotech.ui.dialogs.settings_dialog import (
     TAB_DOCUMENTOS,
@@ -44,8 +41,8 @@ def test_settings_dialog_has_the_three_tabs_with_the_default_legal_texts(
     assert [
         dialog._tabs.tabText(index) for index in range(dialog._tabs.count())
     ] == [TAB_TALLER, TAB_DOCUMENTOS, TAB_LEGAL]
-    assert dialog._service_terms.toPlainText() == DEFAULT_SERVICE_TERMS
-    assert dialog._warranty_terms.toPlainText() == DEFAULT_WARRANTY_TERMS
+    assert dialog._service_terms.toPlainText() == default_service_terms()
+    assert dialog._warranty_terms.toPlainText() == default_warranty_terms()
     assert dialog._warranty_days.value() == DEFAULT_WARRANTY_DAYS
 
 
@@ -145,7 +142,7 @@ def test_cancel_does_not_touch_the_database(
     dialog.reject()
 
     with session_factory() as session:
-        assert settings.service_terms(session) == DEFAULT_SERVICE_TERMS
+        assert settings.service_terms(session) == default_service_terms()
 
 
 def test_restore_buttons_put_back_the_default_legal_texts(
@@ -158,8 +155,8 @@ def test_restore_buttons_put_back_the_default_legal_texts(
     dialog._reset_terms.click()
     dialog._reset_warranty.click()
 
-    assert dialog._service_terms.toPlainText() == DEFAULT_SERVICE_TERMS
-    assert dialog._warranty_terms.toPlainText() == DEFAULT_WARRANTY_TERMS
+    assert dialog._service_terms.toPlainText() == default_service_terms()
+    assert dialog._warranty_terms.toPlainText() == default_warranty_terms()
 
 
 def test_a_blank_warranty_text_can_be_saved(

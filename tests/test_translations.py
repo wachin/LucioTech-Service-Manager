@@ -13,7 +13,21 @@ from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtWidgets import QApplication
 from sqlalchemy.orm import Session, sessionmaker
 
-from luciotech.services.settings_service import language, set_language
+from luciotech.services.predefined_text_service import default_predefined_texts
+from luciotech.services.settings_service import (
+    default_service_terms,
+    default_warranty_terms,
+    equipment_types,
+    language,
+    set_language,
+)
+from luciotech.ui.labels import (
+    equipment_type_label,
+    equipment_type_value,
+    priority_label,
+    state_label,
+)
+from luciotech.ui.main_window import MainWindow
 from luciotech.ui.translations import (
     DEFAULT_LANGUAGE,
     TRANSLATIONS_DIR,
@@ -52,6 +66,62 @@ def test_installing_another_language_returns_the_loaded_files(qapp: QApplication
     finally:
         for translator in translators:
             qapp.removeTranslator(translator)
+
+
+def test_the_interface_speaks_english_without_the_spanish_catalogue(
+    qapp: QApplication,
+    qtbot,
+    session_factory: sessionmaker[Session],
+    spanish_translators: list,
+) -> None:
+    """Sin el catálogo español cargado, la interfaz muestra el inglés fuente."""
+    installed = spanish_translators
+    for translator in installed:
+        qapp.removeTranslator(translator)
+    try:
+        assert QCoreApplication.translate("LoginDialog", "Sign in") == "Sign in"
+        assert state_label("Recibido") == "Received"
+        assert priority_label("Alta") == "High"
+        assert equipment_type_label("Computadora de escritorio") == "Desktop computer"
+        assert equipment_type_value("Desktop computer") == "Computadora de escritorio"
+
+        window = MainWindow(session_factory)
+        qtbot.addWidget(window)
+        tabs = [window._tabs.tabText(index) for index in range(window._tabs.count())]
+        assert tabs == ["Home", "Orders", "Customers", "Equipment", "Trash"]
+        assert window.menuBar().actions()[0].text() == "&File"
+    finally:
+        for translator in installed:
+            qapp.installTranslator(translator)
+
+
+def test_default_texts_follow_the_chosen_language(
+    qapp: QApplication,
+    session_factory: sessionmaker[Session],
+    spanish_translators: list,
+) -> None:
+    """Los tipos, las frases y los textos legales por defecto hablan el idioma elegido."""
+    with session_factory() as session:
+        stored_types = equipment_types(session)
+    assert "Computadora de escritorio" in stored_types
+    assert equipment_type_label("Computadora de escritorio") == "Computadora de escritorio"
+    assert default_service_terms().startswith("1. La reparación se inicia")
+    assert default_warranty_terms().startswith("1. La garantía cubre")
+    assert default_predefined_texts()[0] == "Se realizó inspección visual del equipo."
+
+    installed = spanish_translators
+    for translator in installed:
+        qapp.removeTranslator(translator)
+    try:
+        assert equipment_type_label("Computadora de escritorio") == "Desktop computer"
+        assert default_service_terms().startswith("1. The repair starts")
+        assert default_warranty_terms().startswith("1. The warranty covers")
+        assert default_predefined_texts()[0] == (
+            "A visual inspection of the equipment was performed."
+        )
+    finally:
+        for translator in installed:
+            qapp.installTranslator(translator)
 
 
 def test_the_language_is_stored_in_the_settings(

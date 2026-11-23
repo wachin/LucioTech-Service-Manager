@@ -33,14 +33,14 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import (
     DEFAULT_LANGUAGE,
-    DEFAULT_SERVICE_TERMS,
-    DEFAULT_WARRANTY_TERMS,
     MAX_PAGE_MARGIN_MM,
     MIN_PAGE_MARGIN_MM,
     PAPER_SIZES,
 )
 from luciotech.services.settings_service import (
     budget_validity_days,
+    default_service_terms,
+    default_warranty_terms,
     language,
     equipment_types,
     page_margin_mm,
@@ -66,6 +66,7 @@ from luciotech.services.settings_service import (
     workshop_name,
     workshop_phone,
 )
+from luciotech.ui.labels import equipment_type_label, equipment_type_value
 from luciotech.ui.translations import available_languages
 
 ERROR_STYLE = "color: #b00020;"
@@ -250,7 +251,9 @@ class SettingsDialog(QDialog):
                 self._margin.setValue(page_margin_mm(session))
                 self._budget_days.setValue(budget_validity_days(session))
                 self._retention.setValue(retention_months(session))
-                self._equipment_types.setPlainText("\n".join(equipment_types(session)))
+                self._equipment_types.setPlainText(
+                    "\n".join(equipment_type_label(tipo) for tipo in equipment_types(session))
+                )
                 self._warranty_days.setValue(warranty_days(session))
                 self._service_terms.setPlainText(service_terms(session))
                 self._warranty_terms.setPlainText(warranty_terms(session))
@@ -282,7 +285,13 @@ class SettingsDialog(QDialog):
                 set_page_margin_mm(session, self._margin.value())
                 set_budget_validity_days(session, self._budget_days.value())
                 set_retention_months(session, self._retention.value())
-                set_equipment_types(session, self._equipment_types.toPlainText())
+                set_equipment_types(
+                    session,
+                    "\n".join(
+                        equipment_type_value(line)
+                        for line in self._equipment_types.toPlainText().splitlines()
+                    ),
+                )
                 set_warranty_days(session, self._warranty_days.value())
                 set_service_terms(session, self._service_terms.toPlainText())
                 set_warranty_terms(session, self._warranty_terms.toPlainText())
@@ -303,10 +312,10 @@ class SettingsDialog(QDialog):
         self.accept()
 
     def _restore_service_terms(self) -> None:
-        self._service_terms.setPlainText(DEFAULT_SERVICE_TERMS)
+        self._service_terms.setPlainText(default_service_terms())
 
     def _restore_warranty_terms(self) -> None:
-        self._warranty_terms.setPlainText(DEFAULT_WARRANTY_TERMS)
+        self._warranty_terms.setPlainText(default_warranty_terms())
 
 
 def _tab(layout: QVBoxLayout) -> QWidget:

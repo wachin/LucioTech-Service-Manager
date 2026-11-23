@@ -85,6 +85,19 @@ _BUDGET_LINE_TYPES: dict[str, str] = {
     BudgetLineType.OTRO.value: "Other",
 }
 
+_EQUIPMENT_TYPES: dict[str, str] = {
+    "Laptop": "Laptop",
+    "Computadora de escritorio": "Desktop computer",
+    "Impresora": "Printer",
+    "Cámara de seguridad": "Security camera",
+    "DVR": "DVR",
+    "NVR": "NVR",
+    "Monitor": "Monitor",
+    "Router": "Router",
+    "Fuente de poder": "Power supply",
+    "Otro": "Other",
+}
+
 _EVENT_TITLES: dict[str, str] = {
     EventType.LLAMADA_CLIENTE.value: "Call to customer",
     EventType.MENSAJE_ENVIADO.value: "Message sent",
@@ -109,6 +122,20 @@ def _label(mapping: Mapping[str, str], value: str | None) -> str:
     if source is None:
         return str(value or "")
     return QCoreApplication.translate("LucioTech", source)
+
+
+def equipment_type_label(value: str | None) -> str:
+    """Tipo de equipo para mostrar; el valor guardado sigue siendo el original."""
+    return _label(_EQUIPMENT_TYPES, value)
+
+
+def equipment_type_value(label: str | None) -> str:
+    """Vuelve del texto mostrado al valor que se guarda (para el editor de Configuración)."""
+    text = str(label or "").strip()
+    for value, source in _EQUIPMENT_TYPES.items():
+        if text in (value, source, QCoreApplication.translate("LucioTech", source)):
+            return value
+    return text
 
 
 def state_label(value: str | None) -> str:
@@ -224,3 +251,12 @@ def _catalog() -> None:
     QCoreApplication.translate("LucioTech", 'Order restored')
     QCoreApplication.translate("LucioTech", 'State change')
     QCoreApplication.translate("LucioTech", 'Equipment delivered to the customer')
+    QCoreApplication.translate("LucioTech", "Laptop")
+    QCoreApplication.translate("LucioTech", "Desktop computer")
+    QCoreApplication.translate("LucioTech", "Printer")
+    QCoreApplication.translate("LucioTech", "Security camera")
+    QCoreApplication.translate("LucioTech", "DVR")
+    QCoreApplication.translate("LucioTech", "NVR")
+    QCoreApplication.translate("LucioTech", "Monitor")
+    QCoreApplication.translate("LucioTech", "Router")
+    QCoreApplication.translate("LucioTech", "Power supply")

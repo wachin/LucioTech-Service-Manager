@@ -21,6 +21,9 @@ from luciotech.services.settings_service import (  # noqa: E402
 )
 
 
+_TRANSLATORS: list = []
+
+
 @pytest.fixture(autouse=True, scope="session")
 def spanish_interface(qapp: QApplication) -> Iterator[None]:
     """Deja la interfaz en español, que es el idioma por defecto del taller.
@@ -32,9 +35,16 @@ def spanish_interface(qapp: QApplication) -> Iterator[None]:
 
     translators = install_translations(qapp, "es")
     assert translators, "falta el catálogo compilado luciotech_es.qm"
+    _TRANSLATORS[:] = translators
     yield
     for translator in translators:
         qapp.removeTranslator(translator)
+
+
+@pytest.fixture
+def spanish_translators() -> list:
+    """Traductores instalados por la sesión, para que una prueba pueda retirarlos y reponerlos."""
+    return list(_TRANSLATORS)
 
 
 @pytest.fixture

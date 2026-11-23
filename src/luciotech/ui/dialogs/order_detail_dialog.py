@@ -69,6 +69,7 @@ from luciotech.ui.dialogs.photographs_tab import PhotographsTab
 from luciotech.ui.documents import DocumentKind, document_label, print_order_document
 from luciotech.ui.formatting import format_datetime, format_money
 from luciotech.ui.labels import (
+    equipment_type_label,
     event_title_label,
     history_detail_label,
     priority_label,
@@ -601,7 +602,10 @@ def _equipment_html(view: EquipmentView, reveal: bool) -> str:
     if view.contrasena_equipo and not reveal:
         password = "••••••"
     rows = [
-        (QCoreApplication.translate("LucioTech", "Type"), view.tipo_equipo),
+        (
+            QCoreApplication.translate("LucioTech", "Type"),
+            equipment_type_label(view.tipo_equipo),
+        ),
         (QCoreApplication.translate("LucioTech", "Brand"), view.marca or "-"),
         (QCoreApplication.translate("LucioTech", "Model"), view.modelo or "-"),
         (QCoreApplication.translate("LucioTech", "Serial number"), view.numero_serie or "-"),
@@ -659,7 +663,8 @@ def _summary_html(order: ServiceOrder, totals: OrderTotals) -> str:
         ),
         (
             QCoreApplication.translate("LucioTech", "Equipment"),
-            f"{equipment.tipo_equipo} {equipment.marca or ''} {equipment.modelo or ''}".strip(),
+            f"{equipment_type_label(equipment.tipo_equipo)} {equipment.marca or ''} "
+            f"{equipment.modelo or ''}".strip(),
         ),
         (QCoreApplication.translate("LucioTech", "Serial number"), equipment.numero_serie or "-"),
         (QCoreApplication.translate("LucioTech", "Received on"), format_datetime(order.fecha_ingreso)),

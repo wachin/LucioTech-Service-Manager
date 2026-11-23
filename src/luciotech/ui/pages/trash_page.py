@@ -26,7 +26,7 @@ from luciotech.database.models import ServiceOrder
 from luciotech.services.order_query_service import OrderFilter, search_orders
 from luciotech.services.order_service import restore_order
 from luciotech.ui.dialogs.order_detail_dialog import OrderDetailDialog
-from luciotech.ui.labels import state_label
+from luciotech.ui.labels import equipment_type_label, state_label
 from luciotech.ui.formatting import format_datetime, format_money
 
 # Nombre de quien tiene la sesión abierta; `DEFAULT_USER` solo cubre las llamadas antiguas.
@@ -98,7 +98,7 @@ class TrashPage(QWidget):
                     order.numero_orden,
                     format_datetime(order.fecha_ingreso),
                     order.customer.nombre_completo,
-                    order.equipment.tipo_equipo,
+                    equipment_type_label(order.equipment.tipo_equipo),
                     " ".join(part for part in (order.equipment.marca, order.equipment.modelo) if part),
                     state_label(order.estado),
                     format_money(order.saldo_pendiente),

@@ -8,7 +8,7 @@ import pytest
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
-from luciotech.config import DEFAULT_PREDEFINED_TEXTS
+from luciotech.services.predefined_text_service import default_predefined_texts
 from luciotech.services.customer_service import CustomerData
 from luciotech.services.equipment_service import EquipmentData
 from luciotech.services.predefined_text_service import save_predefined_texts
@@ -89,4 +89,4 @@ def test_detail_dialog_defaults_are_the_specified_seven(
 ) -> None:
     dialog = OrderDetailDialog(session_factory, order_id, "Ing. Lucio")
     qtbot.addWidget(dialog)
-    assert dialog._recommendations.predefined_texts() == list(DEFAULT_PREDEFINED_TEXTS)
+    assert dialog._recommendations.predefined_texts() == default_predefined_texts()
