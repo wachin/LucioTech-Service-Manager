@@ -85,6 +85,17 @@ def _fake_payment_dialog(monkeypatch: pytest.MonkeyPatch, values: tuple) -> None
     monkeypatch.setattr(PaymentDialog, "values", lambda self: values)
 
 
+def test_the_amounts_have_room_inside_their_boxes(
+    qtbot: QtBot, session_factory: sessionmaker[Session], order_id: int
+) -> None:
+    """El descuento y el saldo no deben quedar pegados al borde de lo que los contiene."""
+    tab = _tab(qtbot, session_factory, order_id)
+
+    saldo = tab._totals_values["saldo"]
+    assert saldo.minimumHeight() >= saldo.fontMetrics().height() + 4
+    assert tab._discount.textMargins().top() > 0
+
+
 def test_totals_panel_says_when_tax_is_disabled(
     qtbot: QtBot, session_factory: sessionmaker[Session]
 ) -> None:

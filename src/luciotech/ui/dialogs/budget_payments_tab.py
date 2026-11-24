@@ -192,12 +192,16 @@ class BudgetPaymentsTab(QWidget):
 
         self._discount = QLineEdit()
         self._discount.setPlaceholderText("0.00")
+        # Aire dentro del campo: con el margen por omisión el importe queda pegado al borde.
+        self._discount.setTextMargins(6, 3, 6, 3)
         self._discount.editingFinished.connect(self._apply_discount)
 
         self._totals_labels: dict[str, QLabel] = {}
         self._totals_values: dict[str, QLabel] = {}
         totals_box = QGroupBox(self.tr("Totals"))
         totals_grid = QGridLayout(totals_box)
+        totals_grid.setContentsMargins(9, 8, 12, 12)
+        totals_grid.setVerticalSpacing(4)
         totals_grid.setColumnStretch(1, 1)
         row = 0
         row = self._add_total_row(totals_grid, row, "subtotal", self.tr("Subtotal"))
@@ -267,6 +271,9 @@ class BudgetPaymentsTab(QWidget):
         if points:
             _set_points(label, points - 2, QFont.Weight.DemiBold)
             _set_points(value, points, QFont.Weight.Bold)
+            # Los números grandes no caben si la fila mide justo lo que la fuente.
+            for widget in (label, value):
+                widget.setMinimumHeight(widget.fontMetrics().height() + 4)
         self._totals_labels[key] = label
         self._totals_values[key] = value
         grid.addWidget(label, row, 0)
