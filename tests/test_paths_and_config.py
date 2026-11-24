@@ -25,6 +25,17 @@ def test_the_application_icon_is_a_loadable_svg(qapp) -> None:
     assert not QIcon(str(APP_ICON)).isNull()
 
 
+def test_the_package_ships_the_icons_and_translations_outside_editable_installs() -> None:
+    import tomllib
+
+    pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    package_data = data["tool"]["setuptools"]["package-data"]["luciotech.ui"]
+
+    assert "resources/icons/*.svg" in package_data
+    assert "translations/*.qm" in package_data
+
+
 def test_data_dir_uses_xdg_data_home(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(paths, "_is_windows", lambda: False)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))

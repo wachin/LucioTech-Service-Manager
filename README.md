@@ -13,7 +13,7 @@
   <img alt="SQLite" src="https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite&logoColor=white">
   <img alt="Linux and Windows" src="https://img.shields.io/badge/platform-Linux%20%7C%20Windows-2C2C2C.svg">
   <img alt="Runs 100% offline" src="https://img.shields.io/badge/offline-100%25-4C1.svg">
-  <img alt="486 tests passing" src="https://img.shields.io/badge/tests-486%20passing-brightgreen.svg">
+  <img alt="486 tests passing" src="https://img.shields.io/badge/tests-487%20passing-brightgreen.svg">
   <img alt="Phase 3 complete" src="https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg">
 </p>
 
@@ -641,7 +641,7 @@ The suite uses a temporary SQLite database for each test and runs the Qt interfa
 
 ### Windows test status
 
-Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: the whole suite passes (about 1 minute). On Linux the same suite passes as well: **486 of 486** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 50 seconds).
+Verified on Windows 11 with Python 3.13.15 and PyQt6 6.9.0: the whole suite passes (about 1 minute). On Linux the same suite passes as well: **487 of 487** with `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, about 50 seconds).
 
 Previously one test failed on Windows only: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. The cause was not a product bug but a platform-dependent assumption in the test. The test resized the rich-text editor to a fixed 900 px and expected both toolbar rows to fit without horizontal scrolling. On Windows the toolbar font metrics are wider, so the action row needs **976 px** and legitimately scrolls at 900 px — its height (47 px, toolbar plus scrollbar) was therefore correct, and only the format row (657 px) returned to the compact 33 px. On Linux the same row is narrower than 900 px, so the assumption held.
 
@@ -652,7 +652,7 @@ Two changes were made:
 
 The compact height (33 px) and the expanded height (47 px) are unchanged; the fix only removes the stale-height risk and makes the test platform-independent.
 
-One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`486 passed`) is the one that counts.
+One harmless detail while the suite runs: pytest prints `Windows fatal exception: code 0x80040155` followed by a stack trace that ends in `print_document` or `render_to_pdf`. It comes from `QPrinter` being constructed under the offscreen platform, where there is no real print subsystem. It is a first-chance exception that Qt handles internally: the affected tests (`test_render_to_pdf_creates_a_pdf` and the PDF tests of `tests/test_print_page.py`) still pass and the PDFs are written correctly. The summary line (`487 passed`) is the one that counts.
 
 There is a real trap next to it, and it cost a segfault: `QPrintPreviewDialog` does **not** take ownership of the `QPrinter` it is given, it keeps a raw pointer. Passing a temporary (`QPrintPreviewDialog(_printer(), None)`) leaves the preview pointing at freed memory and the process dies later, far from the cause. The tests keep the printer in a variable, and `print_document` does the same.
 
