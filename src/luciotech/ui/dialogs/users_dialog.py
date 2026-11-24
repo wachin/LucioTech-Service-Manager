@@ -53,10 +53,18 @@ class UserFormDialog(QDialog):
         session_factory: sessionmaker[Session],
         user_id: int | None = None,
         parent: QWidget | None = None,
+        *,
+        fixed_role: UserRole | None = None,
     ) -> None:
+        """Prepara el formulario de alta o de edición de una cuenta.
+
+        `fixed_role` solo se aplica al alta (no a la edición) y fija el rol sin dejar
+        elegirlo: lo usa el acceso para que desde allí solo nazcan técnicos.
+        """
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
+        self._fixed_role = fixed_role if user_id is None else None
         self.username: str | None = None
         self.setWindowTitle(
             self.tr("Edit user") if user_id is not None else self.tr("New user")
@@ -70,6 +78,11 @@ class UserFormDialog(QDialog):
         self._role = QComboBox()
         for role in UserRole:
             self._role.addItem(role_label(role.value), role.value)
+        if self._fixed_role is not None:
+            index = self._role.findData(self._fixed_role.value)
+            if index >= 0:
+                self._role.setCurrentIndex(index)
+            self._role.setEnabled(False)
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
         self._repeat = QLineEdit()
@@ -129,7 +142,11 @@ class UserFormDialog(QDialog):
                         username=self._username.text(),
                         full_name=self._full_name.text(),
                         password=self._password.text(),
-                        role=self._role.currentData(),
+                        role=(
+                            self._fixed_role
+                            if self._fixed_role is not None
+                            else self._role.currentData()
+                        ),
                     )
                     self.username = created.nombre_usuario
                 else:

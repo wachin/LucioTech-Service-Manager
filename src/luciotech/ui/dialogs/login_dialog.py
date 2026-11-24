@@ -7,7 +7,9 @@ Son dos diálogos distintos porque son dos momentos distintos:
   cuenta de administrador del taller.
 - `LoginDialog` es el de todos los días: muestra los usuarios del taller en una lista
   desplegable, pide solo la contraseña y también permite dar de alta una cuenta nueva sin
-  tener que entrar antes con la de un administrador.
+  tener que entrar antes con la de un administrador. Esa alta desde el acceso crea siempre un
+  técnico: si cualquiera pudiera elegir el rol, se daría administración a sí mismo sin saber
+  ninguna contraseña.
 
 Los dos devuelven en `self.user` un `CurrentUser`, que es lo que después viaja a la ventana, al
 historial de las órdenes y al pie de los documentos.
@@ -31,6 +33,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import APP_CONFIG, DEFAULT_USER
+from luciotech.database.enums import UserRole
 from luciotech.database.models import User
 from luciotech.ui.dialogs.users_dialog import UserFormDialog
 from luciotech.ui.labels import role_label
@@ -135,8 +138,10 @@ class LoginDialog(QDialog):
         self._user_combo.setCurrentIndex(max(chosen, 0))
 
     def _create_user(self) -> None:
-        """Da de alta una cuenta sin salir del acceso y la deja lista para entrar."""
-        dialog = UserFormDialog(self._session_factory, parent=self)
+        """Da de alta una cuenta de técnico sin salir del acceso y la deja lista para entrar."""
+        dialog = UserFormDialog(
+            self._session_factory, parent=self, fixed_role=UserRole.TECNICO
+        )
         dialog.exec()
         if dialog.result() != QDialog.DialogCode.Accepted or not dialog.username:
             return

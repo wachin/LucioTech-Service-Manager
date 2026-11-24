@@ -249,7 +249,11 @@ def test_a_new_user_can_be_created_from_the_login_window(
         form._username.setText("luis")
         form._password.setText("1234")
         form._repeat.setText("1234")
-        form._role.setCurrentIndex(form._role.findData(UserRole.TECNICO.value))
+        # El acceso no deja elegir rol: aunque se cambie por código, se guarda técnico.
+        assert form._role.isEnabled() is False
+        assert form._role.currentData() == UserRole.TECNICO.value
+        form._role.setEnabled(True)
+        form._role.setCurrentIndex(form._role.findData(UserRole.ADMINISTRADOR.value))
         form._save()
 
     monkeypatch.setattr(UserFormDialog, "exec", fill_and_save)
