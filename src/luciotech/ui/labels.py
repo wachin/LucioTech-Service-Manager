@@ -21,6 +21,7 @@ from luciotech.database.enums import (
     PaymentType,
     PhotoType,
     Priority,
+    UserAuditAction,
     UserRole,
 )
 
@@ -75,6 +76,16 @@ _PAYMENT_METHODS: dict[str, str] = {
 _ROLES: dict[str, str] = {
     UserRole.ADMINISTRADOR.value: "Administrator",
     UserRole.TECNICO.value: "Technician",
+}
+
+_USER_ACTIONS: dict[str, str] = {
+    UserAuditAction.ALTA.value: "User created",
+    UserAuditAction.EDICION.value: "Details changed",
+    UserAuditAction.ROL.value: "Role changed",
+    UserAuditAction.CONTRASENA_PROPIA.value: "Password changed",
+    UserAuditAction.CONTRASENA_RESTABLECIDA.value: "Password reset",
+    UserAuditAction.ACTIVADO.value: "Account activated",
+    UserAuditAction.DESACTIVADO.value: "Account deactivated",
 }
 
 _BUDGET_LINE_TYPES: dict[str, str] = {
@@ -242,6 +253,11 @@ def budget_line_type_label(value: str | None) -> str:
     return _label(_BUDGET_LINE_TYPES, value)
 
 
+def user_action_label(value: str | None) -> str:
+    """Acción de la bitácora de cuentas, guardada en español y mostrada en el idioma elegido."""
+    return _label(_USER_ACTIONS, value)
+
+
 def event_title_label(value: str | None) -> str:
     """Título de un evento; también traduce los pagos («Anticipo de 10.00»)."""
     text = str(value or "")
@@ -310,6 +326,13 @@ def _catalog() -> None:
     QCoreApplication.translate("LucioTech", 'Bank deposit')
     QCoreApplication.translate("LucioTech", 'Administrator')
     QCoreApplication.translate("LucioTech", 'Technician')
+    QCoreApplication.translate("LucioTech", 'User created')
+    QCoreApplication.translate("LucioTech", 'Details changed')
+    QCoreApplication.translate("LucioTech", 'Role changed')
+    QCoreApplication.translate("LucioTech", 'Password changed')
+    QCoreApplication.translate("LucioTech", 'Password reset')
+    QCoreApplication.translate("LucioTech", 'Account activated')
+    QCoreApplication.translate("LucioTech", 'Account deactivated')
     QCoreApplication.translate("LucioTech", 'Diagnosis')
     QCoreApplication.translate("LucioTech", 'Labour')
     QCoreApplication.translate("LucioTech", 'Part')

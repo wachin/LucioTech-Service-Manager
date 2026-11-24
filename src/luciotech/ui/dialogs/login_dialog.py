@@ -9,7 +9,8 @@ Son dos diálogos distintos porque son dos momentos distintos:
   desplegable, pide solo la contraseña y también permite dar de alta una cuenta nueva sin
   tener que entrar antes con la de un administrador. Esa alta desde el acceso crea siempre un
   técnico: si cualquiera pudiera elegir el rol, se daría administración a sí mismo sin saber
-  ninguna contraseña.
+  ninguna contraseña. Si un administrador restableció la contraseña de la cuenta, el acceso
+  obliga a elegir una nueva antes de entrar: la temporal solo la conocía quien la escribió.
 
 Los dos devuelven en `self.user` un `CurrentUser`, que es lo que después viaja a la ventana, al
 historial de las órdenes y al pie de los documentos.
@@ -168,13 +169,45 @@ class LoginDialog(QDialog):
                     self._password.clear()
                     self._password.setFocus(Qt.FocusReason.OtherFocusReason)
                     return
-                touch_login(session, user)
-                session.commit()
-                self.user = current_user_of(user)
+                user_id = user.id
+                must_change = user.debe_cambiar_contrasena
+                if not must_change:
+                    touch_login(session, user)
+                    session.commit()
+                    self.user = current_user_of(user)
         except SQLAlchemyError:
             self._message.setText(self.tr("Could not check the credentials. Please try again."))
             return
+        if must_change:
+            if not self._choose_new_password(user_id):
+                self._message.setText(
+                    self.tr("You must choose a new password before continuing.")
+                )
+                self._password.clear()
+                self._password.setFocus(Qt.FocusReason.OtherFocusReason)
+                return
+            try:
+                with self._session_factory() as session:
+                    user = session.get(User, user_id)
+                    if user is None:
+                        self._message.setText(self.tr("The user no longer exists."))
+                        return
+                    touch_login(session, user)
+                    session.commit()
+                    self.user = current_user_of(user)
+            except SQLAlchemyError:
+                self._message.setText(
+                    self.tr("Could not check the credentials. Please try again.")
+                )
+                return
         self.accept()
+
+    def _choose_new_password(self, user_id: int) -> bool:
+        """Obliga a cambiar una contraseña temporal; si se cancela, no se entra."""
+        dialog = ChangePasswordDialog(
+            self._session_factory, user_id, parent=self, forced=True
+        )
+        return dialog.exec() == QDialog.DialogCode.Accepted
 
 
 class FirstUserDialog(QDialog):
@@ -272,11 +305,15 @@ class ChangePasswordDialog(QDialog):
         session_factory: sessionmaker[Session],
         user_id: int,
         parent: QWidget | None = None,
+        *,
+        forced: bool = False,
     ) -> None:
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
-        self.setWindowTitle(self.tr("Change my password"))
+        self.setWindowTitle(
+            self.tr("Change your password") if forced else self.tr("Change my password")
+        )
         self.setMinimumWidth(420)
 
         self._current = QLineEdit()
@@ -302,6 +339,14 @@ class ChangePasswordDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
+        if forced:
+            explanation = QLabel(
+                self.tr(
+                    "An administrator reset your password. Choose a new one to continue."
+                )
+            )
+            explanation.setWordWrap(True)
+            layout.addWidget(explanation)
         layout.addLayout(form)
         layout.addWidget(self._message)
         layout.addWidget(buttons)

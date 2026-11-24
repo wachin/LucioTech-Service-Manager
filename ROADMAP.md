@@ -82,6 +82,8 @@ Decisión del bloque 11 (2026-11-01, rama `feat/usuarios`):
 - Las contraseñas **no** se guardan ni se cifran con un algoritmo reversible: hash PBKDF2 con sal por usuario, en `services/user_service.py`, con la biblioteca estándar (regla 1 del AGENTS: nada de instalar paquetes).
 - Las cuentas **no se borran**, se desactivan: el historial guarda el nombre de quien hizo cada cambio y ese nombre tiene que seguir significando algo. Por lo mismo, el nombre de usuario no se puede editar una vez creado.
 - El primer arranque de una base sin cuentas pide crear el administrador; no hay usuario por defecto con contraseña conocida.
+- La tabla `eventos_usuario` (migración 0006) es la bitácora de las cuentas: alta, cambio de nombre y de rol, activación, desactivación y cambio o restablecimiento de contraseña, con quién lo hizo y a quién. Se consulta en la pestaña **Actividad** de Archivo ▸ Usuarios… y es lo que permite detectar un restablecimiento ajeno.
+- La contraseña que restablece un administrador queda marcada como temporal (`debe_cambiar_contrasena`): el acceso obliga a elegir una propia antes de entrar, así que la temporal solo la conoce quien la escribió.
 - El técnico de la recepción se propone con el nombre de la sesión, pero sigue siendo editable: a veces recibe uno y repara otro.
 
 Decisión de interfaz del bloque 7 (2026-10-29):

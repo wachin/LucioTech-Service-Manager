@@ -240,5 +240,26 @@ class User(Base):
     contrasena_hash: Mapped[str] = mapped_column(String(255))
     rol: Mapped[str] = mapped_column(String(20), default=UserRole.TECNICO.value)
     activo: Mapped[bool] = mapped_column(Boolean, default=True)
+    debe_cambiar_contrasena: Mapped[bool] = mapped_column(Boolean, default=False)
     fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     ultimo_acceso: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class UserEvent(Base):
+    """Bitácora de las cuentas (§19): quién creó, cambió, activó o restableció a quién.
+
+    `usuario_id` es quien actuó y puede ser nulo en el primer arranque, cuando todavía no hay
+    ninguna cuenta con la que firmar. Los nombres se copian en el momento del hecho para que
+    la bitácora siga leyéndose aunque la cuenta cambie de nombre visible después.
+    """
+
+    __tablename__ = "eventos_usuario"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    fecha: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, index=True)
+    usuario_id: Mapped[int | None] = mapped_column(ForeignKey("usuarios.id"))
+    usuario_nombre: Mapped[str] = mapped_column(String(120), default="")
+    afectado_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
+    afectado_nombre: Mapped[str] = mapped_column(String(120))
+    accion: Mapped[str] = mapped_column(String(40))
+    detalle: Mapped[str | None] = mapped_column(Text)

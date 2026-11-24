@@ -16,6 +16,7 @@ from luciotech.services.user_service import (
     get_user,
     list_users,
     set_active,
+    set_password,
 )
 from luciotech.ui.dialogs.login_dialog import (
     ChangePasswordDialog,
@@ -270,6 +271,75 @@ def test_a_new_user_can_be_created_from_the_login_window(
         assert authenticate(session, "luis", "1234") is not None
 
 
+def test_a_temporary_password_must_be_changed_before_entering(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        luis = create_user(
+            session, username="luis", full_name="Luis Paredes", password=PASSWORD
+        )
+        session.flush()
+        set_password(session, luis, "temporal1", actor=admin)
+        session.commit()
+
+    def change_it(dialog: ChangePasswordDialog) -> int:
+        assert dialog.windowTitle() == "Cambie su contraseña"
+        dialog._current.setText("temporal1")
+        dialog._new.setText("propia2026")
+        dialog._repeat.setText("propia2026")
+        dialog._save()
+        return dialog.result()
+
+    monkeypatch.setattr(ChangePasswordDialog, "exec", change_it)
+
+    dialog = LoginDialog(session_factory)
+    qtbot.addWidget(dialog)
+    dialog._user_combo.setCurrentIndex(dialog._user_combo.findData("luis"))
+    dialog._password.setText("temporal1")
+
+    dialog._attempt_login()
+
+    assert dialog.result() == QDialog.DialogCode.Accepted
+    assert dialog.user is not None
+    with session_factory() as session:
+        user = get_user(session, "luis")
+        assert user is not None
+        assert user.debe_cambiar_contrasena is False
+        assert authenticate(session, "luis", "propia2026") is not None
+        assert authenticate(session, "luis", "temporal1") is None
+
+
+def test_cancelling_the_forced_change_keeps_the_login_window(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        luis = create_user(
+            session, username="luis", full_name="Luis Paredes", password=PASSWORD
+        )
+        session.flush()
+        set_password(session, luis, "temporal1", actor=admin)
+        session.commit()
+
+    monkeypatch.setattr(
+        ChangePasswordDialog, "exec", lambda _dialog: QDialog.DialogCode.Rejected
+    )
+
+    dialog = LoginDialog(session_factory)
+    qtbot.addWidget(dialog)
+    dialog._user_combo.setCurrentIndex(dialog._user_combo.findData("luis"))
+    dialog._password.setText("temporal1")
+
+    dialog._attempt_login()
+
+    assert dialog.result() != QDialog.DialogCode.Accepted
+    assert dialog.user is None
+    assert "Debe elegir" in dialog._message.text()
+    with session_factory() as session:
+        assert get_user(session, "luis").debe_cambiar_contrasena is True
+
+
 def test_login_explains_when_no_active_account_is_left(
     qtbot: QtBot, session_factory: sessionmaker[Session]
 ) -> None:
@@ -305,6 +375,32 @@ def test_the_users_dialog_lists_the_accounts(
     assert dialog._table.rowCount() == 2
     assert dialog._table.item(0, 0).text() == "ana"
     assert dialog._table.item(0, 2).text() == UserRole.ADMINISTRADOR.value
+
+
+def test_the_users_dialog_shows_the_activity_log(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        create_user(
+            session,
+            username="luis",
+            full_name="Luis Paredes",
+            password=PASSWORD,
+            actor=admin,
+        )
+        session.commit()
+
+    dialog = UsersDialog(session_factory, admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._tabs.tabText(0) == "Usuarios"
+    assert dialog._tabs.tabText(1) == "Actividad"
+    assert dialog._activity.rowCount() == 2
+    assert dialog._activity.item(0, 1).text() == "Ana Torres"
+    assert dialog._activity.item(0, 2).text() == "Alta de usuario"
+    assert dialog._activity.item(0, 3).text() == "Luis Paredes"
+    assert dialog._activity.item(0, 4).text() == "Técnico"
 
 
 def test_the_buttons_stay_disabled_until_a_row_is_chosen(

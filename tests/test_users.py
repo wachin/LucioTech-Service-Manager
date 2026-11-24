@@ -11,8 +11,8 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import DEFAULT_USER
-from luciotech.database.enums import UserRole
-from luciotech.database.models import User
+from luciotech.database.enums import UserAuditAction, UserRole
+from luciotech.database.models import User, UserEvent
 from luciotech.services.customer_service import CustomerData
 from luciotech.services.equipment_service import EquipmentData
 from luciotech.services.reception_service import ReceptionData, register_reception
@@ -28,6 +28,7 @@ from luciotech.services.user_service import (
     get_user,
     hash_password,
     list_login_users,
+    list_user_events,
     list_users,
     normalize_username,
     set_active,
@@ -40,6 +41,18 @@ from luciotech.ui import documents
 from luciotech.ui.dialogs.reception_dialog import ReceptionDialog
 
 PASSWORD = "taller2026"
+
+
+def _make_technician(session: Session, actor: CurrentUser | None = None) -> User:
+    user = create_user(
+        session,
+        username="luis",
+        full_name="Luis Paredes",
+        password=PASSWORD,
+        actor=actor,
+    )
+    session.flush()
+    return user
 
 
 def _make_user(
@@ -116,6 +129,101 @@ def test_a_four_character_password_is_enough(session: Session) -> None:
     assert MIN_PASSWORD_LENGTH == 4
     user = create_user(session, username="ana", full_name="Ana", password="1234")
     assert verify_password("1234", user.contrasena_hash)
+
+
+def test_the_audit_log_records_who_created_whom(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+
+    _make_technician(session, actor)
+
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.ALTA.value
+    assert event.usuario_nombre == "Ana Torres"
+    assert event.afectado_nombre == "Luis Paredes"
+    assert event.detalle == UserRole.TECNICO.value
+
+
+def test_the_audit_log_records_role_changes_and_edits(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+
+    update_user(session, luis, role=UserRole.ADMINISTRADOR, actor=actor)
+    update_user(session, luis, full_name="Luis A. Paredes", actor=actor)
+
+    edit_event, role_event = list_user_events(session)[:2]
+    assert role_event.accion == UserAuditAction.ROL.value
+    assert role_event.detalle == "Técnico → Administrador"
+    assert edit_event.accion == UserAuditAction.EDICION.value
+    assert edit_event.detalle == "Luis A. Paredes"
+
+
+def test_the_audit_log_records_deactivations(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+
+    set_active(session, luis, False, actor=actor)
+
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.DESACTIVADO.value
+    assert event.usuario_nombre == "Ana Torres"
+
+
+def test_a_reset_password_is_temporary_and_leaves_a_trace(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+
+    set_password(session, luis, "temporal1", actor=actor)
+    session.commit()
+
+    assert luis.debe_cambiar_contrasena is True
+    assert authenticate(session, "luis", "temporal1") is not None
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.CONTRASENA_RESTABLECIDA.value
+    assert event.usuario_nombre == "Ana Torres"
+    assert event.afectado_nombre == "Luis Paredes"
+
+
+def test_changing_your_own_password_clears_the_temporary_mark(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+    set_password(session, luis, "temporal1", actor=actor)
+
+    change_own_password(session, luis, "temporal1", "propia2026")
+    session.commit()
+
+    assert luis.debe_cambiar_contrasena is False
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.CONTRASENA_PROPIA.value
+    assert event.usuario_nombre == "Luis Paredes"
+    assert event.afectado_nombre == "Luis Paredes"
+
+
+def test_the_audit_log_shows_the_newest_movement_first(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+    set_active(session, luis, False, actor=actor)
+
+    actions = [event.accion for event in list_user_events(session)]
+    assert actions[0] == UserAuditAction.DESACTIVADO.value
+    assert actions[-1] == UserAuditAction.ALTA.value
+
+
+def test_the_audit_log_keeps_the_name_copy_even_after_a_rename(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+    event = list_user_events(session)[0]
+
+    update_user(session, luis, full_name="Luis A. Paredes", actor=actor)
+    session.commit()
+
+    assert session.get(UserEvent, event.id).afectado_nombre == "Luis Paredes"
 
 
 def test_validate_username_returns_the_value_that_gets_stored() -> None:
@@ -291,6 +399,7 @@ def test_the_users_table_arrives_with_migration_0005(tmp_path: Path) -> None:
     command.upgrade(config, "head")
     engine = create_engine(url)
     columns = {column["name"] for column in inspect(engine).get_columns("usuarios")}
+    tables = set(inspect(engine).get_table_names())
     engine.dispose()
     assert columns == {
         "id",
@@ -299,9 +408,11 @@ def test_the_users_table_arrives_with_migration_0005(tmp_path: Path) -> None:
         "contrasena_hash",
         "rol",
         "activo",
+        "debe_cambiar_contrasena",
         "fecha_creacion",
         "ultimo_acceso",
     }
+    assert "eventos_usuario" in tables
 
 
 # Lo que llega al papel

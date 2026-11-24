@@ -58,6 +58,18 @@ class UserRole(StrEnum):
     TECNICO = "Técnico"
 
 
+class UserAuditAction(StrEnum):
+    """Lo que la bitácora de cuentas registra (§19); se guarda en español y se traduce al mostrar."""
+
+    ALTA = "Alta de usuario"
+    EDICION = "Datos modificados"
+    ROL = "Cambio de rol"
+    CONTRASENA_PROPIA = "Contraseña cambiada"
+    CONTRASENA_RESTABLECIDA = "Contraseña restablecida"
+    ACTIVADO = "Cuenta activada"
+    DESACTIVADO = "Cuenta desactivada"
+
+
 class EventType(StrEnum):
     LLAMADA_CLIENTE = "Llamada al cliente"
     MENSAJE_ENVIADO = "Mensaje enviado"

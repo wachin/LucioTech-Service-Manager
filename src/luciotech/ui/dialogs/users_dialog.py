@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -29,20 +30,31 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.database.enums import UserRole
-from luciotech.database.models import User
+from luciotech.database.models import User, UserEvent
+from luciotech.database.enums import UserAuditAction
 from luciotech.services.user_service import (
     CurrentUser,
     create_user,
+    list_user_events,
     list_users,
     set_active,
     set_password,
     update_user,
 )
 from luciotech.ui.formatting import format_datetime
-from luciotech.ui.labels import role_label
+from luciotech.ui.labels import role_label, user_action_label
 
 COLUMNS = ("User", "Full name", "Role", "Status", "Last sign-in")
+ACTIVITY_COLUMNS = ("Date", "User", "Action", "Affected user", "Details")
 ERROR_STYLE = "color: #b00020;"
+
+
+def _event_detail(event: UserEvent) -> str:
+    """Detalle del movimiento; los roles se guardan en español y se muestran traducidos."""
+    detail = event.detalle or ""
+    if event.accion in (UserAuditAction.ALTA.value, UserAuditAction.ROL.value):
+        return " → ".join(role_label(part) for part in detail.split(" → "))
+    return detail
 
 
 class UserFormDialog(QDialog):
@@ -55,6 +67,7 @@ class UserFormDialog(QDialog):
         parent: QWidget | None = None,
         *,
         fixed_role: UserRole | None = None,
+        actor: CurrentUser | None = None,
     ) -> None:
         """Prepara el formulario de alta o de edición de una cuenta.
 
@@ -64,6 +77,7 @@ class UserFormDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
+        self._actor = actor
         self._fixed_role = fixed_role if user_id is None else None
         self.username: str | None = None
         self.setWindowTitle(
@@ -147,6 +161,7 @@ class UserFormDialog(QDialog):
                             if self._fixed_role is not None
                             else self._role.currentData()
                         ),
+                        actor=self._actor,
                     )
                     self.username = created.nombre_usuario
                 else:
@@ -155,7 +170,11 @@ class UserFormDialog(QDialog):
                         self._message.setText(self.tr("The user no longer exists."))
                         return
                     update_user(
-                        session, user, full_name=self._full_name.text(), role=self._role.currentData()
+                        session,
+                        user,
+                        full_name=self._full_name.text(),
+                        role=self._role.currentData(),
+                        actor=self._actor,
                     )
                 session.commit()
         except ValueError as exc:
@@ -224,13 +243,49 @@ class UsersDialog(QDialog):
         )
         note.setWordWrap(True)
 
+        users_tab = QWidget()
+        users_layout = QVBoxLayout(users_tab)
+        users_layout.setContentsMargins(0, 0, 0, 0)
+        users_layout.addLayout(top)
+        users_layout.addWidget(self._table, 1)
+        users_layout.addWidget(note)
+
+        self._activity = QTableWidget(0, len(ACTIVITY_COLUMNS))
+        self._activity.setHorizontalHeaderLabels([self.tr(c) for c in ACTIVITY_COLUMNS])
+        self._activity.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self._activity.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self._activity.verticalHeader().setVisible(False)
+        activity_header = self._activity.horizontalHeader()
+        activity_header.setStretchLastSection(True)
+        for column in range(len(ACTIVITY_COLUMNS) - 1):
+            activity_header.setSectionResizeMode(
+                column, QHeaderView.ResizeMode.ResizeToContents
+            )
+
+        activity_note = QLabel(
+            self.tr(
+                "This log records who created, changed, disabled or reset the password of "
+                "each account."
+            )
+        )
+        activity_note.setWordWrap(True)
+
+        activity_tab = QWidget()
+        activity_layout = QVBoxLayout(activity_tab)
+        activity_layout.setContentsMargins(0, 0, 0, 0)
+        activity_layout.addWidget(self._activity, 1)
+        activity_layout.addWidget(activity_note)
+
+        self._tabs = QTabWidget()
+        self._tabs.addTab(users_tab, self.tr("Users"))
+        self._tabs.addTab(activity_tab, self.tr("Activity"))
+        self._tabs.currentChanged.connect(lambda _index: self.refresh())
+
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
-        layout.addLayout(top)
-        layout.addWidget(self._table, 1)
-        layout.addWidget(note)
+        layout.addWidget(self._tabs, 1)
         layout.addWidget(buttons)
 
         self._table.itemSelectionChanged.connect(self._update_buttons)
@@ -239,6 +294,7 @@ class UsersDialog(QDialog):
     def refresh(self) -> None:
         with self._session_factory() as session:
             users = list_users(session)
+            events = list_user_events(session)
         self._user_ids = [user.id for user in users]
         self._table.setRowCount(len(users))
         for row, user in enumerate(users):
@@ -251,6 +307,17 @@ class UsersDialog(QDialog):
             )
             for column, value in enumerate(cells):
                 self._table.setItem(row, column, QTableWidgetItem(value))
+        self._activity.setRowCount(len(events))
+        for row, event in enumerate(events):
+            cells = (
+                format_datetime(event.fecha),
+                event.usuario_nombre or "—",
+                user_action_label(event.accion),
+                event.afectado_nombre,
+                _event_detail(event),
+            )
+            for column, value in enumerate(cells):
+                self._activity.setItem(row, column, QTableWidgetItem(value))
         self._update_buttons()
 
     def _selected_id(self) -> int | None:
@@ -279,21 +346,26 @@ class UsersDialog(QDialog):
         self._active_button.setText(self.tr("Deactivate") if active else self.tr("Activate"))
 
     def _new_user(self) -> None:
-        if UserFormDialog(self._session_factory, parent=self).exec():
+        if UserFormDialog(self._session_factory, parent=self, actor=self._current_user).exec():
             self.refresh()
 
     def _edit_selected(self) -> None:
         user_id = self._selected_id()
         if user_id is None:
             return
-        if UserFormDialog(self._session_factory, user_id, parent=self).exec():
+        dialog = UserFormDialog(
+            self._session_factory, user_id, parent=self, actor=self._current_user
+        )
+        if dialog.exec():
             self.refresh()
 
     def _change_password(self) -> None:
         user_id = self._selected_id()
         if user_id is None:
             return
-        dialog = SetPasswordDialog(self._session_factory, user_id, parent=self)
+        dialog = SetPasswordDialog(
+            self._session_factory, user_id, parent=self, actor=self._current_user
+        )
         if dialog.exec():
             self.refresh()
 
@@ -313,7 +385,7 @@ class UsersDialog(QDialog):
                 user = session.get(User, user_id)
                 if user is None:
                     return
-                set_active(session, user, not user.activo)
+                set_active(session, user, not user.activo, actor=self._current_user)
                 session.commit()
         except ValueError as exc:
             QMessageBox.warning(self, self.windowTitle(), str(exc))
@@ -334,10 +406,13 @@ class SetPasswordDialog(QDialog):
         session_factory: sessionmaker[Session],
         user_id: int,
         parent: QWidget | None = None,
+        *,
+        actor: CurrentUser | None = None,
     ) -> None:
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
+        self._actor = actor
         self.setWindowTitle(self.tr("Change password"))
         self.setMinimumWidth(420)
 
@@ -377,7 +452,7 @@ class SetPasswordDialog(QDialog):
                 if user is None:
                     self._message.setText(self.tr("The user no longer exists."))
                     return
-                set_password(session, user, self._password.text())
+                set_password(session, user, self._password.text(), actor=self._actor)
                 session.commit()
         except ValueError as exc:
             self._message.setText(str(exc))

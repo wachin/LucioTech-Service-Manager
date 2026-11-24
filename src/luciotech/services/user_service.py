@@ -10,6 +10,11 @@ dependencias nuevas.
 
 Los servicios reciben la sesión y hacen `flush`, no `commit`; el commit lo pone la interfaz,
 igual que en el resto del proyecto.
+
+Toda alta, cambio de rol o de nombre, activación, desactivación y cambio de contraseña deja
+un renglón en la bitácora `eventos_usuario` con quién lo hizo y a quién. La contraseña que
+restablece un administrador queda marcada como temporal (`debe_cambiar_contrasena`) para que
+la persona afectada tenga que poner una propia en el siguiente acceso.
 """
 
 from __future__ import annotations
@@ -26,8 +31,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from luciotech.config import DEFAULT_USER
-from luciotech.database.enums import UserRole
-from luciotech.database.models import User
+from luciotech.database.enums import UserAuditAction, UserRole
+from luciotech.database.models import User, UserEvent
 
 HASH_ALGORITHM = "sha256"
 HASH_ITERATIONS = 260_000
@@ -170,6 +175,39 @@ def list_users(session: Session, *, only_active: bool = False) -> list[User]:
     return list(session.scalars(query.order_by(User.activo.desc(), User.nombre_completo)))
 
 
+def record_user_event(
+    session: Session,
+    *,
+    actor: CurrentUser | None,
+    affected: User,
+    action: UserAuditAction | str,
+    detail: str | None = None,
+) -> UserEvent:
+    """Anota en la bitácora de cuentas quién hizo qué y a quién (sin commit)."""
+    event = UserEvent(
+        usuario_id=actor.id if actor is not None else None,
+        usuario_nombre=actor.display_name if actor is not None else "",
+        afectado_id=affected.id,
+        afectado_nombre=affected.nombre_completo,
+        accion=UserAuditAction(action).value,
+        detalle=detail,
+    )
+    session.add(event)
+    session.flush()
+    return event
+
+
+def list_user_events(session: Session, *, limit: int = 200) -> list[UserEvent]:
+    """Últimos movimientos de cuentas, del más nuevo al más viejo."""
+    return list(
+        session.scalars(
+            select(UserEvent)
+            .order_by(UserEvent.fecha.desc(), UserEvent.id.desc())
+            .limit(limit)
+        )
+    )
+
+
 def list_login_users(session: Session) -> list[User]:
     """Cuentas activas para la lista de acceso, en el orden del último acceso.
 
@@ -199,11 +237,13 @@ def create_user(
     full_name: str,
     password: str,
     role: UserRole | str = UserRole.TECNICO,
+    actor: CurrentUser | None = None,
 ) -> User:
     """Crea un usuario y lo deja en la sesión (sin commit).
 
     Valida el nombre de acceso, el nombre completo y la contraseña, y rechaza los nombres de
-    acceso repetidos sin importar cómo se escriban.
+    acceso repetidos sin importar cómo se escriban. `actor` es quien da el alta, para la
+    bitácora; el alta que se hace desde el acceso no tiene nadie con quien firmarla.
     """
     value = validate_username(username)
     name = validate_full_name(full_name)
@@ -221,9 +261,13 @@ def create_user(
         contrasena_hash=hash_password(password),
         rol=role_value,
         activo=True,
+        debe_cambiar_contrasena=False,
     )
     session.add(user)
     session.flush()
+    record_user_event(
+        session, actor=actor, affected=user, action=UserAuditAction.ALTA, detail=role_value
+    )
     return user
 
 
@@ -264,11 +308,32 @@ def current_user_of(user: User) -> CurrentUser:
     )
 
 
-def set_password(session: Session, user: User, password: str) -> None:
-    """Cambia la contraseña sin pedir la anterior: lo usa el administrador."""
+def _store_password(session: Session, user: User, password: str, *, must_change: bool) -> None:
     validate_password(password)
     user.contrasena_hash = hash_password(password)
+    user.debe_cambiar_contrasena = must_change
     session.flush()
+
+
+def set_password(
+    session: Session,
+    user: User,
+    password: str,
+    *,
+    actor: CurrentUser | None = None,
+) -> None:
+    """Restablece la contraseña de otra cuenta, sin pedir la anterior.
+
+    Queda marcada como temporal: solo la conoce quien la escribió, así que la persona tendrá
+    que elegir una propia en su siguiente acceso.
+    """
+    _store_password(session, user, password, must_change=True)
+    record_user_event(
+        session,
+        actor=actor,
+        affected=user,
+        action=UserAuditAction.CONTRASENA_RESTABLECIDA,
+    )
 
 
 def change_own_password(session: Session, user: User, current: str, new: str) -> None:
@@ -277,7 +342,13 @@ def change_own_password(session: Session, user: User, current: str, new: str) ->
         raise ValueError(
             QCoreApplication.translate("LucioTech", "The current password is not correct.")
         )
-    set_password(session, user, new)
+    _store_password(session, user, new, must_change=False)
+    record_user_event(
+        session,
+        actor=current_user_of(user),
+        affected=user,
+        action=UserAuditAction.CONTRASENA_PROPIA,
+    )
 
 
 def update_user(
@@ -286,24 +357,55 @@ def update_user(
     *,
     full_name: str | None = None,
     role: UserRole | str | None = None,
+    actor: CurrentUser | None = None,
 ) -> None:
     """Cambia el nombre visible o el rol, sin dejar el sistema sin administradores."""
     if full_name is not None:
-        user.nombre_completo = validate_full_name(full_name)
+        name = validate_full_name(full_name)
+        if name != user.nombre_completo:
+            user.nombre_completo = name
+            record_user_event(
+                session,
+                actor=actor,
+                affected=user,
+                action=UserAuditAction.EDICION,
+                detail=name,
+            )
     if role is not None:
         new_role = UserRole(role).value
-        if user.rol == UserRole.ADMINISTRADOR.value and new_role != user.rol:
-            _ensure_another_admin(session, user)
-        user.rol = new_role
+        if new_role != user.rol:
+            if user.rol == UserRole.ADMINISTRADOR.value:
+                _ensure_another_admin(session, user)
+            previous = user.rol
+            user.rol = new_role
+            record_user_event(
+                session,
+                actor=actor,
+                affected=user,
+                action=UserAuditAction.ROL,
+                detail=f"{previous} → {new_role}",
+            )
     session.flush()
 
 
-def set_active(session: Session, user: User, active: bool) -> None:
+def set_active(
+    session: Session,
+    user: User,
+    active: bool,
+    *,
+    actor: CurrentUser | None = None,
+) -> None:
     """Activa o desactiva una cuenta; la última cuenta de administrador no se puede apagar."""
     if not active:
         _ensure_another_admin(session, user)
     user.activo = active
     session.flush()
+    record_user_event(
+        session,
+        actor=actor,
+        affected=user,
+        action=UserAuditAction.ACTIVADO if active else UserAuditAction.DESACTIVADO,
+    )
 
 
 def _ensure_another_admin(session: Session, user: User) -> None:

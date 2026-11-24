@@ -192,6 +192,16 @@
       <source>The password could not be changed. Please try again.</source>
       <translation type="unfinished">No se pudo cambiar la contraseña. Intente de nuevo.</translation>
     </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="410" />
+      <source>Change your password</source>
+      <translation>Cambie su contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="435" />
+      <source>An administrator reset your password. Choose a new one to continue.</source>
+      <translation>Un administrador restableció su contraseña. Elija una nueva para continuar.</translation>
+    </message>
   </context>
   <context>
     <name>CustomerDialog</name>
@@ -701,6 +711,11 @@ Do you want to save anyway?</source>
       <source>Could not check the credentials. Please try again.</source>
       <translation type="unfinished">No se pudo comprobar el acceso. Intente de nuevo.</translation>
     </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="180" />
+      <source>You must choose a new password before continuing.</source>
+      <translation>Debe elegir una contraseña nueva para continuar.</translation>
+    </message>
   </context>
   <context>
     <name>LucioTech</name>
@@ -1060,6 +1075,41 @@ Do you want to save anyway?</source>
       <location filename="../src/luciotech/ui/labels.py" line="269" />
       <source>Technician</source>
       <translation type="unfinished">Técnico</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="300" />
+      <source>User created</source>
+      <translation>Alta de usuario</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="301" />
+      <source>Details changed</source>
+      <translation>Datos modificados</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="302" />
+      <source>Role changed</source>
+      <translation>Cambio de rol</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="303" />
+      <source>Password changed</source>
+      <translation>Contraseña cambiada</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="304" />
+      <source>Password reset</source>
+      <translation>Contraseña restablecida</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="305" />
+      <source>Account activated</source>
+      <translation>Cuenta activada</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/labels.py" line="306" />
+      <source>Account deactivated</source>
+      <translation>Cuenta desactivada</translation>
     </message>
     <message>
       <location filename="../src/luciotech/ui/labels.py" line="270" />
@@ -3338,6 +3388,41 @@ Do you want to continue?</source>
       <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="304" />
       <source>The status could not be changed. Please try again.</source>
       <translation type="unfinished">No se pudo cambiar el estado. Intente de nuevo.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="250" />
+      <source>Activity</source>
+      <translation>Actividad</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <source>Date</source>
+      <translation>Fecha</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <source>User</source>
+      <translation>Usuario</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <source>Action</source>
+      <translation>Acción</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <source>Affected user</source>
+      <translation>Usuario afectado</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <source>Details</source>
+      <translation>Detalle</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="238" />
+      <source>This log records who created, changed, disabled or reset the password of each account.</source>
+      <translation>Esta bitácora registra quién creó, modificó, desactivó o restableció la contraseña de cada cuenta.</translation>
     </message>
   </context>
 </TS>
