@@ -13,7 +13,7 @@
   <img alt="SQLite" src="https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite&logoColor=white">
   <img alt="Linux y Windows" src="https://img.shields.io/badge/platform-Linux%20%7C%20Windows-2C2C2C.svg">
   <img alt="Funciona 100 % sin conexión" src="https://img.shields.io/badge/offline-100%25-4C1.svg">
-  <img alt="486 pruebas pasan" src="https://img.shields.io/badge/tests-488%20passing-brightgreen.svg">
+  <img alt="490 pruebas pasan" src="https://img.shields.io/badge/tests-490%20passing-brightgreen.svg">
   <img alt="Fase 3 cerrada" src="https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg">
 </p>
 
@@ -525,7 +525,7 @@ Remove-Item "$env:TEMP/luciotech-prueba.sqlite3" -ErrorAction SilentlyContinue
 
 ### Qué puedes probar
 
-1. **Primer arranque:** la primera vez que la aplicación abre una base de datos muestra **Bienvenido a LucioTech Service Manager** y pide la cuenta de administrador: nombre completo, nombre de usuario y contraseña (al menos 8 caracteres, escrita dos veces). Ese nombre es el que aparecerá en los documentos que imprimas. Después, cada arranque empieza con la ventana de acceso, que lista las cuentas del taller en un desplegable: elige tu nombre y escribe solo tu contraseña.
+1. **Primer arranque:** la primera vez que la aplicación abre una base de datos muestra **Bienvenido a LucioTech Service Manager** y pide la cuenta de administrador: nombre completo, nombre de usuario y contraseña (al menos 4 caracteres, escrita dos veces). Ese nombre es el que aparecerá en los documentos que imprimas. Después, cada arranque empieza con la ventana de acceso, que lista las cuentas del taller en un desplegable: elige tu nombre y escribe solo tu contraseña.
 2. **Inicio:** las tarjetas muestran conteos en vivo. Con una base vacía muestran 0 o `0.00 USD`.
 3. **Clientes:** pulsa **Nuevo cliente** y prueba:
    - dejar el nombre vacío (debe mostrar «Campo obligatorio»);
@@ -652,7 +652,7 @@ La suite usa una base de datos SQLite temporal para cada prueba y ejecuta la int
 
 ### Estado de las pruebas en Windows
 
-Verificado en Windows 11 con Python 3.13.15 y PyQt6 6.9.0: la suite completa pasa (alrededor de 1 minuto). En Linux la misma suite también pasa: **488 de 488** con `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, unos 50 segundos).
+Verificado en Windows 11 con Python 3.13.15 y PyQt6 6.9.0: la suite completa pasa (alrededor de 1 minuto). En Linux la misma suite también pasa: **490 de 490** con `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, unos 50 segundos).
 
 Antes fallaba una prueba solo en Windows: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. La causa no era un error del producto sino una suposición dependiente de la plataforma en la prueba. La prueba redimensionaba el editor de texto enriquecido a 900 px fijos y esperaba que las dos filas de la barra cupieran sin desplazamiento horizontal. En Windows las métricas de la fuente de la barra son más anchas, así que la fila de acciones necesita **976 px** y se desplaza legítimamente a 900 px —por tanto su altura (47 px, barra más barra de desplazamiento) era correcta, y solo la fila de formato (657 px) volvía a los 33 px compactos—. En Linux la misma fila mide menos de 900 px, así que la suposición se cumplía.
 
@@ -663,7 +663,7 @@ Se hicieron dos cambios:
 
 La altura compacta (33 px) y la expandida (47 px) no cambian; el arreglo solo elimina el riesgo de altura obsoleta y hace la prueba independiente de la plataforma.
 
-Un detalle inofensivo mientras corre la suite: pytest imprime `Windows fatal exception: code 0x80040155` seguido de una traza que termina en `print_document` o `render_to_pdf`. Viene de construir un `QPrinter` bajo la plataforma offscreen, donde no hay un subsistema de impresión real. Es una excepción de primera oportunidad que Qt maneja internamente: las pruebas afectadas (`test_render_to_pdf_creates_a_pdf` y las pruebas de PDF de `tests/test_print_page.py`) siguen pasando y los PDF se escriben correctamente. La línea de resumen (`488 passed`) es la que cuenta.
+Un detalle inofensivo mientras corre la suite: pytest imprime `Windows fatal exception: code 0x80040155` seguido de una traza que termina en `print_document` o `render_to_pdf`. Viene de construir un `QPrinter` bajo la plataforma offscreen, donde no hay un subsistema de impresión real. Es una excepción de primera oportunidad que Qt maneja internamente: las pruebas afectadas (`test_render_to_pdf_creates_a_pdf` y las pruebas de PDF de `tests/test_print_page.py`) siguen pasando y los PDF se escriben correctamente. La línea de resumen (`490 passed`) es la que cuenta.
 
 Hay una trampa real al lado, y costó un segfault: `QPrintPreviewDialog` **no** toma posesión del `QPrinter` que recibe, guarda un puntero crudo. Pasar un temporal (`QPrintPreviewDialog(_printer(), None)`) deja la vista previa apuntando a memoria liberada y el proceso muere después, lejos de la causa. Las pruebas mantienen la impresora en una variable, y `print_document` hace lo mismo.
 
@@ -765,12 +765,12 @@ En esta aplicación viven dos tipos de contraseña y se tratan de forma distinta
 El taller trabaja con **cuentas**: cada persona entra con su propio nombre de usuario y contraseña, y su nombre es el que firma lo que hace.
 
 - **Primer arranque.** Si la base de datos no tiene cuentas, la aplicación pide el administrador del taller (nombre completo, nombre de usuario y contraseña dos veces). No hay una cuenta por defecto con una contraseña conocida que cambiar después.
-- **Cada arranque.** La ventana de acceso muestra las cuentas activas del taller por su nombre completo en un desplegable, así que nadie tiene que recordar ni escribir un nombre de usuario: elige tu nombre y escribe la contraseña. La cuenta usada más recientemente queda preseleccionada; las cuentas desactivadas están ocultas. La casilla **Mostrar contraseña** permite comprobar lo escrito antes de pulsar **Entrar**. Cinco intentos fallidos son solo cinco oportunidades más: nada se bloquea y nada se escribe en ningún sitio.
+- **Cada arranque.** La ventana de acceso muestra las cuentas activas del taller por su nombre completo en un desplegable, así que nadie tiene que recordar ni escribir un nombre de usuario: elige tu nombre y escribe la contraseña. La cuenta usada más recientemente queda preseleccionada; las cuentas desactivadas están ocultas. La casilla **Mostrar contraseña** permite comprobar lo escrito antes de pulsar **Entrar**. Cinco intentos fallidos son solo cinco oportunidades más: nada se bloquea y nada se escribe en ningún sitio. **Nuevo usuario…** abre el mismo formulario que **Archivo ▸ Usuarios…**, así que se puede crear otra cuenta sin entrar antes como administrador; la cuenta nueva queda seleccionada para escribir su contraseña y entrar.
 - **Roles.** Un **Administrador** puede gestionar usuarios; un **Técnico** trabaja con órdenes, clientes, equipos y dinero, pero no ve **Archivo ▸ Usuarios…**. Ambos ven los mismos datos del taller: es una base de datos por taller, no una por usuario.
 - **El nombre en el papel.** El nombre de la sesión va a la barra de estado, a la columna **Usuario** del historial de la orden, al técnico propuesto en el formulario de recepción (todavía editable) y al pie de cada documento que imprime ese usuario: `Generado el 01/11/2026 12:30 por Ana Torres`.
 - **Salir.** **Archivo ▸ Cerrar sesión** cierra la ventana y muestra el acceso de nuevo sin salir del programa; **Archivo ▸ Salir** (o `Ctrl+Q`) cierra la aplicación.
 
-Las contraseñas deben tener al menos 8 caracteres. Los nombres de usuario se guardan en minúsculas, así que `Ana` y `ana` son la misma cuenta, y no se pueden cambiar una vez creados: son la firma que queda en el historial.
+Las contraseñas deben tener al menos 4 caracteres. Los nombres de usuario se guardan en minúsculas, así que `Ana` y `ana` son la misma cuenta, y no se pueden cambiar una vez creados: son la firma que queda en el historial.
 
 ## Solución de problemas
 

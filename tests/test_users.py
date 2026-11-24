@@ -107,9 +107,15 @@ def test_usernames_and_passwords_are_validated(session: Session) -> None:
     with pytest.raises(ValueError, match="sin tilde"):
         create_user(session, username="ana torres", full_name="Ana", password=PASSWORD)
     with pytest.raises(ValueError, match=f"al menos {MIN_PASSWORD_LENGTH}"):
-        create_user(session, username="ana", full_name="Ana", password="corta")
+        create_user(session, username="ana", full_name="Ana", password="abc")
     with pytest.raises(ValueError, match="nombre completo"):
         create_user(session, username="ana", full_name="   ", password=PASSWORD)
+
+
+def test_a_four_character_password_is_enough(session: Session) -> None:
+    assert MIN_PASSWORD_LENGTH == 4
+    user = create_user(session, username="ana", full_name="Ana", password="1234")
+    assert verify_password("1234", user.contrasena_hash)
 
 
 def test_validate_username_returns_the_value_that_gets_stored() -> None:

@@ -57,6 +57,7 @@ class UserFormDialog(QDialog):
         super().__init__(parent)
         self._session_factory = session_factory
         self._user_id = user_id
+        self.username: str | None = None
         self.setWindowTitle(
             self.tr("Edit user") if user_id is not None else self.tr("New user")
         )
@@ -123,13 +124,14 @@ class UserFormDialog(QDialog):
         try:
             with self._session_factory() as session:
                 if self._user_id is None:
-                    create_user(
+                    created = create_user(
                         session,
                         username=self._username.text(),
                         full_name=self._full_name.text(),
                         password=self._password.text(),
                         role=self._role.currentData(),
                     )
+                    self.username = created.nombre_usuario
                 else:
                     user = session.get(User, self._user_id)
                     if user is None:

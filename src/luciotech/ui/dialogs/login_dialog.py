@@ -6,7 +6,8 @@ Son dos diálogos distintos porque son dos momentos distintos:
   cuando la tabla `usuarios` está vacía. No se pide una contraseña que nadie conoce: se crea la
   cuenta de administrador del taller.
 - `LoginDialog` es el de todos los días: muestra los usuarios del taller en una lista
-  desplegable y pide solo la contraseña.
+  desplegable, pide solo la contraseña y también permite dar de alta una cuenta nueva sin
+  tener que entrar antes con la de un administrador.
 
 Los dos devuelven en `self.user` un `CurrentUser`, que es lo que después viaja a la ventana, al
 historial de las órdenes y al pie de los documentos.
@@ -31,6 +32,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from luciotech.config import APP_CONFIG, DEFAULT_USER
 from luciotech.database.models import User
+from luciotech.ui.dialogs.users_dialog import UserFormDialog
 from luciotech.ui.labels import role_label
 from luciotech.services.user_service import (
     CurrentUser,
@@ -73,16 +75,7 @@ class LoginDialog(QDialog):
 
         self._user_combo = QComboBox()
         self._user_combo.setMinimumWidth(260)
-        with self._session_factory() as session:
-            for index, user in enumerate(list_login_users(session)):
-                label = user.nombre_completo or user.nombre_usuario
-                self._user_combo.addItem(label, user.nombre_usuario)
-                self._user_combo.setItemData(
-                    index,
-                    f"{user.nombre_usuario} · {role_label(user.rol)}",
-                    Qt.ItemDataRole.ToolTipRole,
-                )
-        self._user_combo.setCurrentIndex(0)
+        self._reload_users()
 
         self._password = QLineEdit()
         self._password.setPlaceholderText(self.tr("Password"))
@@ -104,6 +97,10 @@ class LoginDialog(QDialog):
         )
         self._enter_button.setDefault(True)
         buttons.addButton(self.tr("Quit"), QDialogButtonBox.ButtonRole.RejectRole)
+        self._create_button = buttons.addButton(
+            self.tr("New user…"), QDialogButtonBox.ButtonRole.ActionRole
+        )
+        self._create_button.clicked.connect(self._create_user)
         buttons.accepted.connect(self._attempt_login)
         buttons.rejected.connect(self.reject)
 
@@ -121,6 +118,32 @@ class LoginDialog(QDialog):
         self._password.setEchoMode(
             QLineEdit.EchoMode.Normal if shown else QLineEdit.EchoMode.Password
         )
+
+    def _reload_users(self, selected: str | None = None) -> None:
+        """Vuelve a llenar la lista con las cuentas activas y deja elegida la indicada."""
+        self._user_combo.clear()
+        with self._session_factory() as session:
+            for index, user in enumerate(list_login_users(session)):
+                label = user.nombre_completo or user.nombre_usuario
+                self._user_combo.addItem(label, user.nombre_usuario)
+                self._user_combo.setItemData(
+                    index,
+                    f"{user.nombre_usuario} · {role_label(user.rol)}",
+                    Qt.ItemDataRole.ToolTipRole,
+                )
+        chosen = self._user_combo.findData(selected) if selected else -1
+        self._user_combo.setCurrentIndex(max(chosen, 0))
+
+    def _create_user(self) -> None:
+        """Da de alta una cuenta sin salir del acceso y la deja lista para entrar."""
+        dialog = UserFormDialog(self._session_factory, parent=self)
+        dialog.exec()
+        if dialog.result() != QDialog.DialogCode.Accepted or not dialog.username:
+            return
+        self._reload_users(dialog.username)
+        self._message.clear()
+        self._password.clear()
+        self._password.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def _attempt_login(self) -> None:
         username = self._user_combo.currentData()

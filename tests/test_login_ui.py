@@ -236,6 +236,36 @@ def test_login_enters_with_the_chosen_account(
     assert dialog.user.display_name == "Luis Paredes"
 
 
+def test_a_new_user_can_be_created_from_the_login_window(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _seed(session_factory)
+    dialog = LoginDialog(session_factory)
+    qtbot.addWidget(dialog)
+    assert dialog._user_combo.count() == 1
+
+    def fill_and_save(form: UserFormDialog) -> None:
+        form._full_name.setText("Luis Paredes")
+        form._username.setText("luis")
+        form._password.setText("1234")
+        form._repeat.setText("1234")
+        form._role.setCurrentIndex(form._role.findData(UserRole.TECNICO.value))
+        form._save()
+
+    monkeypatch.setattr(UserFormDialog, "exec", fill_and_save)
+
+    dialog._create_user()
+
+    assert dialog._user_combo.count() == 2
+    assert dialog._user_combo.currentData() == "luis"
+    assert dialog._password.text() == ""
+    with session_factory() as session:
+        user = get_user(session, "luis")
+        assert user is not None
+        assert user.rol == UserRole.TECNICO.value
+        assert authenticate(session, "luis", "1234") is not None
+
+
 def test_login_explains_when_no_active_account_is_left(
     qtbot: QtBot, session_factory: sessionmaker[Session]
 ) -> None:

@@ -677,6 +677,11 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Salir</translation>
     </message>
     <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="111" />
+      <source>New user…</source>
+      <translation type="unfinished">Nuevo usuario…</translation>
+    </message>
+    <message>
       <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="129" />
       <source>There is no active user to sign in.</source>
       <translation type="unfinished">No hay ningún usuario activo para entrar.</translation>
