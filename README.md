@@ -1,25 +1,205 @@
 # LucioTech Service Manager
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41cd52.svg)](https://riverbankcomputing.com/software/pyqt/)
-[![Tests](https://img.shields.io/badge/tests-484%2F484-brightgreen.svg)](#testing)
-[![Status](https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg)](ROADMAP.md)
+<p align="center">
+  <strong>Offline desktop management for a repair workshop</strong><br/>
+  Reception → diagnosis → budget → repair → delivery, with the paperwork ready to print.
+</p>
 
-A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**.
+<p align="center">
+  <a href="LICENSE"><img alt="License: GPL v3" src="https://img.shields.io/badge/license-GPLv3-blue.svg"></a>
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-3776AB.svg?logo=python&logoColor=white">
+  <img alt="PyQt6" src="https://img.shields.io/badge/GUI-PyQt6-41CD52.svg?logo=qt&logoColor=white">
+  <img alt="SQLAlchemy 2.0" src="https://img.shields.io/badge/ORM-SQLAlchemy%202.0-D71F00.svg">
+  <img alt="SQLite" src="https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite&logoColor=white">
+  <img alt="Linux and Windows" src="https://img.shields.io/badge/platform-Linux%20%7C%20Windows-2C2C2C.svg">
+  <img alt="Runs 100% offline" src="https://img.shields.io/badge/offline-100%25-4C1.svg">
+  <img alt="484 tests passing" src="https://img.shields.io/badge/tests-484%20passing-brightgreen.svg">
+  <img alt="Phase 3 complete" src="https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg">
+</p>
 
-The application works fully offline and does not send data to any external server.
+**English** · [🇪🇸 Leer en español](README_ES.md)
 
-> **Status:** Phase 1 (runnable core), Phase 2 (diagnosis, predefined texts and photographs) and Phase 3 (budgets, payments, PDF and printing) are closed. Phase 3 delivered the budget line items and the **Dinero** tab, the trash with restore, the five documents of §13.1 (reception receipt, budget, technical report, delivery receipt and full history) with page numbers, header and footer, A4/Letter paper, configurable margins and PDF export with a descriptive file name, the order detail in four tabs, user accounts with password login and the **Configuración** screen for workshop data, taxes, terms and conditions and the warranty. Phase 4 (reports, backups, themes, translations and packaging) is next and has not started yet. See [`ROADMAP.md`](ROADMAP.md) for details.
+A desktop application written in Python 3 and PyQt6 to record the intake, diagnosis, repair and delivery of electronic equipment at the technical service of **Ing. Lucio**. It works fully offline: the database, the photographs and the printed documents never leave the computer.
 
-> **Language note:** the application's user interface is in Spanish, because it is made for a Spanish-speaking service technician. This README is in English for developers. Translations of the interface are planned for Phase 4.
+This README is written for two readers at once. If you repair equipment, start with [Why a technician would use it](#why-a-technician-would-use-it) and [How it works](#how-it-works); if you are a developer, the [Project structure](#project-structure) and [Testing](#testing) sections will get you productive.
+
+> **Status:** Phase 1 (runnable core), Phase 2 (diagnosis, predefined texts and photographs) and Phase 3 (budgets, payments, PDF and printing) are closed. Phase 3 delivered the budget line items and the **Dinero** tab, the trash with restore, the five documents of §13.1 (reception receipt, budget, technical report, delivery receipt and full history) with page numbers, header and footer, A4/Letter paper, configurable margins and PDF export with a descriptive file name, the order detail in four tabs, user accounts with password login and the **Configuración** screen for workshop data, taxes, terms and conditions and the warranty. Phase 4 (reports, backups, themes and packaging) is next and has not started yet; the multilingual interface of §21 is already in place. See [`ROADMAP.md`](ROADMAP.md) for details.
+
+## Why a technician would use it
+
+- **One order per device, from the counter to the delivery.** The order keeps the client, the equipment, the reported problem, the diagnosis, the photographs, the budget, every payment and the whole history in one place. Nothing lives in a notebook, a spreadsheet and a folder at the same time.
+- **The paperwork is part of the flow, not a separate job.** The five documents of the workshop — reception receipt, budget, technical report, delivery receipt and full history — are generated from the same data you already typed, with the workshop header, page numbers and the legal terms you configured.
+- **The money has one formula.** Budget lines, diagnosis fee, discount, tax, deposits, payments and balance are calculated in a single place, so the screen, the receipt, the budget and the delivery note never disagree.
+- **It works with no internet and no account.** A SQLite file holds everything; the program does not phone home. That matters in a workshop with a flaky connection and for client data that should stay on the bench.
+- **Each technician signs their own work.** Accounts with roles, a session name in the status bar, and that name printed in the history and the footer of every document.
+- **Nothing is thrown away.** Deleting an order is logical: it moves to the trash and can be restored. Payments are voided, not erased, and every status change is kept.
+
+## How it works
+
+The diagrams below are the shortest path to understanding the program. All of them render natively on GitHub.
+
+### A day at the workshop
+
+What the technician does, and which document comes out of each step.
+
+```mermaid
+flowchart TD
+    A([Client arrives with the device]) --> B[Reception<br/>client, equipment, accessories, photos]
+    B --> C[[Reception receipt<br/>printed and signed]]
+    C --> D[Diagnosis<br/>notes, photos, findings]
+    D --> E{Can it be repaired?}
+    E -- No --> F[[Technical report<br/>not repairable]]
+    E -- Yes --> G[Budget<br/>line items, discount, tax, total]
+    G --> H{Client approves?}
+    H -- No --> I[Equipment returned<br/>without repair]
+    H -- Yes --> J{Parts in stock?}
+    J -- No --> K[Waiting for parts] --> J
+    J -- Yes --> L[Repair<br/>work performed and parts used]
+    L --> M[Ready for delivery<br/>technical report]
+    M --> N[Delivery<br/>payments, balance, warranty]
+    N --> O([[Delivery receipt<br/>with warranty]])
+    F --> N
+    I --> N
+```
+
+### The life of an order
+
+The states the order goes through. They match the status selector and the **Next step** button in the order window; today any status can be set from any other, because the transition rules are still pending.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Received
+    Received --> PendingDiagnosis
+    PendingDiagnosis --> Diagnosed
+    Diagnosed --> AwaitingApproval
+    AwaitingApproval --> Repairing: budget approved
+    AwaitingApproval --> Delivered: budget rejected
+    Repairing --> WaitingForParts
+    WaitingForParts --> Repairing
+    Repairing --> Repaired
+    Repaired --> ReadyForDelivery
+    ReadyForDelivery --> Delivered
+    PendingDiagnosis --> NotRepairable
+    NotRepairable --> Delivered
+    Received --> Cancelled
+    Delivered --> [*]
+    Cancelled --> [*]
+    note right of Delivered
+        Cancelling a service is not deleting it:
+        deleted orders go to the trash and can be restored.
+    end note
+```
+
+### One source of truth for the money
+
+Every amount on screen and on paper is produced by the same totals formula (§5.3). This is why a payment voided in the **Money** tab also disappears from the delivery receipt.
+
+```mermaid
+flowchart LR
+    L[Budget lines<br/>parts, labour, services] --> T{{totals_service}}
+    D[Diagnosis fee] --> T
+    DIS[Discount] --> T
+    TAX[Tax<br/>off by default] --> T
+    P[Payments and deposits<br/>voided ones excluded] --> T
+    T --> S[(Stored totals<br/>on the order)]
+    T --> UI[Money tab]
+    T --> R[Reception receipt]
+    T --> B[Budget]
+    T --> DR[Delivery receipt]
+```
+
+### Inside the application
+
+The interface never writes SQL: it calls services, services use repositories, repositories use SQLAlchemy, and SQLAlchemy talks to the local SQLite file.
+
+```mermaid
+flowchart TB
+    subgraph UI["PyQt6 interface"]
+        MW[Main window<br/>Home · Orders · Customers · Equipment · Trash]
+        OD[Order detail<br/>Summary · Work · Money · History]
+        DOC[Five printable documents<br/>preview and PDF]
+    end
+    subgraph SVC["Services — business rules, no commits"]
+        OS[order_service<br/>reception_service]
+        TS[totals_service]
+        SS[state_service]
+        SET[settings_service]
+        US[user_service]
+    end
+    subgraph DATA["Persistence"]
+        REP[Repositories<br/>flush only]
+        ORM[SQLAlchemy 2.0 models]
+        DB[(SQLite<br/>local file)]
+        FILES[(Photographs<br/>UUID files on disk)]
+    end
+    MW --> SVC
+    OD --> SVC
+    DOC --> SVC
+    SVC --> REP --> ORM --> DB
+    OD --> FILES
+    DOC --> FILES
+```
+
+### The data model
+
+The tables that matter on a normal day. `state_history` and `events` are the order's audit trail; `usuarios` is not linked by foreign key because the history keeps the name of whoever signed each change.
+
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ EQUIPMENT : owns
+    CUSTOMERS ||--o{ SERVICE_ORDERS : places
+    EQUIPMENT ||--o{ SERVICE_ORDERS : "is serviced in"
+    SERVICE_ORDERS ||--o{ BUDGET_LINES : "priced with"
+    SERVICE_ORDERS ||--o{ PAYMENTS : "paid with"
+    SERVICE_ORDERS ||--o{ PHOTOGRAPHS : "documented by"
+    SERVICE_ORDERS ||--o{ STATE_HISTORY : "moves through"
+    SERVICE_ORDERS ||--o{ EVENTS : "noted in"
+    CUSTOMERS {
+        int id
+        string nombre_completo
+        string numero_identificacion
+        string telefono_principal
+    }
+    EQUIPMENT {
+        int id
+        string tipo_equipo
+        string marca
+        string modelo
+        string numero_serie
+        string accesorios_recibidos
+    }
+    SERVICE_ORDERS {
+        int id
+        string numero_orden
+        string estado
+        string prioridad
+        decimal total
+        decimal saldo_pendiente
+        bool activo
+    }
+    BUDGET_LINES {
+        int id
+        string tipo_linea
+        decimal cantidad
+        decimal precio_unitario
+    }
+    PAYMENTS {
+        int id
+        string tipo_pago
+        decimal monto
+        bool anulado
+    }
+```
 
 ## Contents
 
+- [Why a technician would use it](#why-a-technician-would-use-it)
+- [How it works](#how-it-works)
 - [Requirements](#requirements)
 - [Installation on Linux](#installation-on-linux)
 - [Installation on Windows](#installation-on-windows)
 - [Running the application](#running-the-application)
+- [Languages](#languages)
 - [Trying the interface](#trying-the-interface)
 - [Reception receipt and terms and conditions](#reception-receipt-and-terms-and-conditions)
 - [Settings and editable legal texts](#settings-and-editable-legal-texts)
@@ -27,6 +207,7 @@ The application works fully offline and does not send data to any external serve
 - [Project structure](#project-structure)
 - [Data location](#data-location)
 - [Password storage policy](#password-storage-policy)
+- [Users and access](#users-and-access)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
@@ -507,6 +688,9 @@ python -m pytest "tests/test_rich_text_editor.py::test_toolbar_has_the_essential
 │       ├── ui/
 │       │   ├── main_window.py    # Main window with tabs
 │       │   ├── documents.py      # The five printable documents and the print preview (§13.1)
+│       │   ├── labels.py         # Translated labels for values stored in Spanish
+│       │   ├── translations.py   # Loads the chosen language and Qt's own catalogues
+│       │   ├── translations/     # Compiled .qm catalogues, one per language
 │       │   ├── pages/            # Home, orders, clients, equipment and trash pages
 │       │   └── dialogs/          # Forms, order details, login, users and settings
 │       └── utils/
