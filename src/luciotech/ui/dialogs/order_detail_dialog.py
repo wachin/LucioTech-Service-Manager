@@ -223,7 +223,10 @@ class OrderDetailDialog(QDialog):
         self._tabs = QTabWidget()
         self._tabs.addTab(_scrollable(summary_tab), self.tr("Summary"))
         self._tabs.addTab(self._work_tabs, self.tr("Work"))
-        self._tabs.addTab(self._budget_payments, self.tr("Money"))
+        # El dinero no cabe entero en pantallas de 768 px de alto: sin scroll la ventana se
+        # queda corta y Qt comprime las filas de totales hasta aplastar el campo del descuento.
+        # Con la página desplazable, el desglose conserva su alto natural y se recorre.
+        self._tabs.addTab(_scrollable(self._budget_payments), self.tr("Money"))
         # El historial va al lado del dinero y con el alto entero de la ventana: es lo que se
         # mira cuando se duda de un cobro, y en una sección del resumen se quedaba con cuatro
         # filas visibles y una barra de scroll dentro de otra.

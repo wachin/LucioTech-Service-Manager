@@ -5,7 +5,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 import pytest
-from PyQt6.QtWidgets import QDialog, QInputDialog, QTabWidget
+from PyQt6.QtWidgets import QDialog, QInputDialog, QScrollArea, QTabWidget
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -308,7 +308,9 @@ def test_tab_is_present_in_the_order_detail_dialog(
     qtbot.addWidget(dialog)
     labels = [dialog._tabs.tabText(index) for index in range(dialog._tabs.count())]
     assert "Dinero" in labels
-    assert dialog._tabs.widget(labels.index("Dinero")) is dialog._budget_payments
+    page = dialog._tabs.widget(labels.index("Dinero"))
+    assert isinstance(page, QScrollArea)
+    assert page.widget() is dialog._budget_payments
 
 
 def test_budget_change_refreshes_the_dialog_summary(

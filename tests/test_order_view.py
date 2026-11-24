@@ -120,17 +120,19 @@ def test_detail_dialog_groups_everything_in_four_tabs(
     assert sections == ["Siguiente paso", "Orden", "Cliente", "Equipo"]
 
 
-def test_the_summary_page_is_the_only_one_that_scrolls(
+def test_the_long_pages_scroll_instead_of_squeezing_their_content(
     qtbot: QtBot, session_factory: sessionmaker[Session], two_orders: tuple[int, int]
 ) -> None:
-    """El resumen se lee como una ficha larga; el trabajo, el dinero y el historial necesitan el
-    alto entero."""
+    """El resumen se lee como una ficha larga y el dinero no cabe en pantallas bajas: ambos se
+    recorren con scroll en vez de comprimir sus filas. El trabajo y el historial usan el alto
+    entero de la ventana y no lo necesitan."""
     first_id, _ = two_orders
     dialog = OrderDetailDialog(session_factory, first_id, "Ing. Lucio")
     qtbot.addWidget(dialog)
     assert isinstance(dialog._tabs.widget(0), QScrollArea)
     assert not isinstance(dialog._tabs.widget(1), QScrollArea)
-    assert not isinstance(dialog._tabs.widget(2), QScrollArea)
+    assert isinstance(dialog._tabs.widget(2), QScrollArea)
+    assert dialog._tabs.widget(2).widget() is dialog._budget_payments
     assert not isinstance(dialog._tabs.widget(3), QScrollArea)
 
 
