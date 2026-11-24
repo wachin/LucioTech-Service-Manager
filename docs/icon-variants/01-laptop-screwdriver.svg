@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="title desc">
+  <title id="title">Laptop and screwdriver</title>
+  <desc id="desc">A laptop with a check mark on screen and a screwdriver crossing its base.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1E2D"/>
+      <stop offset="1" stop-color="#124356"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#55E3AA"/>
+      <stop offset="1" stop-color="#2FB98A"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD070"/>
+      <stop offset="1" stop-color="#F0A33A"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="4"/>
+
+  <g>
+    <rect x="96" y="110" width="320" height="214" rx="26" fill="#F5FAFC"/>
+    <rect x="122" y="136" width="268" height="162" rx="14" fill="#0A2433"/>
+    <path d="M176 216 L212 252 L286 166" fill="none" stroke="url(#mint)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="76" y="334" width="360" height="30" rx="15" fill="#F5FAFC"/>
+    <rect x="226" y="334" width="60" height="12" rx="6" fill="#0A2433" opacity="0.45"/>
+  </g>
+
+  <g transform="translate(356 322) rotate(45)">
+    <rect x="-24" y="30" width="48" height="120" rx="24" fill="url(#amber)"/>
+    <rect x="-24" y="64" width="48" height="12" fill="#0A2433" opacity="0.18"/>
+    <rect x="-17" y="14" width="34" height="22" rx="11" fill="#F5FAFC"/>
+    <rect x="-9" y="-70" width="18" height="92" rx="9" fill="#F5FAFC"/>
+    <path d="M-9 -70 L9 -70 L6 -104 L-6 -104 Z" fill="#F5FAFC"/>
+  </g>
+</svg>

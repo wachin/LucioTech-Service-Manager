@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="title desc">
+  <title id="title">Gear and magnifying glass</title>
+  <desc id="desc">A large gear inspected with a magnifying glass: diagnosis and precise settings.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1E2D"/>
+      <stop offset="1" stop-color="#124356"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#55E3AA"/>
+      <stop offset="1" stop-color="#2FB98A"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD070"/>
+      <stop offset="1" stop-color="#F0A33A"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="4"/>
+
+  <g transform="translate(216 228)">
+    <g fill="url(#mint)">
+      <rect x="-21" y="-132" width="42" height="66" rx="11"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(45)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(90)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(135)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(180)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(225)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(270)"/>
+      <rect x="-21" y="-132" width="42" height="66" rx="11" transform="rotate(315)"/>
+      <circle r="94"/>
+    </g>
+    <circle r="40" fill="#0D2A3A"/>
+    <circle r="40" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="6"/>
+  </g>
+
+  <g>
+    <path d="M326 334 L424 432" stroke="url(#amber)" stroke-width="34" stroke-linecap="round"/>
+    <circle cx="318" cy="286" r="88" fill="#F5FAFC" fill-opacity="0.08"/>
+    <circle cx="318" cy="286" r="88" fill="none" stroke="#F5FAFC" stroke-width="22"/>
+    <path d="M266 240 A72 72 0 0 1 330 216" fill="none" stroke="#F5FAFC" stroke-opacity="0.55" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>
