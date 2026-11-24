@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
 from luciotech.config import APP_CONFIG, APP_VERSION
@@ -19,12 +21,16 @@ from luciotech.ui.dialogs.login_dialog import login_user
 from luciotech.ui.main_window import MainWindow
 from luciotech.ui.translations import install_translations
 
+# Icono de la aplicación y de cada ventana que no fije el suyo.
+APP_ICON = Path(__file__).resolve().parent / "ui" / "resources" / "icons" / "app-icon.svg"
+
 
 def main(argv: list[str] | None = None) -> int:
     app = QApplication(sys.argv if argv is None else argv)
     app.setApplicationName(APP_CONFIG.app_name)
     app.setApplicationVersion(APP_VERSION)
     app.setOrganizationName(APP_CONFIG.organization_name)
+    app.setWindowIcon(QIcon(str(APP_ICON)))
 
     url = resolve_database_url()
     upgrade_database(url)

@@ -16,6 +16,15 @@ def test_app_identity_is_centralized() -> None:
     assert APP_VERSION == APP_CONFIG.application_version
 
 
+def test_the_application_icon_is_a_loadable_svg(qapp) -> None:
+    from PyQt6.QtGui import QIcon
+
+    from luciotech.main import APP_ICON
+
+    assert APP_ICON.is_file()
+    assert not QIcon(str(APP_ICON)).isNull()
+
+
 def test_data_dir_uses_xdg_data_home(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(paths, "_is_windows", lambda: False)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
