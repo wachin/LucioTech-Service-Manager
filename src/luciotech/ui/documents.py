@@ -814,10 +814,15 @@ def _slug(text: str) -> str:
 
 
 def _text_block(title: str, text: str) -> str:
-    """Apartado de texto legal: título en negrita y cada línea del usuario en su propia línea."""
+    """Apartado de texto legal con el título de entrada y cada línea en su propio renglón.
+
+    El título va dentro del mismo párrafo que el primer punto a propósito: Qt pagina el HTML
+    y, con el título en un párrafo aparte, podía dejarlo solo al final de una hoja mientras el
+    texto seguía en la siguiente. Un título de entrada no se puede separar de su contenido y
+    no obliga a empezar otra página cuando el apartado cabe entero.
+    """
     return (
-        f'<p style="margin: 10pt 0 2pt 0;"><b>{_escape(title)}</b></p>'
-        f'<p style="margin: 0;">{_lines(text)}</p>'
+        f'<p style="margin: 10pt 0 0 0;"><b>{_escape(title)}.</b> {_lines(text)}</p>'
     )
 
 

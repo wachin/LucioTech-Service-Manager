@@ -13,7 +13,7 @@
   <img alt="SQLite" src="https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite&logoColor=white">
   <img alt="Linux y Windows" src="https://img.shields.io/badge/platform-Linux%20%7C%20Windows-2C2C2C.svg">
   <img alt="Funciona 100 % sin conexión" src="https://img.shields.io/badge/offline-100%25-4C1.svg">
-  <img alt="484 pruebas pasan" src="https://img.shields.io/badge/tests-484%20passing-brightgreen.svg">
+  <img alt="486 pruebas pasan" src="https://img.shields.io/badge/tests-486%20passing-brightgreen.svg">
   <img alt="Fase 3 cerrada" src="https://img.shields.io/badge/status-Phase%203%20complete-brightgreen.svg">
 </p>
 
@@ -203,10 +203,25 @@ erDiagram
     }
 ```
 
+## Capturas
+
+Todas salen de los datos de demostración que crea `tools/capture-screenshots.py`; ninguno pertenece a un taller real.
+
+| Recepción | Órdenes |
+| --- | --- |
+| <img src="docs/screenshots/reception.png" width="420" alt="Formulario de recepción con cliente, equipo y anticipo"> | <img src="docs/screenshots/orders.png" width="420" alt="Lista de órdenes con filtros y saldos"> |
+| Cliente, equipo, accesorios y anticipo en una sola pasada. | Búsqueda, filtros y el saldo de cada orden. |
+
+| Dinero | Comprobante de recepción |
+| --- | --- |
+| <img src="docs/screenshots/order-money.png" width="420" alt="Pestaña Dinero con líneas de presupuesto, pagos y saldo"> | <img src="docs/screenshots/document-reception.png" width="420" alt="Comprobante de recepción con términos y garantía"> |
+| Líneas de presupuesto, pagos y saldo, con la misma fórmula que el papel. | Lo que firma el cliente, con los términos y la garantía. |
+
 ## Contenido
 
 - [Por qué un técnico lo usaría](#por-qué-un-técnico-lo-usaría)
 - [Cómo funciona](#cómo-funciona)
+- [Capturas](#capturas)
 - [Requisitos](#requisitos)
 - [Instalación en Linux](#instalación-en-linux)
 - [Instalación en Windows](#instalación-en-windows)
@@ -637,7 +652,7 @@ La suite usa una base de datos SQLite temporal para cada prueba y ejecuta la int
 
 ### Estado de las pruebas en Windows
 
-Verificado en Windows 11 con Python 3.13.15 y PyQt6 6.9.0: **pasan 484 de 484 pruebas** (alrededor de 1 minuto). En Linux la misma suite también pasa: **484 de 484** con `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, unos 55 segundos).
+Verificado en Windows 11 con Python 3.13.15 y PyQt6 6.9.0: la suite completa pasa (alrededor de 1 minuto). En Linux la misma suite también pasa: **486 de 486** con `.venv/bin/python -m pytest` (Python 3.13.5, PyQt6 6.9.0, unos 50 segundos).
 
 Antes fallaba una prueba solo en Windows: `tests/test_rich_text_editor.py::test_toolbar_rows_are_compact_and_only_grow_when_scrolling_is_needed`. La causa no era un error del producto sino una suposición dependiente de la plataforma en la prueba. La prueba redimensionaba el editor de texto enriquecido a 900 px fijos y esperaba que las dos filas de la barra cupieran sin desplazamiento horizontal. En Windows las métricas de la fuente de la barra son más anchas, así que la fila de acciones necesita **976 px** y se desplaza legítimamente a 900 px —por tanto su altura (47 px, barra más barra de desplazamiento) era correcta, y solo la fila de formato (657 px) volvía a los 33 px compactos—. En Linux la misma fila mide menos de 900 px, así que la suposición se cumplía.
 
@@ -648,7 +663,7 @@ Se hicieron dos cambios:
 
 La altura compacta (33 px) y la expandida (47 px) no cambian; el arreglo solo elimina el riesgo de altura obsoleta y hace la prueba independiente de la plataforma.
 
-Un detalle inofensivo mientras corre la suite: pytest imprime `Windows fatal exception: code 0x80040155` seguido de una traza que termina en `print_document` o `render_to_pdf`. Viene de construir un `QPrinter` bajo la plataforma offscreen, donde no hay un subsistema de impresión real. Es una excepción de primera oportunidad que Qt maneja internamente: las pruebas afectadas (`test_render_to_pdf_creates_a_pdf` y las pruebas de PDF de `tests/test_print_page.py`) siguen pasando y los PDF se escriben correctamente. La línea de resumen (`484 passed`) es la que cuenta.
+Un detalle inofensivo mientras corre la suite: pytest imprime `Windows fatal exception: code 0x80040155` seguido de una traza que termina en `print_document` o `render_to_pdf`. Viene de construir un `QPrinter` bajo la plataforma offscreen, donde no hay un subsistema de impresión real. Es una excepción de primera oportunidad que Qt maneja internamente: las pruebas afectadas (`test_render_to_pdf_creates_a_pdf` y las pruebas de PDF de `tests/test_print_page.py`) siguen pasando y los PDF se escriben correctamente. La línea de resumen (`486 passed`) es la que cuenta.
 
 Hay una trampa real al lado, y costó un segfault: `QPrintPreviewDialog` **no** toma posesión del `QPrinter` que recibe, guarda un puntero crudo. Pasar un temporal (`QPrintPreviewDialog(_printer(), None)`) deja la vista previa apuntando a memoria liberada y el proceso muere después, lejos de la causa. Las pruebas mantienen la impresora en una variable, y `print_document` hace lo mismo.
 

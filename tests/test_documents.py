@@ -464,6 +464,21 @@ def test_a_multiline_legal_text_keeps_its_lines(
     assert "Primera línea<br/>Segunda línea" in html
 
 
+def test_the_legal_title_shares_the_paragraph_with_its_first_point(
+    session_factory: sessionmaker[Session], order_id: int
+) -> None:
+    """El título va de entrada: Qt no puede dejarlo solo al final de una hoja."""
+    with session_factory() as session:
+        set_service_terms(session, "1. Aprobar el presupuesto.\n2. Retirar en {meses} meses.")
+        set_warranty_terms(session, "1. Cubre {dias} días.")
+        session.commit()
+
+    html = _html(session_factory, order_id, documents.receipt_html)
+
+    assert "<b>Términos y condiciones.</b> 1. Aprobar el presupuesto." in html
+    assert "<b>Condiciones de garantía.</b> 1. Cubre 30 días." in html
+
+
 def test_the_legal_texts_are_escaped_before_printing(
     session_factory: sessionmaker[Session], order_id: int
 ) -> None:

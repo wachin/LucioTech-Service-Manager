@@ -711,7 +711,10 @@ def main() -> int:
         return 0
     finally:
         engine.dispose()
-        shutil.rmtree(WORK, ignore_errors=True)
+        if os.environ.get("LUCIOTECH_KEEP_CAPTURE_WORK"):
+            print(f"Archivos de trabajo conservados en {WORK}")
+        else:
+            shutil.rmtree(WORK, ignore_errors=True)
 
 
 if __name__ == "__main__":
