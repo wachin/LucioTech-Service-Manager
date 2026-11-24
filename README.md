@@ -45,10 +45,10 @@ What the technician does, and which document comes out of each step.
 ```mermaid
 flowchart TD
     A([Client arrives with the device]) --> B[Reception<br/>client, equipment, accessories, photos]
-    B --> C[[Reception receipt<br/>printed and signed]]
+    B --> C["Reception receipt<br/>printed and signed"]
     C --> D[Diagnosis<br/>notes, photos, findings]
     D --> E{Can it be repaired?}
-    E -- No --> F[[Technical report<br/>not repairable]]
+    E -- No --> F["Technical report<br/>not repairable"]
     E -- Yes --> G[Budget<br/>line items, discount, tax, total]
     G --> H{Client approves?}
     H -- No --> I[Equipment returned<br/>without repair]
@@ -57,7 +57,7 @@ flowchart TD
     J -- Yes --> L[Repair<br/>work performed and parts used]
     L --> M[Ready for delivery<br/>technical report]
     M --> N[Delivery<br/>payments, balance, warranty]
-    N --> O([[Delivery receipt<br/>with warranty]])
+    N --> O["Delivery receipt<br/>with warranty"]
     F --> N
     I --> N
 ```

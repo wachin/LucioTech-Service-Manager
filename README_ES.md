@@ -45,10 +45,10 @@ Lo que hace el técnico y qué documento sale de cada paso.
 ```mermaid
 flowchart TD
     A([El cliente llega con el equipo]) --> B[Recepción<br/>cliente, equipo, accesorios, fotos]
-    B --> C[[Comprobante de recepción<br/>impreso y firmado]]
+    B --> C["Comprobante de recepción<br/>impreso y firmado"]
     C --> D[Diagnóstico<br/>notas, fotos, hallazgos]
     D --> E{¿Tiene reparación?}
-    E -- No --> F[[Informe técnico<br/>no reparable]]
+    E -- No --> F["Informe técnico<br/>no reparable"]
     E -- Sí --> G[Presupuesto<br/>líneas, descuento, impuestos, total]
     G --> H{¿El cliente aprueba?}
     H -- No --> I[Equipo devuelto<br/>sin reparar]
@@ -57,7 +57,7 @@ flowchart TD
     J -- Sí --> L[Reparación<br/>trabajo realizado y repuestos usados]
     L --> M[Listo para entregar<br/>informe técnico]
     M --> N[Entrega<br/>pagos, saldo, garantía]
-    N --> O([[Comprobante de entrega<br/>con garantía]])
+    N --> O["Comprobante de entrega<br/>con garantía"]
     F --> N
     I --> N
 ```
