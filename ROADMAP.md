@@ -86,7 +86,7 @@ Tests to add in `tests/test_login_ui.py` (pytest-qt, monkeypatching `monotonic` 
 
 ### 2. Ask for the actor's password to deactivate or demote another administrator
 
-- [ ] Require the current user's own password when deactivating another administrator or changing their role to Técnico, and warn that the change is recorded in the bitácora.
+- [x] Require the current user's own password when deactivating another administrator or changing their role to Técnico, and warn that the change is recorded in the bitácora. (paso 2, pendiente de commit)
 
 Why: since 2026-11-25, resetting another administrator's password already asks for the actor's password (`user_service.set_password(..., actor_password=...)`), but deactivating that administrator still needs nothing more than the open session. Anyone at an unattended session — or anyone who got past the inactivity lock — can take every administrator out of service or demote them all to Técnico, which is the same takeover by another route.
 

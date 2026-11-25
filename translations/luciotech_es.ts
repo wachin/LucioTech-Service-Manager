@@ -311,6 +311,44 @@ Do you want to save anyway?</source>
     </message>
   </context>
   <context>
+    <name>DeactivateDialog</name>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="585" />
+      <source>Deactivate</source>
+      <translation type="unfinished">Desactivar</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="585" />
+      <source>Activate</source>
+      <translation type="unfinished">Activar</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="605" />
+      <source>Your password</source>
+      <translation type="unfinished">Su contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="620" />
+      <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
+      <translation type="unfinished">Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="629" />
+      <source>This change is recorded in the account log under your name.</source>
+      <translation type="unfinished">Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="644" />
+      <source>The user no longer exists.</source>
+      <translation type="unfinished">El usuario ya no existe.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="661" />
+      <source>The status could not be changed. Please try again.</source>
+      <translation type="unfinished">No se pudo cambiar el estado. Intente de nuevo.</translation>
+    </message>
+  </context>
+  <context>
     <name>DocumentChooserDialog</name>
     <message>
       <location filename="../src/luciotech/ui/dialogs/document_chooser_dialog.py" line="51" />
@@ -849,11 +887,15 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Ya existe un usuario con ese nombre de acceso.</translation>
     </message>
     <message>
+      <location filename="../src/luciotech/services/user_service.py" line="484" />
+      <location filename="../src/luciotech/services/user_service.py" line="435" />
       <location filename="../src/luciotech/services/user_service.py" line="340" />
       <source>Enter your own password to reset another administrator's password.</source>
       <translation>Escriba su propia contraseña para restablecer la de otro administrador.</translation>
     </message>
     <message>
+      <location filename="../src/luciotech/services/user_service.py" line="494" />
+      <location filename="../src/luciotech/services/user_service.py" line="445" />
       <location filename="../src/luciotech/services/user_service.py" line="350" />
       <source>Your password is not correct.</source>
       <translation>Su contraseña no es correcta.</translation>
@@ -864,12 +906,12 @@ Do you want to save anyway?</source>
       <translation type="unfinished">La contraseña actual no es correcta.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="467" />
+      <location filename="../src/luciotech/services/user_service.py" line="522" />
       <source>At least one active administrator must remain.</source>
       <translation type="unfinished">Debe quedar al menos un administrador activo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="477" />
+      <location filename="../src/luciotech/services/user_service.py" line="532" />
       <source>Users have already been created on this computer.</source>
       <translation type="unfinished">Ya hay usuarios creados en este equipo.</translation>
     </message>
@@ -2148,52 +2190,52 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Papelera</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="144" />
+      <location filename="../src/luciotech/ui/main_window.py" line="146" />
       <source>Signed in: %1 · %2</source>
       <translation type="unfinished">Sesión: %1 · %2</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="149" />
+      <location filename="../src/luciotech/ui/main_window.py" line="151" />
       <source>This name appears in the order history and in the footer of the documents you print.</source>
       <translation type="unfinished">Este nombre aparece en el historial de las órdenes y en el pie de los documentos que imprima.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="157" />
+      <location filename="../src/luciotech/ui/main_window.py" line="159" />
       <source>&amp;File</source>
       <translation type="unfinished">&amp;Archivo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="159" />
+      <location filename="../src/luciotech/ui/main_window.py" line="161" />
       <source>Change &amp;my password…</source>
       <translation type="unfinished">Cambiar &amp;mi contraseña…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="163" />
+      <location filename="../src/luciotech/ui/main_window.py" line="165" />
       <source>&amp;Settings…</source>
       <translation type="unfinished">&amp;Configuración…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="166" />
+      <location filename="../src/luciotech/ui/main_window.py" line="168" />
       <source>&amp;Users…</source>
       <translation type="unfinished">&amp;Usuarios…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="171" />
+      <location filename="../src/luciotech/ui/main_window.py" line="173" />
       <source>&amp;Sign out</source>
       <translation type="unfinished">&amp;Cerrar sesión</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="175" />
+      <location filename="../src/luciotech/ui/main_window.py" line="177" />
       <source>&amp;Quit</source>
       <translation type="unfinished">&amp;Salir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="180" />
+      <location filename="../src/luciotech/ui/main_window.py" line="182" />
       <source>&amp;Help</source>
       <translation type="unfinished">&amp;Ayuda</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="181" />
+      <location filename="../src/luciotech/ui/main_window.py" line="183" />
       <source>&amp;About…</source>
       <translation type="unfinished">&amp;Acerca de…</translation>
     </message>
@@ -3103,47 +3145,47 @@ Do you want to continue?</source>
   <context>
     <name>SetPasswordDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="416" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="476" />
       <source>Change password</source>
       <translation type="unfinished">Cambiar contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="441" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="501" />
       <source>Your password</source>
       <translation>Su contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="442" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="502" />
       <source>New password</source>
       <translation type="unfinished">Contraseña nueva</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="443" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="503" />
       <source>Repeat the new password</source>
       <translation type="unfinished">Repetir la nueva</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="458" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="518" />
       <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
       <translation>Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="467" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="527" />
       <source>This change is recorded in the account log under your name.</source>
       <translation>Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="481" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="541" />
       <source>The two passwords do not match.</source>
       <translation type="unfinished">Las dos contraseñas no coinciden.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="487" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="547" />
       <source>The user no longer exists.</source>
       <translation type="unfinished">El usuario ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="503" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="563" />
       <source>The password could not be changed. Please try again.</source>
       <translation type="unfinished">No se pudo cambiar la contraseña. Intente de nuevo.</translation>
     </message>
@@ -3358,67 +3400,82 @@ Do you want to continue?</source>
   <context>
     <name>UserFormDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="84" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="98" />
       <source>Edit user</source>
       <translation type="unfinished">Editar usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="84" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="98" />
       <source>New user</source>
       <translation type="unfinished">Nuevo usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="89" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="103" />
       <source>As it should appear on documents</source>
       <translation type="unfinished">Como debe salir en los documentos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="91" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="105" />
       <source>Used to sign in; no spaces or accents</source>
       <translation type="unfinished">Para entrar; sin espacios ni tildes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="106" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="122" />
       <source>Full name</source>
       <translation type="unfinished">Nombre completo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="107" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="123" />
       <source>User</source>
       <translation type="unfinished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="108" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="124" />
       <source>Role</source>
       <translation type="unfinished">Rol</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="110" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="126" />
       <source>Password</source>
       <translation type="unfinished">Contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="111" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="127" />
       <source>Repeat password</source>
       <translation type="unfinished">Repetir contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="141" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="129" />
+      <source>Your password</source>
+      <translation type="unfinished">Su contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="144" />
+      <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
+      <translation type="unfinished">Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="153" />
+      <source>This change is recorded in the account log under your name.</source>
+      <translation type="unfinished">Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="173" />
       <source>The user name cannot be changed once created.</source>
       <translation type="unfinished">El nombre de usuario no se puede cambiar una vez creado.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="149" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="181" />
       <source>The two passwords do not match.</source>
       <translation type="unfinished">Las dos contraseñas no coinciden.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="170" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="202" />
       <source>The user no longer exists.</source>
       <translation type="unfinished">El usuario ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="184" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="219" />
       <source>The user could not be saved. Please try again.</source>
       <translation type="unfinished">No se pudo guardar el usuario. Intente de nuevo.</translation>
     </message>
@@ -3426,75 +3483,75 @@ Do you want to continue?</source>
   <context>
     <name>UsersDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="280" />
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="201" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="315" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="236" />
       <source>Users</source>
       <translation type="unfinished">Usuarios</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="222" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="257" />
       <source>New user…</source>
       <translation type="unfinished">Nuevo usuario…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="224" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="259" />
       <source>Edit…</source>
       <translation type="unfinished">Editar…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="226" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="261" />
       <source>Change password…</source>
       <translation type="unfinished">Cambiar contraseña…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="346" />
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="341" />
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="228" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="381" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="376" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="263" />
       <source>Deactivate</source>
       <translation type="unfinished">Desactivar</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="239" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="274" />
       <source>The full name appears in the order history and in the footer of the documents printed by each user.</source>
       <translation type="unfinished">El nombre completo es el que aparece en el historial de las órdenes y en el pie de los documentos que imprime cada usuario.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="266" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="301" />
       <source>This log records who created, changed, disabled or reset the password of each account.</source>
       <translation>Esta bitácora registra quién creó, modificó, desactivó o restableció la contraseña de cada cuenta.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="281" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="316" />
       <source>Activity</source>
       <translation>Actividad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="305" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="340" />
       <source>Active</source>
       <translation type="unfinished">Activo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="305" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="340" />
       <source>Deactivated</source>
       <translation type="unfinished">Desactivado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="306" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="341" />
       <source>Never</source>
       <translation type="unfinished">Nunca</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="346" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="381" />
       <source>Activate</source>
       <translation type="unfinished">Activar</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="380" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="415" />
       <source>You cannot deactivate the account you are working with.</source>
       <translation type="unfinished">No puede desactivar la cuenta con la que está trabajando.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="395" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="455" />
       <source>The status could not be changed. Please try again.</source>
       <translation type="unfinished">No se pudo cambiar el estado. Intente de nuevo.</translation>
     </message>

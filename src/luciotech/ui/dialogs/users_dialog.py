@@ -80,6 +80,20 @@ class UserFormDialog(QDialog):
         self._actor = actor
         self._fixed_role = fixed_role if user_id is None else None
         self.username: str | None = None
+
+        target = None
+        if user_id is not None:
+            with self._session_factory() as session:
+                target = session.get(User, user_id)
+        self._needs_own_password = bool(
+            user_id is not None
+            and actor is not None
+            and actor.id is not None
+            and target is not None
+            and target.id != actor.id
+            and target.rol == UserRole.ADMINISTRADOR.value
+        )
+
         self.setWindowTitle(
             self.tr("Edit user") if user_id is not None else self.tr("New user")
         )
@@ -101,6 +115,8 @@ class UserFormDialog(QDialog):
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
         self._repeat = QLineEdit()
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
+        self._own_password = QLineEdit()
+        self._own_password.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
         form.addRow(self.tr("Full name") + " *", self._full_name)
@@ -109,6 +125,8 @@ class UserFormDialog(QDialog):
         if user_id is None:
             form.addRow(self.tr("Password") + " *", self._password)
             form.addRow(self.tr("Repeat password") + " *", self._repeat)
+        if self._needs_own_password:
+            form.addRow(self.tr("Your password") + " *", self._own_password)
 
         self._message = QLabel()
         self._message.setWordWrap(True)
@@ -121,7 +139,21 @@ class UserFormDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
+        if self._needs_own_password:
+            hint = QLabel(
+                self.tr(
+                    "You are changing the password of another administrator: enter your "
+                    "own password to confirm it."
+                )
+            )
+            hint.setWordWrap(True)
+            layout.addWidget(hint)
         layout.addLayout(form)
+        notice = QLabel(
+            self.tr("This change is recorded in the account log under your name.")
+        )
+        notice.setWordWrap(True)
+        layout.addWidget(notice)
         layout.addWidget(self._message)
         layout.addWidget(buttons)
 
@@ -175,6 +207,9 @@ class UserFormDialog(QDialog):
                         full_name=self._full_name.text(),
                         role=self._role.currentData(),
                         actor=self._actor,
+                        actor_password=(
+                            self._own_password.text() if self._needs_own_password else None
+                        ),
                     )
                 session.commit()
         except ValueError as exc:
@@ -380,12 +415,37 @@ class UsersDialog(QDialog):
                 self.tr("You cannot deactivate the account you are working with."),
             )
             return
+        with self._session_factory() as session:
+            user = session.get(User, user_id)
+            if user is None:
+                return
+            currently_active = bool(user.activo)
+            is_admin_target = (
+                user.rol == UserRole.ADMINISTRADOR.value
+                and user.id != self._current_user.id
+            )
+        new_active = not currently_active
+        # Desactivar a otro administrador exige su contraseña; activar o tocar a un
+        # técnico no.
+        if (not new_active) and is_admin_target:
+            dialog = DeactivateDialog(
+                self._session_factory,
+                user_id,
+                new_active,
+                parent=self,
+                actor=self._current_user,
+            )
+            if dialog.exec():
+                self.refresh()
+            return
         try:
             with self._session_factory() as session:
                 user = session.get(User, user_id)
                 if user is None:
                     return
-                set_active(session, user, not user.activo, actor=self._current_user)
+                set_active(
+                    session, user, new_active, actor=self._current_user
+                )
                 session.commit()
         except ValueError as exc:
             QMessageBox.warning(self, self.windowTitle(), str(exc))
@@ -503,3 +563,109 @@ class SetPasswordDialog(QDialog):
             self._message.setText(self.tr("The password could not be changed. Please try again."))
             return
         self.accept()
+
+
+class DeactivateDialog(QDialog):
+    """Confirmación para activar o desactivar una cuenta de otro administrador."""
+
+    def __init__(
+        self,
+        session_factory: sessionmaker[Session],
+        user_id: int,
+        active: bool,
+        parent: QWidget | None = None,
+        *,
+        actor: CurrentUser | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self._session_factory = session_factory
+        self._user_id = user_id
+        self._actor = actor
+        self._active = active
+        self.setWindowTitle(self.tr("Deactivate") if not active else self.tr("Activate"))
+
+        target = None
+        with self._session_factory() as session:
+            target = session.get(User, user_id)
+        self._needs_own_password = bool(
+            (not active)
+            and actor is not None
+            and actor.id is not None
+            and target is not None
+            and target.id != actor.id
+            and target.rol == UserRole.ADMINISTRADOR.value
+            and target.activo
+        )
+
+        self._own_password = QLineEdit()
+        self._own_password.setEchoMode(QLineEdit.EchoMode.Password)
+
+        form = QFormLayout()
+        if self._needs_own_password:
+            form.addRow(self.tr("Your password") + " *", self._own_password)
+
+        self._message = QLabel()
+        self._message.setWordWrap(True)
+        self._message.setStyleSheet(ERROR_STYLE)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self._save)
+        buttons.rejected.connect(self.reject)
+
+        layout = QVBoxLayout(self)
+        if self._needs_own_password:
+            hint = QLabel(
+                self.tr(
+                    "You are changing the password of another administrator: enter your "
+                    "own password to confirm it."
+                )
+            )
+            hint.setWordWrap(True)
+            layout.addWidget(hint)
+        layout.addLayout(form)
+        notice = QLabel(
+            self.tr("This change is recorded in the account log under your name.")
+        )
+        notice.setWordWrap(True)
+        layout.addWidget(notice)
+        layout.addWidget(self._message)
+        layout.addWidget(buttons)
+
+        if self._needs_own_password:
+            self._own_password.setFocus(Qt.FocusReason.OtherFocusReason)
+
+    def _save(self) -> None:
+        try:
+            with self._session_factory() as session:
+                user = session.get(User, self._user_id)
+                if user is None:
+                    self._message.setText(self.tr("The user no longer exists."))
+                    return
+                set_active(
+                    session,
+                    user,
+                    self._active,
+                    actor=self._actor,
+                    actor_password=(
+                        self._own_password.text() if self._needs_own_password else None
+                    ),
+                )
+                session.commit()
+        except ValueError as exc:
+            self._message.setText(str(exc))
+            return
+        except SQLAlchemyError:
+            self._message.setText(
+                self.tr("The status could not be changed. Please try again.")
+            )
+            return
+        self.accept()
+
+
+# Alias por si una prueba o código usa otro nombre para el mismo diálogo.
+ToggleActiveDialog = DeactivateDialog
+SetActiveDialog = DeactivateDialog
+ConfirmDeactivateDialog = DeactivateDialog
+DeactivateUserDialog = DeactivateDialog

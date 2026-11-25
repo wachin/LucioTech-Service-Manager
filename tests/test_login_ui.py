@@ -808,3 +808,90 @@ def test_the_users_of_the_database_survive_a_new_session(
     _seed(session_factory)
     with session_factory() as session:
         assert [user.nombre_usuario for user in list_users(session)] == ["ana"]
+
+
+# Contraseña del actor al desactivar o degradar administradores desde la UI
+
+
+def test_editing_another_administrator_asks_for_your_password(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        jefe = create_user(
+            session,
+            username="jefe",
+            full_name="Jefe de planta",
+            password="jefe2026",
+            role=UserRole.ADMINISTRADOR,
+        )
+        session.commit()
+        jefe_id = jefe.id
+
+    dialog = UserFormDialog(session_factory, jefe_id, actor=admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._needs_own_password is True
+    texts = [label.text() for label in dialog.findChildren(QLabel)]
+    assert any("bitácora" in text for text in texts)
+
+
+def test_editing_a_technician_does_not_ask_for_your_password(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        luis = create_user(
+            session, username="luis", full_name="Luis Paredes", password=PASSWORD
+        )
+        session.commit()
+        luis_id = luis.id
+
+    dialog = UserFormDialog(session_factory, luis_id, actor=admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._needs_own_password is False
+
+
+def test_deactivating_another_administrator_dialog_asks_for_your_password(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        jefe = create_user(
+            session,
+            username="jefe",
+            full_name="Jefe de planta",
+            password="jefe2026",
+            role=UserRole.ADMINISTRADOR,
+        )
+        session.commit()
+        jefe_id = jefe.id
+
+    from luciotech.ui.dialogs.users_dialog import DeactivateDialog
+
+    dialog = DeactivateDialog(session_factory, jefe_id, False, actor=admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._needs_own_password is True
+    texts = [label.text() for label in dialog.findChildren(QLabel)]
+    assert any("bitácora" in text for text in texts)
+
+
+def test_deactivating_a_technician_dialog_does_not_ask_for_your_password(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        luis = create_user(
+            session, username="luis", full_name="Luis Paredes", password=PASSWORD
+        )
+        session.commit()
+        luis_id = luis.id
+
+    from luciotech.ui.dialogs.users_dialog import DeactivateDialog
+
+    dialog = DeactivateDialog(session_factory, luis_id, False, actor=admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._needs_own_password is False

@@ -536,3 +536,106 @@ def test_the_state_history_keeps_the_name_of_the_session_user(
     ).first()
     assert entry is not None
     assert entry.usuario == "Ana Torres"
+
+
+# Contraseñas del actor al desactivar o degradar administradores
+
+
+def test_deactivating_another_admin_requires_the_actor_password(
+    session: Session,
+) -> None:
+    first = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    second = _make_user(session, username="jefa", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(first)
+
+    with pytest.raises(ValueError, match="propia contraseña"):
+        set_active(session, second, False, actor=actor)
+    assert second.activo is True
+
+    with pytest.raises(ValueError, match="no es correcta"):
+        set_active(session, second, False, actor=actor, actor_password="otra")
+    assert second.activo is True
+
+    set_active(session, second, False, actor=actor, actor_password=PASSWORD)
+    session.commit()
+
+    assert second.activo is False
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.DESACTIVADO.value
+    assert event.usuario_nombre == "Ana Torres"
+
+
+def test_deactivating_a_technician_needs_no_confirmation(session: Session) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+
+    set_active(session, luis, False, actor=actor)
+    session.commit()
+
+    assert luis.activo is False
+
+
+def test_deactivating_your_own_admin_account_needs_no_password(
+    session: Session,
+) -> None:
+    first = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    _make_user(session, username="jefa", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(first)
+
+    set_active(session, first, False, actor=actor)
+    session.commit()
+
+    assert first.activo is False
+
+
+def test_demoting_another_admin_requires_the_actor_password(
+    session: Session,
+) -> None:
+    first = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    second = _make_user(session, username="jefa", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(first)
+
+    update_user(session, second, full_name="Jefa Nueva", actor=actor)
+    session.commit()
+    assert second.nombre_completo == "Jefa Nueva"
+
+    with pytest.raises(ValueError, match="propia contraseña"):
+        update_user(session, second, role=UserRole.TECNICO, actor=actor)
+    assert second.rol == UserRole.ADMINISTRADOR.value
+
+    with pytest.raises(ValueError, match="no es correcta"):
+        update_user(
+            session, second, role=UserRole.TECNICO, actor=actor, actor_password="otra"
+        )
+    assert second.rol == UserRole.ADMINISTRADOR.value
+
+    update_user(
+        session, second, role=UserRole.TECNICO, actor=actor, actor_password=PASSWORD
+    )
+    session.commit()
+
+    assert second.rol == UserRole.TECNICO.value
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.ROL.value
+
+
+def test_the_last_active_admin_error_precedes_the_password_prompt(
+    session: Session,
+) -> None:
+    actor_user = _make_user(session, username="actor", role=UserRole.ADMINISTRADOR)
+    target = _make_user(session, username="target", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(actor_user)
+
+    set_active(
+        session,
+        actor_user,
+        False,
+        actor=current_user_of(target),
+        actor_password=PASSWORD,
+    )
+    session.commit()
+
+    with pytest.raises(ValueError, match="al menos un administrador"):
+        set_active(session, target, False, actor=actor, actor_password=PASSWORD)
+    assert target.activo is True

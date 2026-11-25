@@ -400,8 +400,13 @@ def update_user(
     full_name: str | None = None,
     role: UserRole | str | None = None,
     actor: CurrentUser | None = None,
+    actor_password: str | None = None,
 ) -> None:
-    """Cambia el nombre visible o el rol, sin dejar el sistema sin administradores."""
+    """Cambia el nombre visible o el rol, sin dejar el sistema sin administradores.
+
+    Degradar a otro administrador a técnico exige la contraseña de quien lo hace, igual
+    que al desactivarlo o al restablecerle la contraseña: la sesión abierta no basta.
+    """
     if full_name is not None:
         name = validate_full_name(full_name)
         if name != user.nombre_completo:
@@ -418,6 +423,29 @@ def update_user(
         if new_role != user.rol:
             if user.rol == UserRole.ADMINISTRADOR.value:
                 _ensure_another_admin(session, user)
+                if (
+                    new_role != UserRole.ADMINISTRADOR.value
+                    and actor is not None
+                    and actor.id is not None
+                    and actor.id != user.id
+                    and user.activo
+                ):
+                    if not actor_password:
+                        raise ValueError(
+                            QCoreApplication.translate(
+                                "LucioTech",
+                                "Enter your own password to reset another administrator's password.",
+                            )
+                        )
+                    actor_user = session.get(User, actor.id)
+                    if actor_user is None or not verify_password(
+                        actor_password, actor_user.contrasena_hash
+                    ):
+                        raise ValueError(
+                            QCoreApplication.translate(
+                                "LucioTech", "Your password is not correct."
+                            )
+                        )
             previous = user.rol
             user.rol = new_role
             record_user_event(
@@ -436,10 +464,37 @@ def set_active(
     active: bool,
     *,
     actor: CurrentUser | None = None,
+    actor_password: str | None = None,
 ) -> None:
-    """Activa o desactiva una cuenta; la última cuenta de administrador no se puede apagar."""
+    """Activa o desactiva una cuenta; la última cuenta de administrador no se puede apagar.
+
+    Desactivar a otro administrador exige la contraseña de quien lo hace.
+    """
     if not active:
         _ensure_another_admin(session, user)
+        if (
+            actor is not None
+            and actor.id is not None
+            and actor.id != user.id
+            and user.rol == UserRole.ADMINISTRADOR.value
+            and user.activo
+        ):
+            if not actor_password:
+                raise ValueError(
+                    QCoreApplication.translate(
+                        "LucioTech",
+                        "Enter your own password to reset another administrator's password.",
+                    )
+                )
+            actor_user = session.get(User, actor.id)
+            if actor_user is None or not verify_password(
+                actor_password, actor_user.contrasena_hash
+            ):
+                raise ValueError(
+                    QCoreApplication.translate(
+                        "LucioTech", "Your password is not correct."
+                    )
+                )
     user.activo = active
     session.flush()
     record_user_event(
