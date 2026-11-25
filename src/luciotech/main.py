@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -26,6 +27,11 @@ APP_ICON = Path(__file__).resolve().parent / "ui" / "resources" / "icons" / "app
 
 
 def main(argv: list[str] | None = None) -> int:
+    # En Linux, permitir que el usuario configure el tema (claro/oscuro) y el tema
+    # de iconos con Qt6Ct/Kvantum. La variable debe estar definida antes de crear
+    # la QApplication para que el plugin de plataforma la lea.
+    if sys.platform.startswith("linux") and "QT_QPA_PLATFORMTHEME" not in os.environ:
+        os.environ["QT_QPA_PLATFORMTHEME"] = "qt6ct"
     app = QApplication(sys.argv if argv is None else argv)
     app.setApplicationName(APP_CONFIG.app_name)
     app.setApplicationVersion(APP_VERSION)

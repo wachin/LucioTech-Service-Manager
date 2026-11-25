@@ -259,6 +259,16 @@ sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1
 
 `libxcb-cursor0` is the one missing most often: without it the application stops with `Could not load the Qt platform plugin "xcb"` even though PyQt6 imported fine.
 
+### Tema oscuro en Linux (opcional)
+
+El programa respeta la configuración de **Qt6Ct**: si el usuario tiene instalado `qt6ct` (Qt6 Configuration Tool) junto con `qt-style-kvantum` y `qt-style-kvantum-l10n`, puede elegir en Qt6Ct, en la pestaña **Apariencia**, el estilo `kvantum` (o `kvantum-dark`) y, en la pestaña **Tema de iconos**, un tema con variante *Dark* (por ejemplo `Papirus-Dark` o `Breeze-Dark`); la aplicación adoptará ese tema oscuro. Para ello instale los paquetes:
+
+```bash
+sudo apt install qt6ct qt-style-kvantum qt-style-kvantum-l10n
+```
+
+En Windows no existe un equivalente directo a Qt6Ct/Kvantum; allí el aspecto sigue el del sistema.
+
 ### 2. Option A — distribution packages (no virtual environment)
 
 Debian 13 (trixie), Ubuntu 25.04 and newer ship the four dependencies as distribution packages. Install them with `apt`:
