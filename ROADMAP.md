@@ -60,6 +60,60 @@ A task can only be marked as `[x]` when the complete requirement is implemented 
 | Editor de texto enriquecido para diagnóstico, trabajo y recomendaciones (§8) | Fase 2 (original) | Fase 2 | Sin cambio; se incluye aquí para que el seguimiento de la Fase 2 quede completo. |
 | Resumen de la recepción antes de guardar (§7.5) | Fase 1 | Fase 4 | El formulario ya muestra el número de orden planificado con `peek_next_order_number`, pero falta el diálogo de resumen completo. No pertenece a la Fase 3; se traslada el 2026-11-14 para no cerrar la fase ocultando trabajo pendiente (regla 7). |
 
+## Pending security work
+
+Recorded on 2026-11-25, after the account-security block. These two items are known gaps the current code leaves open; they are not part of Phase 4. Deliver each one as its own block (code, tests, full suite, commit and push) as AGENTS.md rule 4 requires, and update this section when it is done. Do not log, print or store any password while working on them.
+
+### 1. The inactivity lock must keep counting while a dialog is open
+
+- [ ] Keep the inactivity countdown running while a modal dialog (including the print preview) is open, and lock as soon as it closes when the limit has already elapsed.
+
+Current behaviour: `MainWindow._can_lock` in `src/luciotech/ui/main_window.py` returns `False` whenever `QApplication.activeModalWidget()` or `activePopupWidget()` is not `None`, and `_check_inactivity` answers by doing `self._last_activity = monotonic()`. As a result, opening any dialog freezes the countdown and hands out a fresh `INACTIVITY_LOCK_MINUTES` (10) period after closing it; a dialog left open forever means the session never locks.
+
+Required behaviour:
+
+- The clock keeps counting. Do not reset `_last_activity` when locking is deferred; record that the deadline was reached (`_lock_pending` or an absolute deadline) and open `UnlockDialog` when the last modal/popup closes, or on the next timer tick after it closes.
+- Keyboard and mouse activity inside a dialog still restarts the countdown through the existing `QApplication` event filter (`ACTIVITY_EVENTS`), so working in a dialog is activity, but leaving a dialog open without input is not.
+- Keep the current exemptions: the window is not visible, `_unlocking` is true, or the session is `DEFAULT_CURRENT_USER` (no id, no timer).
+- The print preview is a modal Qt dialog, so it falls under the same rule: time spent with a preview open counts.
+- Locking cannot happen while the modal is still on screen; the unlock dialog must appear after it closes, never stacked on top of it.
+
+Tests to add in `tests/test_login_ui.py` (pytest-qt, monkeypatching `monotonic` as the existing tests do):
+
+- A dialog open past the limit, then closed, immediately shows the unlock dialog.
+- A dialog opened and closed before the limit does not lock, and the remaining time is not reset.
+- Activity inside the dialog (a key or click event) postpones the lock even if the dialog stays open past the original deadline.
+
+### 2. Ask for the actor's password to deactivate or demote another administrator
+
+- [ ] Require the current user's own password when deactivating another administrator or changing their role to Técnico, and warn that the change is recorded in the bitácora.
+
+Why: since 2026-11-25, resetting another administrator's password already asks for the actor's password (`user_service.set_password(..., actor_password=...)`), but deactivating that administrator still needs nothing more than the open session. Anyone at an unattended session — or anyone who got past the inactivity lock — can take every administrator out of service or demote them all to Técnico, which is the same takeover by another route.
+
+Service layer (`src/luciotech/services/user_service.py`):
+
+- Add `actor_password` to `set_active(...)` and `update_user(...)`.
+- Reuse the helper behind `set_password` (`_confirm_other_admin_reset`): require the password only when the target is an active administrator, `actor` has an `id`, and the target's id differs from the actor's. Verify with the existing `verify_password`; raise `ValueError` with a message translated in the `LucioTech` context when it is missing or wrong.
+- `update_user` must ask only for `role` changes that leave the target as a non-administrator (`UserRole.TECNICO`); a full-name change never asks.
+- Keep the existing `_ensure_another_admin` check: the last active administrator still cannot be deactivated or demoted, and that error must be raised before asking for a password, so the user is not asked for a password that cannot be used.
+- Record the event in `eventos_usuario` as today (`UserAuditAction.DESACTIVADO` / `ROL`), with the actor's name; nothing else changes in the audit trail.
+
+UI (`src/luciotech/ui/dialogs/users_dialog.py`):
+
+- Follow the pattern of `SetPasswordDialog`: when the target is another administrator, add a «Your password» field and a hint before confirming, pass it as `actor_password`, and show the bitácora warning («the change is recorded in Activity»). Use the same translated strings where they fit.
+- The technical accounts and the user's own account keep working exactly as they do today (no extra field).
+- Verify in the service, not only in the dialog: the password check must not be bypassable by another caller.
+
+Tests:
+
+- `tests/test_users.py`: deactivating another administrator without a password or with a wrong one raises and changes nothing; with the correct password it deactivates and records the event; deactivating a technician and the actor's own account need no password; demoting another administrator requires it while a full-name edit does not; the last-active-administrator error still comes first.
+- `tests/test_login_ui.py`: deactivating or demoting another administrator from `UsersDialog` shows the password field and the bitácora warning; a technician shows neither.
+
+Translations and documentation:
+
+- Source strings stay in English and wrapped in `self.tr(...)` / `QCoreApplication.translate(...)`; add the Spanish entries to `translations/luciotech_es.ts`, update `translations/fill_es.py`, recompile with `./tools/update-translations.sh`, and keep `tests/test_translations.py` green.
+- Update `README.md` and `README_ES.md` (visible behaviour), the users rule in `AGENTS.md`, the decisions above, and the test count in the documents that quote it.
+
 ## Seguimiento de fase activa
 
 Fase cerrada: **Fase 3 — Presupuesto, pagos, PDF e impresión** (checklist copiado de §26 según la regla 9; cerrada el 2026-11-14 con el commit de cierre de la tabla «Estado de las fases»). La Fase 4 todavía no está iniciada: al abrirla hay que copiar su checklist de §26 aquí. El seguimiento que sigue queda como histórico de la Fase 3. Plan de bloques: 1) líneas de presupuesto (modelo, migración y servicio de totales) — entregado, 2) pestaña Presupuesto y pagos — entregado, 3) comprobante de recepción imprimible y términos y condiciones — entregado, 4) papelera con restauración y borrado lógico desde la interfaz — entregado, 5) los cinco documentos de §13.1 con selector «Documentos…» — entregado, 6) hoja, numeración, encabezado y pie, y PDF con nombre descriptivo (§13.2) — entregado, 7) siguiente paso según el estado en el resumen (§9) — entregado, 8) detalle de la orden en tres pestañas (Resumen, Trabajo y Dinero) — entregado, 9) eliminación de los costos fantasma `costo_repuestos` y `costo_mano_obra` (migración 0004) — entregado, 10) el historial como pestaña propia al lado de Dinero — entregado, 11) usuarios con acceso por contraseña y nombre propio en los documentos (§19) — entregado, 12) lista desplegable de usuarios en el acceso diario — entregado, 13) pantalla de **Configuración** para editar los términos y condiciones, la garantía y los datos del taller/impresión (§5.8), pedida por el usuario y entregada como último bloque de la Fase 3 — entregado.
