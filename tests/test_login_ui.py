@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import pytest
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QMessageBox
+from time import monotonic
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -724,6 +726,80 @@ def test_the_fallback_session_without_an_account_never_locks(
 
     assert window._user.id is None
     assert window._lock_timer.isActive() is False
+
+
+def test_a_dialog_open_past_the_limit_locks_when_it_closes(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    window = MainWindow(session_factory, admin)
+    qtbot.addWidget(window)
+    locks: list[bool] = []
+    monkeypatch.setattr(window, "_lock_session", lambda: locks.append(True))
+
+    dialog = QDialog(window)
+    dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+    qtbot.addWidget(dialog)
+    dialog.show()
+
+    window._last_activity -= INACTIVITY_LOCK_MINUTES * 60 + 1
+    window._check_inactivity()
+    assert locks == []
+    assert window._lock_pending is True
+
+    dialog.close()
+    qtbot.waitUntil(lambda: locks == [True], timeout=2000)
+
+
+def test_a_dialog_opened_and_closed_before_the_limit_does_not_lock_nor_reset_the_countdown(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    window = MainWindow(session_factory, admin)
+    qtbot.addWidget(window)
+    locks: list[bool] = []
+    monkeypatch.setattr(window, "_lock_session", lambda: locks.append(True))
+
+    window._last_activity = monotonic() - 5 * 60
+    remaining_before = monotonic() - window._last_activity
+
+    dialog = QDialog(window)
+    dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+    qtbot.addWidget(dialog)
+    dialog.show()
+
+    window._check_inactivity()
+    assert window._lock_pending is False
+    dialog.close()
+    qtbot.wait(50)
+
+    assert locks == []
+    assert abs((monotonic() - window._last_activity) - remaining_before) < 2
+
+
+def test_activity_inside_a_dialog_postpones_the_lock(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    window = MainWindow(session_factory, admin)
+    qtbot.addWidget(window)
+    locks: list[bool] = []
+    monkeypatch.setattr(window, "_lock_session", lambda: locks.append(True))
+
+    dialog = QDialog(window)
+    dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+    qtbot.addWidget(dialog)
+    dialog.show()
+
+    window._last_activity -= INACTIVITY_LOCK_MINUTES * 60 + 1
+    window._check_inactivity()
+    assert window._lock_pending is True
+
+    qtbot.keyClick(dialog, Qt.Key.Key_A)
+    assert window._lock_pending is False
+
+    window._check_inactivity()
+    assert locks == []
 
 
 def test_the_users_of_the_database_survive_a_new_session(

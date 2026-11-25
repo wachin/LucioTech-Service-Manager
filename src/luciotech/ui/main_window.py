@@ -96,6 +96,8 @@ class MainWindow(QMainWindow):
 
         self._last_activity = monotonic()
         self._unlocking = False
+        self._lock_pending = False
+        self._lock_check_scheduled = False
         self._lock_timer = QTimer(self)
         self._lock_timer.setInterval(ACTIVITY_CHECK_MS)
         self._lock_timer.timeout.connect(self._check_inactivity)
@@ -212,6 +214,22 @@ class MainWindow(QMainWindow):
         """Cada tecla, clic o rueda reinicia la cuenta atrás de la inactividad."""
         if event.type() in ACTIVITY_EVENTS:
             self._last_activity = monotonic()
+            # Si el usuario vuelve a tocar algo, el bloqueo aplazado queda cancelado.
+            self._lock_pending = False
+        # Un diálogo modal acaba de cerrarse: si el plazo ya había vencido, se bloquea
+        # en cuanto sea posible, sin esperar al siguiente tick del temporizador.
+        app = QApplication.instance()
+        modal_open = app is not None and (
+            app.activeModalWidget() is not None or app.activePopupWidget() is not None
+        )
+        if (
+            self._lock_pending
+            and not modal_open
+            and not self._unlocking
+            and not self._lock_check_scheduled
+        ):
+            self._lock_check_scheduled = True
+            QTimer.singleShot(0, self._run_deferred_lock_check)
         return super().eventFilter(watched, event)
 
     def _can_lock(self) -> bool:
@@ -226,16 +244,41 @@ class MainWindow(QMainWindow):
             and app.activePopupWidget() is None
         )
 
+    def _run_deferred_lock_check(self) -> None:
+        """Ejecuta la comprobación aplazada que pidió el filtro de eventos."""
+        self._lock_check_scheduled = False
+        self._check_inactivity()
+
     def _check_inactivity(self) -> None:
-        """Que el aviso de bloqueo no salte en mitad de un diálogo o de una vista previa."""
+        """La cuenta sigue corriendo aunque haya un diálogo abierto; se bloquea al cerrarlo."""
+        # La cuenta de respaldo (sin id) no se bloquea nunca.
+        if self._user.id is None:
+            return
+        app = QApplication.instance()
+        modal_open = app is not None and (
+            app.activeModalWidget() is not None or app.activePopupWidget() is not None
+        )
+        # Si el plazo ya venció mientras había un diálogo abierto, se bloquea en
+        # cuanto no quede ningún modal ni menú en pantalla.
+        if self._lock_pending and not modal_open and not self._unlocking:
+            self._lock_pending = False
+            self._lock_session()
+            return
         if not self._can_lock():
-            # Mientras haya un diálogo abierto se reinicia la cuenta: al cerrarlo, el
-            # usuario vuelve a tener el periodo completo, no medio minuto.
-            self._last_activity = monotonic()
+            if self._unlocking:
+                return
+            # Exención por ventana no visible sin diálogo real abierto.
+            if not self.isVisible() and not modal_open:
+                return
+            # Un diálogo modal (o un menú) aplaza el bloqueo, pero no reinicia el
+            # reloj: si el plazo ya venció, queda marcado para bloquear al cerrarse.
+            if monotonic() - self._last_activity >= INACTIVITY_LOCK_MINUTES * 60:
+                self._lock_pending = True
             return
-        if monotonic() - self._last_activity < INACTIVITY_LOCK_MINUTES * 60:
+        if monotonic() - self._last_activity >= INACTIVITY_LOCK_MINUTES * 60:
+            self._lock_pending = False
+            self._lock_session()
             return
-        self._lock_session()
 
     def _lock_session(self) -> None:
         """Tapa la ventana con el diálogo de desbloqueo y no sigue hasta la contraseña."""
@@ -250,6 +293,7 @@ class MainWindow(QMainWindow):
             ).exec()
         finally:
             self._last_activity = monotonic()
+            self._lock_pending = False
             self._unlocking = False
             if self._user.id is not None and self.isVisible():
                 self._lock_timer.start()
