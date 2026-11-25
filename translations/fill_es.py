@@ -798,6 +798,10 @@ EXTRA: dict[str, str] = {
     "The equipment was tested and works correctly.": (
         "El equipo fue probado y funciona correctamente."
     ),
+    "&View": "&Ver",
+    "System theme": "Tema del sistema",
+    "Light theme": "Tema claro",
+    "Dark theme": "Tema oscuro",
 }
 
 MISSING = object()

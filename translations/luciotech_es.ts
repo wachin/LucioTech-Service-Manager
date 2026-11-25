@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1">
   <context>
     <name>AboutDialog</name>
@@ -2165,77 +2166,97 @@ Do you want to save anyway?</source>
   <context>
     <name>MainWindow</name>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="79" />
+      <location filename="../src/luciotech/ui/main_window.py" line="80" />
       <source>Home</source>
       <translation type="unfinished">Inicio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="80" />
+      <location filename="../src/luciotech/ui/main_window.py" line="81" />
       <source>Orders</source>
       <translation type="unfinished">Órdenes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="81" />
+      <location filename="../src/luciotech/ui/main_window.py" line="82" />
       <source>Customers</source>
       <translation type="unfinished">Clientes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="82" />
+      <location filename="../src/luciotech/ui/main_window.py" line="83" />
       <source>Equipment</source>
       <translation type="unfinished">Equipos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="83" />
+      <location filename="../src/luciotech/ui/main_window.py" line="84" />
       <source>Trash</source>
       <translation type="unfinished">Papelera</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="146" />
+      <location filename="../src/luciotech/ui/main_window.py" line="147" />
       <source>Signed in: %1 · %2</source>
       <translation type="unfinished">Sesión: %1 · %2</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="151" />
+      <location filename="../src/luciotech/ui/main_window.py" line="152" />
       <source>This name appears in the order history and in the footer of the documents you print.</source>
       <translation type="unfinished">Este nombre aparece en el historial de las órdenes y en el pie de los documentos que imprima.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="159" />
+      <location filename="../src/luciotech/ui/main_window.py" line="160" />
       <source>&amp;File</source>
       <translation type="unfinished">&amp;Archivo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="161" />
+      <location filename="../src/luciotech/ui/main_window.py" line="162" />
       <source>Change &amp;my password…</source>
       <translation type="unfinished">Cambiar &amp;mi contraseña…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="165" />
+      <location filename="../src/luciotech/ui/main_window.py" line="166" />
       <source>&amp;Settings…</source>
       <translation type="unfinished">&amp;Configuración…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="168" />
+      <location filename="../src/luciotech/ui/main_window.py" line="169" />
       <source>&amp;Users…</source>
       <translation type="unfinished">&amp;Usuarios…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="173" />
+      <location filename="../src/luciotech/ui/main_window.py" line="174" />
       <source>&amp;Sign out</source>
       <translation type="unfinished">&amp;Cerrar sesión</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="177" />
+      <location filename="../src/luciotech/ui/main_window.py" line="178" />
       <source>&amp;Quit</source>
       <translation type="unfinished">&amp;Salir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="182" />
+      <location filename="../src/luciotech/ui/main_window.py" line="183" />
+      <source>&amp;View</source>
+      <translation type="unfinished">&amp;Ver</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="188" />
+      <source>System theme</source>
+      <translation type="unfinished">Tema del sistema</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="194" />
+      <source>Light theme</source>
+      <translation type="unfinished">Tema claro</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="199" />
+      <source>Dark theme</source>
+      <translation type="unfinished">Tema oscuro</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="205" />
       <source>&amp;Help</source>
       <translation type="unfinished">&amp;Ayuda</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="183" />
+      <location filename="../src/luciotech/ui/main_window.py" line="206" />
       <source>&amp;About…</source>
       <translation type="unfinished">&amp;Acerca de…</translation>
     </message>

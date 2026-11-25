@@ -30,6 +30,7 @@ from luciotech.ui.dialogs.settings_dialog import SettingsDialog
 from luciotech.ui.dialogs.unlock_dialog import UnlockDialog
 from luciotech.ui.dialogs.users_dialog import UsersDialog
 from luciotech.ui.labels import role_label
+from luciotech.ui.theme import apply_theme
 from luciotech.ui.pages.customers_page import CustomersPage
 from luciotech.ui.pages.equipment_page import EquipmentPage
 from luciotech.ui.pages.home_page import HomePage
@@ -179,10 +180,39 @@ class MainWindow(QMainWindow):
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
 
+        view_menu = self.menuBar().addMenu(self.tr("&View"))
+        from PyQt6.QtGui import QActionGroup
+
+        self._theme_group = QActionGroup(self)
+        self._theme_group.setExclusive(True)
+        system_action = QAction(self.tr("System theme"), self)
+        system_action.setCheckable(True)
+        system_action.setChecked(True)
+        system_action.triggered.connect(lambda: self._set_theme("system"))
+        self._theme_group.addAction(system_action)
+        view_menu.addAction(system_action)
+        light_action = QAction(self.tr("Light theme"), self)
+        light_action.setCheckable(True)
+        light_action.triggered.connect(lambda: self._set_theme("light"))
+        self._theme_group.addAction(light_action)
+        view_menu.addAction(light_action)
+        dark_action = QAction(self.tr("Dark theme"), self)
+        dark_action.setCheckable(True)
+        dark_action.triggered.connect(lambda: self._set_theme("dark"))
+        self._theme_group.addAction(dark_action)
+        view_menu.addAction(dark_action)
+
         help_menu = self.menuBar().addMenu(self.tr("&Help"))
         about_action = QAction(self.tr("&About…"), self)
         about_action.triggered.connect(self._open_about)
         help_menu.addAction(about_action)
+
+    def _set_theme(self, mode: str) -> None:
+        """Aplica el tema elegido a toda la aplicación y lo recuerda."""
+        apply_theme(mode)
+        from PyQt6.QtCore import QSettings
+
+        QSettings().setValue("theme", mode)
 
     def _open_about(self) -> None:
         AboutDialog(self).exec()

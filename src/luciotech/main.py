@@ -20,6 +20,7 @@ from luciotech.services.settings_service import language, tax_settings
 from luciotech.services.totals_service import recalculate_stored_totals
 from luciotech.ui.dialogs.login_dialog import login_user
 from luciotech.ui.main_window import MainWindow
+from luciotech.ui.theme import apply_theme, init_theme_state
 from luciotech.ui.translations import install_translations
 
 # Icono de la aplicación y de cada ventana que no fije el suyo.
@@ -37,6 +38,11 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationVersion(APP_VERSION)
     app.setOrganizationName(APP_CONFIG.organization_name)
     app.setWindowIcon(QIcon(str(APP_ICON)))
+    init_theme_state(app)
+    from PyQt6.QtCore import QSettings
+
+    saved_theme = QSettings().value("theme", "system")
+    apply_theme(str(saved_theme) if saved_theme else "system")
 
     url = resolve_database_url()
     upgrade_database(url)
