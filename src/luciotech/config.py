@@ -67,6 +67,10 @@ DEFAULT_SERVICE_TERMS = (
 # Días de garantía que recibe cada orden nueva; se cambia en la pantalla de Configuración.
 DEFAULT_WARRANTY_DAYS = 30
 
+# Minutos sin teclado ni ratón antes de que la ventana principal pida la contraseña de la
+# sesión otra vez. La cuenta de respaldo sin sesión (DEFAULT_CURRENT_USER) no se bloquea.
+INACTIVITY_LOCK_MINUTES = 10
+
 # The {dias}, {orden} and {meses} placeholders are replaced when printing (§13.1.2 and §13.1.4).
 DEFAULT_WARRANTY_TERMS = (
     "1. The warranty covers the work performed and the parts invoiced for {dias} days from "

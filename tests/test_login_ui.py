@@ -7,13 +7,15 @@ from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QMessageBox
 from pytestqt.qtbot import QtBot
 from sqlalchemy.orm import Session, sessionmaker
 
-from luciotech.database.enums import UserRole
+from luciotech.config import INACTIVITY_LOCK_MINUTES
+from luciotech.database.enums import UserAuditAction, UserRole
 from luciotech.services.user_service import (
     CurrentUser,
     authenticate,
     count_users,
     create_user,
     get_user,
+    list_user_events,
     list_users,
     set_active,
     set_password,
@@ -23,6 +25,7 @@ from luciotech.ui.dialogs.login_dialog import (
     FirstUserDialog,
     LoginDialog,
 )
+from luciotech.ui.dialogs.unlock_dialog import UnlockDialog
 from luciotech.ui.dialogs.users_dialog import (
     SetPasswordDialog,
     UserFormDialog,
@@ -512,6 +515,71 @@ def test_an_admin_can_reset_a_password(
         assert authenticate(session, "ana", "nueva2026") is not None
 
 
+def test_resetting_another_admin_password_asks_for_yours_and_records_it(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        jefe = create_user(
+            session,
+            username="jefe",
+            full_name="Jefe de planta",
+            password="jefe2026",
+            role=UserRole.ADMINISTRADOR,
+        )
+        session.commit()
+        jefe_id = jefe.id
+
+    dialog = SetPasswordDialog(session_factory, jefe_id, actor=admin)
+    qtbot.addWidget(dialog)
+    assert dialog._needs_own_password is True
+    texts = [label.text() for label in dialog.findChildren(QLabel)]
+    assert any("bitácora" in text for text in texts)
+
+    dialog._password.setText("nueva2026")
+    dialog._repeat.setText("nueva2026")
+    dialog._save()
+    assert dialog.result() != QDialog.DialogCode.Accepted
+    assert "propia contraseña" in dialog._message.text()
+
+    dialog._own_password.setText("no es")
+    dialog._save()
+    assert dialog.result() != QDialog.DialogCode.Accepted
+    assert "no es correcta" in dialog._message.text()
+
+    dialog._own_password.setText(PASSWORD)
+    dialog._save()
+
+    assert dialog.result() == QDialog.DialogCode.Accepted
+    with session_factory() as session:
+        target = get_user(session, "jefe")
+        assert target is not None
+        assert target.debe_cambiar_contrasena is True
+        assert authenticate(session, "jefe", "nueva2026") is not None
+        event = list_user_events(session)[0]
+        assert event.accion == UserAuditAction.CONTRASENA_RESTABLECIDA.value
+        assert event.usuario_nombre == "Ana Torres"
+
+
+def test_resetting_a_technician_password_does_not_ask_for_yours(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    with session_factory() as session:
+        luis = create_user(
+            session, username="luis", full_name="Luis Paredes", password=PASSWORD
+        )
+        session.commit()
+        luis_id = luis.id
+
+    dialog = SetPasswordDialog(session_factory, luis_id, actor=admin)
+    qtbot.addWidget(dialog)
+
+    assert dialog._needs_own_password is False
+    texts = [label.text() for label in dialog.findChildren(QLabel)]
+    assert any("bitácora" in text for text in texts)
+
+
 def test_changing_your_own_password_needs_the_current_one(
     qtbot: QtBot, session_factory: sessionmaker[Session]
 ) -> None:
@@ -591,6 +659,71 @@ def test_the_orders_page_uses_the_name_of_the_session(
     qtbot.addWidget(window)
 
     assert window.orders_page._usuario == "Ana Torres"
+
+
+# Bloqueo por inactividad
+
+
+def test_the_unlock_dialog_only_accepts_the_password_of_the_session(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    admin = _seed(session_factory)
+    dialog = UnlockDialog(session_factory, admin, INACTIVITY_LOCK_MINUTES)
+    qtbot.addWidget(dialog)
+    texts = [label.text() for label in dialog.findChildren(QLabel)]
+    assert any("Ana Torres" in text for text in texts)
+
+    dialog._password.setText("no es esta")
+    dialog._unlock()
+    assert dialog.result() != QDialog.DialogCode.Accepted
+    assert "incorrecta" in dialog._message.text()
+
+    dialog._password.setText(PASSWORD)
+    dialog._unlock()
+    assert dialog.result() == QDialog.DialogCode.Accepted
+
+
+def test_the_window_locks_after_the_inactivity_period(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    window = MainWindow(session_factory, admin)
+    qtbot.addWidget(window)
+    assert window._lock_timer.isActive() is True
+    locks: list[bool] = []
+    monkeypatch.setattr(window, "_can_lock", lambda: True)
+    monkeypatch.setattr(window, "_lock_session", lambda: locks.append(True))
+
+    window._last_activity -= INACTIVITY_LOCK_MINUTES * 60 + 1
+    window._check_inactivity()
+
+    assert locks == [True]
+
+
+def test_no_lock_happens_while_another_dialog_is_open(
+    qtbot: QtBot, session_factory: sessionmaker[Session], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    admin = _seed(session_factory)
+    window = MainWindow(session_factory, admin)
+    qtbot.addWidget(window)
+    locks: list[bool] = []
+    monkeypatch.setattr(window, "_can_lock", lambda: False)
+    monkeypatch.setattr(window, "_lock_session", lambda: locks.append(True))
+
+    window._last_activity -= INACTIVITY_LOCK_MINUTES * 60 + 1
+    window._check_inactivity()
+
+    assert locks == []
+
+
+def test_the_fallback_session_without_an_account_never_locks(
+    qtbot: QtBot, session_factory: sessionmaker[Session]
+) -> None:
+    window = MainWindow(session_factory)
+    qtbot.addWidget(window)
+
+    assert window._user.id is None
+    assert window._lock_timer.isActive() is False
 
 
 def test_the_users_of_the_database_survive_a_new_session(

@@ -3425,4 +3425,61 @@ Do you want to continue?</source>
       <translation>Esta bitácora registra quién creó, modificó, desactivó o restableció la contraseña de cada cuenta.</translation>
     </message>
   </context>
+  <context>
+    <name>UnlockDialog</name>
+    <message>
+      <source>Session locked</source>
+      <translation>Sesión bloqueada</translation>
+    </message>
+    <message>
+      <source>The session was locked after %1 minutes without activity.</source>
+      <translation>La sesión se bloqueó tras %1 minutos sin actividad.</translation>
+    </message>
+    <message>
+      <source>Enter the password of %1 to continue.</source>
+      <translation>Escriba la contraseña de %1 para continuar.</translation>
+    </message>
+    <message>
+      <source>Password</source>
+      <translation>Contraseña</translation>
+    </message>
+    <message>
+      <source>Unlock</source>
+      <translation>Desbloquear</translation>
+    </message>
+    <message>
+      <source>Incorrect password.</source>
+      <translation>Contraseña incorrecta.</translation>
+    </message>
+    <message>
+      <source>The password could not be checked. Please try again.</source>
+      <translation>No se pudo comprobar la contraseña. Intente de nuevo.</translation>
+    </message>
+  </context>
+  <context>
+    <name>SetPasswordDialog</name>
+    <message>
+      <source>Your password</source>
+      <translation>Su contraseña</translation>
+    </message>
+    <message>
+      <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
+      <translation>Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
+    </message>
+    <message>
+      <source>This change is recorded in the account log under your name.</source>
+      <translation>Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
+    </message>
+  </context>
+  <context>
+    <name>LucioTech</name>
+    <message>
+      <source>Enter your own password to reset another administrator's password.</source>
+      <translation>Escriba su propia contraseña para restablecer la de otro administrador.</translation>
+    </message>
+    <message>
+      <source>Your password is not correct.</source>
+      <translation>Su contraseña no es correcta.</translation>
+    </message>
+  </context>
 </TS>

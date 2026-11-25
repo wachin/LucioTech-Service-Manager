@@ -513,6 +513,30 @@ ES: dict[str, str] = {
     "Insert a predefined phrase": "Insertar una frase predefinida",
     "(No predefined texts configured)": "(No hay textos configurados)",
     "Change password": "Cambiar contraseña",
+    "Your password": "Su contraseña",
+    "You are changing the password of another administrator: enter your own password to confirm it.": (
+        "Está cambiando la contraseña de otro administrador: escriba su propia "
+        "contraseña para confirmarlo."
+    ),
+    "This change is recorded in the account log under your name.": (
+        "Este cambio queda registrado en la bitácora de cuentas con su nombre."
+    ),
+    "Enter your own password to reset another administrator's password.": (
+        "Escriba su propia contraseña para restablecer la de otro administrador."
+    ),
+    "Your password is not correct.": "Su contraseña no es correcta.",
+    "Session locked": "Sesión bloqueada",
+    "The session was locked after %1 minutes without activity.": (
+        "La sesión se bloqueó tras %1 minutos sin actividad."
+    ),
+    "Enter the password of %1 to continue.": (
+        "Escriba la contraseña de %1 para continuar."
+    ),
+    "Unlock": "Desbloquear",
+    "Incorrect password.": "Contraseña incorrecta.",
+    "The password could not be checked. Please try again.": (
+        "No se pudo comprobar la contraseña. Intente de nuevo."
+    ),
     "Settings": "Configuración",
     "Tax enabled": "IVA activo",
     "Workshop name": "Nombre del taller",

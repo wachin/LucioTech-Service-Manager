@@ -84,6 +84,8 @@ Decisión del bloque 11 (2026-11-01, rama `feat/usuarios`):
 - El primer arranque de una base sin cuentas pide crear el administrador; no hay usuario por defecto con contraseña conocida.
 - La tabla `eventos_usuario` (migración 0006) es la bitácora de las cuentas: alta, cambio de nombre y de rol, activación, desactivación y cambio o restablecimiento de contraseña, con quién lo hizo y a quién. Se consulta en la pestaña **Actividad** de Archivo ▸ Usuarios… y es lo que permite detectar un restablecimiento ajeno.
 - La contraseña que restablece un administrador queda marcada como temporal (`debe_cambiar_contrasena`): el acceso obliga a elegir una propia antes de entrar, así que la temporal solo la conoce quien la escribió.
+- Restablecer la contraseña de **otro administrador** exige además la contraseña de quien lo hace (`set_password(..., actor_password=...)`): la sesión abierta sola no basta para entregar el control de todas las cuentas. El diálogo lo explica y avisa de que el cambio queda en la bitácora con el nombre del actor; el control vive en el servicio, no solo en la pantalla.
+- **Bloqueo por inactividad** (2026-11-25): tras `INACTIVITY_LOCK_MINUTES` (10) sin teclado ni ratón, la ventana principal abre `ui/dialogs/unlock_dialog.py` y no deja seguir sin la contraseña de la cuenta de la sesión. Un diálogo modal abierto o la vista previa de impresión aplazan el bloqueo; la cuenta de respaldo sin sesión (`DEFAULT_CURRENT_USER`) no se bloquea.
 - El técnico de la recepción se propone con el nombre de la sesión, pero sigue siendo editable: a veces recibe uno y repara otro.
 
 Decisión de interfaz del bloque 7 (2026-10-29):

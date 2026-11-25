@@ -6,17 +6,27 @@ barra de estado, al historial de cada orden y al pie de los documentos que se im
 
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QKeySequence, QShortcut
-from PyQt6.QtWidgets import QDialog, QLabel, QMainWindow, QTabWidget, QWidget
+from time import monotonic
+
+from PyQt6.QtCore import QEvent, QObject, QTimer, Qt
+from PyQt6.QtGui import QAction, QCloseEvent, QKeySequence, QShortcut
+from PyQt6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QLabel,
+    QMainWindow,
+    QTabWidget,
+    QWidget,
+)
 from sqlalchemy.orm import Session, sessionmaker
 
-from luciotech.config import APP_CONFIG
+from luciotech.config import APP_CONFIG, INACTIVITY_LOCK_MINUTES
 from luciotech.services.settings_service import tax_settings
 from luciotech.services.totals_service import recalculate_stored_totals
 from luciotech.services.user_service import DEFAULT_CURRENT_USER, CurrentUser
 from luciotech.ui.dialogs.login_dialog import ChangePasswordDialog
 from luciotech.ui.dialogs.settings_dialog import SettingsDialog
+from luciotech.ui.dialogs.unlock_dialog import UnlockDialog
 from luciotech.ui.dialogs.users_dialog import UsersDialog
 from luciotech.ui.labels import role_label
 from luciotech.ui.pages.customers_page import CustomersPage
@@ -27,6 +37,20 @@ from luciotech.ui.pages.trash_page import TrashPage
 
 MIN_WIDTH = 800
 MIN_HEIGHT = 560
+
+# Cada segundo se compara el reloj con la última vez que hubo teclado o ratón. El evento
+# que cuenta como actividad se filtra en toda la aplicación, así que escribir en un diálogo
+# también mantiene la sesión despierta.
+ACTIVITY_CHECK_MS = 1000
+ACTIVITY_EVENTS = frozenset(
+    {
+        QEvent.Type.KeyPress,
+        QEvent.Type.MouseButtonPress,
+        QEvent.Type.MouseButtonDblClick,
+        QEvent.Type.MouseMove,
+        QEvent.Type.Wheel,
+    }
+)
 
 
 class MainWindow(QMainWindow):
@@ -68,6 +92,19 @@ class MainWindow(QMainWindow):
         self._show_session()
         refresh_shortcut = QShortcut(QKeySequence("F5"), self)
         refresh_shortcut.activated.connect(self.refresh_all)
+
+        self._last_activity = monotonic()
+        self._unlocking = False
+        self._lock_timer = QTimer(self)
+        self._lock_timer.setInterval(ACTIVITY_CHECK_MS)
+        self._lock_timer.timeout.connect(self._check_inactivity)
+        # La cuenta de respaldo de las pruebas y del arranque sin sesión no tiene contraseña
+        # que pedir, así que no se bloquea.
+        if self._user.id is not None:
+            app = QApplication.instance()
+            if app is not None:
+                app.installEventFilter(self)
+            self._lock_timer.start()
 
     @property
     def user(self) -> CurrentUser:
@@ -161,3 +198,57 @@ class MainWindow(QMainWindow):
     def _logout(self) -> None:
         self.logout_requested = True
         self.close()
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:  # noqa: N802
+        """Cada tecla, clic o rueda reinicia la cuenta atrás de la inactividad."""
+        if event.type() in ACTIVITY_EVENTS:
+            self._last_activity = monotonic()
+        return super().eventFilter(watched, event)
+
+    def _can_lock(self) -> bool:
+        """No se bloquea encima de un diálogo modal ni con un menú desplegable abierto."""
+        if not self.isVisible() or self._unlocking:
+            return False
+        app = QApplication.instance()
+        if app is None:
+            return True
+        return (
+            app.activeModalWidget() is None
+            and app.activePopupWidget() is None
+        )
+
+    def _check_inactivity(self) -> None:
+        """Que el aviso de bloqueo no salte en mitad de un diálogo o de una vista previa."""
+        if not self._can_lock():
+            # Mientras haya un diálogo abierto se reinicia la cuenta: al cerrarlo, el
+            # usuario vuelve a tener el periodo completo, no medio minuto.
+            self._last_activity = monotonic()
+            return
+        if monotonic() - self._last_activity < INACTIVITY_LOCK_MINUTES * 60:
+            return
+        self._lock_session()
+
+    def _lock_session(self) -> None:
+        """Tapa la ventana con el diálogo de desbloqueo y no sigue hasta la contraseña."""
+        self._unlocking = True
+        self._lock_timer.stop()
+        try:
+            UnlockDialog(
+                self._session_factory,
+                self._user,
+                INACTIVITY_LOCK_MINUTES,
+                parent=self,
+            ).exec()
+        finally:
+            self._last_activity = monotonic()
+            self._unlocking = False
+            if self._user.id is not None and self.isVisible():
+                self._lock_timer.start()
+
+    def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802 (nombre de Qt)
+        """Al cerrar la ventana se deja de escuchar la actividad de toda la aplicación."""
+        self._lock_timer.stop()
+        app = QApplication.instance()
+        if app is not None:
+            app.removeEventFilter(self)
+        super().closeEvent(event)

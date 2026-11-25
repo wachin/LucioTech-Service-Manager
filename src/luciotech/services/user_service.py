@@ -315,18 +315,60 @@ def _store_password(session: Session, user: User, password: str, *, must_change:
     session.flush()
 
 
+def _confirm_other_admin_reset(
+    session: Session,
+    user: User,
+    *,
+    actor: CurrentUser | None,
+    actor_password: str | None,
+) -> None:
+    """Exige la contraseña de quien administra para tocar la de otro administrador.
+
+    Restablecer la contraseña de un técnico no da acceso a nada más; la de otro
+    administrador sí, así que no basta con tener la sesión abierta: hay que demostrar que
+    quien está sentado delante es de verdad el dueño de esa sesión.
+    """
+    if (
+        actor is None
+        or actor.id is None
+        or actor.id == user.id
+        or user.rol != UserRole.ADMINISTRADOR.value
+    ):
+        return
+    if not actor_password:
+        raise ValueError(
+            QCoreApplication.translate(
+                "LucioTech",
+                "Enter your own password to reset another administrator's password.",
+            )
+        )
+    actor_user = session.get(User, actor.id)
+    if actor_user is None or not verify_password(
+        actor_password, actor_user.contrasena_hash
+    ):
+        raise ValueError(
+            QCoreApplication.translate("LucioTech", "Your password is not correct.")
+        )
+
+
 def set_password(
     session: Session,
     user: User,
     password: str,
     *,
     actor: CurrentUser | None = None,
+    actor_password: str | None = None,
 ) -> None:
     """Restablece la contraseña de otra cuenta, sin pedir la anterior.
 
     Queda marcada como temporal: solo la conoce quien la escribió, así que la persona tendrá
-    que elegir una propia en su siguiente acceso.
+    que elegir una propia en su siguiente acceso. Si la cuenta es la de otro administrador,
+    `actor_password` tiene que traer la contraseña de `actor`; el cambio se anota en la
+    bitácora con el nombre de quien lo hizo.
     """
+    _confirm_other_admin_reset(
+        session, user, actor=actor, actor_password=actor_password
+    )
     _store_password(session, user, password, must_change=True)
     record_user_event(
         session,

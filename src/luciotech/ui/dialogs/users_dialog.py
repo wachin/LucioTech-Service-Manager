@@ -416,12 +416,29 @@ class SetPasswordDialog(QDialog):
         self.setWindowTitle(self.tr("Change password"))
         self.setMinimumWidth(420)
 
+        # Restablecer la contraseña de otro administrador es abrirle la puerta a todo el
+        # programa: además de la sesión, se pide la contraseña de quien lo está haciendo.
+        target = None
+        with self._session_factory() as session:
+            target = session.get(User, user_id)
+        self._needs_own_password = bool(
+            actor is not None
+            and actor.id is not None
+            and target is not None
+            and target.id != actor.id
+            and target.rol == UserRole.ADMINISTRADOR.value
+        )
+
         self._password = QLineEdit()
         self._password.setEchoMode(QLineEdit.EchoMode.Password)
         self._repeat = QLineEdit()
         self._repeat.setEchoMode(QLineEdit.EchoMode.Password)
+        self._own_password = QLineEdit()
+        self._own_password.setEchoMode(QLineEdit.EchoMode.Password)
 
         form = QFormLayout()
+        if self._needs_own_password:
+            form.addRow(self.tr("Your password") + " *", self._own_password)
         form.addRow(self.tr("New password"), self._password)
         form.addRow(self.tr("Repeat the new password"), self._repeat)
 
@@ -436,11 +453,28 @@ class SetPasswordDialog(QDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
+        if self._needs_own_password:
+            hint = QLabel(
+                self.tr(
+                    "You are changing the password of another administrator: enter your "
+                    "own password to confirm it."
+                )
+            )
+            hint.setWordWrap(True)
+            layout.addWidget(hint)
         layout.addLayout(form)
+        notice = QLabel(
+            self.tr("This change is recorded in the account log under your name.")
+        )
+        notice.setWordWrap(True)
+        layout.addWidget(notice)
         layout.addWidget(self._message)
         layout.addWidget(buttons)
 
-        self._password.setFocus(Qt.FocusReason.OtherFocusReason)
+        if self._needs_own_password:
+            self._own_password.setFocus(Qt.FocusReason.OtherFocusReason)
+        else:
+            self._password.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def _save(self) -> None:
         if self._password.text() != self._repeat.text():
@@ -452,7 +486,15 @@ class SetPasswordDialog(QDialog):
                 if user is None:
                     self._message.setText(self.tr("The user no longer exists."))
                     return
-                set_password(session, user, self._password.text(), actor=self._actor)
+                set_password(
+                    session,
+                    user,
+                    self._password.text(),
+                    actor=self._actor,
+                    actor_password=(
+                        self._own_password.text() if self._needs_own_password else None
+                    ),
+                )
                 session.commit()
         except ValueError as exc:
             self._message.setText(str(exc))

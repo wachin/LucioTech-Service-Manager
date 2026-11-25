@@ -325,6 +325,42 @@ def test_an_admin_can_set_a_password_without_knowing_the_old_one(session: Sessio
     assert authenticate(session, "ana", PASSWORD) is None
 
 
+def test_resetting_another_admins_password_requires_the_actor_password(
+    session: Session,
+) -> None:
+    first = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    second = _make_user(session, username="jefa", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(first)
+
+    with pytest.raises(ValueError, match="propia contraseña"):
+        set_password(session, second, "nueva2026", actor=actor)
+    with pytest.raises(ValueError, match="no es correcta"):
+        set_password(session, second, "nueva2026", actor=actor, actor_password="otra")
+
+    set_password(
+        session, second, "nueva2026", actor=actor, actor_password=PASSWORD
+    )
+    session.commit()
+
+    assert authenticate(session, "jefa", "nueva2026") is not None
+    event = list_user_events(session)[0]
+    assert event.accion == UserAuditAction.CONTRASENA_RESTABLECIDA.value
+    assert event.usuario_nombre == "Ana Torres"
+
+
+def test_resetting_a_technician_password_needs_no_confirmation(
+    session: Session,
+) -> None:
+    admin = _make_user(session, username="jefe", role=UserRole.ADMINISTRADOR)
+    actor = current_user_of(admin)
+    luis = _make_technician(session, actor)
+
+    set_password(session, luis, "nueva2026", actor=actor)
+    session.commit()
+
+    assert authenticate(session, "luis", "nueva2026") is not None
+
+
 def test_changing_your_own_password_asks_for_the_current_one(session: Session) -> None:
     user = _make_user(session, username="ana")
     with pytest.raises(ValueError, match="actual no es correcta"):
