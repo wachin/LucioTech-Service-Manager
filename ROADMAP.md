@@ -66,7 +66,7 @@ Recorded on 2026-11-25, after the account-security block. These two items are kn
 
 ### 1. The inactivity lock must keep counting while a dialog is open
 
-- [x] Keep the inactivity countdown running while a modal dialog (including the print preview) is open, and lock as soon as it closes when the limit has already elapsed. (paso 1, pendiente de commit)
+- [x] Keep the inactivity countdown running while a modal dialog (including the print preview) is open, and lock as soon as it closes when the limit has already elapsed. (paso 1, 10a77e5)
 
 Current behaviour: `MainWindow._can_lock` in `src/luciotech/ui/main_window.py` returns `False` whenever `QApplication.activeModalWidget()` or `activePopupWidget()` is not `None`, and `_check_inactivity` answers by doing `self._last_activity = monotonic()`. As a result, opening any dialog freezes the countdown and hands out a fresh `INACTIVITY_LOCK_MINUTES` (10) period after closing it; a dialog left open forever means the session never locks.
 
