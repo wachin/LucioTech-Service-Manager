@@ -85,6 +85,7 @@ src/luciotech/
 │   ├── translations.py       # Carga el idioma elegido y las traducciones de Qt (§21)
 │   ├── labels.py             # Etiquetas traducidas de los valores que la base guarda en español
 │   ├── translations/         # Catálogos compilados (luciotech_es.qm)
+│   ├── dialogs/about_dialog.py   # Créditos del programa (Ayuda ▸ Acerca de…)
 │   ├── dialogs/login_dialog.py   # Acceso y creación del primer usuario (§19)
 │   ├── dialogs/users_dialog.py   # Alta, edición, contraseña y baja de cuentas
 │   ├── dialogs/unlock_dialog.py  # Desbloqueo de la sesión tras la inactividad
@@ -92,7 +93,7 @@ src/luciotech/
 │   ├── pages/                # Inicio, órdenes, clientes y equipos
 │   ├── dialogs/              # Recepción, detalle de orden, fotos, buscar y reemplazar
 │   ├── widgets/              # Editor de texto enriquecido (§8)
-│   └── resources/icons/      # Iconos Breeze con CREDITS.md
+│   └── resources/            # Iconos Breeze (con CREDITS.md) y fotos de los créditos
 └── utils/
     ├── paths.py              # Rutas XDG de datos, adjuntos y logs
     └── validators.py         # Cédula (módulo 10), teléfono y correo
@@ -153,6 +154,6 @@ Las rutas de datos son XDG (`~/.local/share/...` y `~/.local/state/.../logs/`). 
 - Bloque de seguridad de cuentas (2026-11-24): bitácora `eventos_usuario` (migración 0006) con quién hizo cada alta, cambio de rol, activación, desactivación y cambio de contraseña, visible en la pestaña **Actividad** de Archivo ▸ Usuarios…; y contraseña temporal obligatoria (`debe_cambiar_contrasena`) cuando un administrador restablece la de otra cuenta.
 - Bloque de seguridad de cuentas 2 (2026-11-25): restablecer la contraseña de **otro administrador** pide la contraseña del actor (`actor_password` en `user_service.set_password`) y el diálogo avisa de que el cambio queda en la bitácora; **bloqueo por inactividad** a los `INACTIVITY_LOCK_MINUTES` (10) minutos, con `ui/dialogs/unlock_dialog.py` y el `QTimer` de `ui/main_window.py` (aplazado con diálogos modales y vista previa de impresión abiertos; `DEFAULT_CURRENT_USER` no se bloquea).
 - Cierre de la Fase 3 (2026-11-14): los checklists de §26 y §30 se copiaron desde «Seguimiento de fase activa» (regla 9 del ROADMAP). El **resumen previo al guardado** de §7.5 queda trasladado a la Fase 4 (regla 7), no se marca como hecho. Las pruebas de PDF no extraen texto porque el entorno no tiene lector de PDF: verifican la maqueta, el encabezado, el pie y el número de hojas (§13). Los checklists de §2 a §25 son espejos históricos de la especificación, no estado de avance.
-- 508 pruebas pasan con `.venv/Scripts/python.exe -m pytest` en Windows (`.venv/bin/python -m pytest` en Linux/macOS).
+- 512 pruebas pasan con `.venv/Scripts/python.exe -m pytest` en Windows (`.venv/bin/python -m pytest` en Linux/macOS).
 - La interfaz es multilingüe (§21): inglés como idioma fuente y español traducido en `translations/luciotech_es.ts`; el idioma se elige en Configuración y se aplica al reabrir.
 - El punto de entrada es `luciotech.main`; ejecútalo con `PYTHONPATH=src` o con el paquete instalado. La aplicación migra la base al arrancar.

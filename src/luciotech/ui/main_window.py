@@ -24,6 +24,7 @@ from luciotech.config import APP_CONFIG, INACTIVITY_LOCK_MINUTES
 from luciotech.services.settings_service import tax_settings
 from luciotech.services.totals_service import recalculate_stored_totals
 from luciotech.services.user_service import DEFAULT_CURRENT_USER, CurrentUser
+from luciotech.ui.dialogs.about_dialog import AboutDialog
 from luciotech.ui.dialogs.login_dialog import ChangePasswordDialog
 from luciotech.ui.dialogs.settings_dialog import SettingsDialog
 from luciotech.ui.dialogs.unlock_dialog import UnlockDialog
@@ -175,6 +176,14 @@ class MainWindow(QMainWindow):
         quit_action.setShortcut(QKeySequence("Ctrl+Q"))
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
+
+        help_menu = self.menuBar().addMenu(self.tr("&Help"))
+        about_action = QAction(self.tr("&About…"), self)
+        about_action.triggered.connect(self._open_about)
+        help_menu.addAction(about_action)
+
+    def _open_about(self) -> None:
+        AboutDialog(self).exec()
 
     def _open_settings(self) -> None:
         dialog = SettingsDialog(self._session_factory, parent=self)

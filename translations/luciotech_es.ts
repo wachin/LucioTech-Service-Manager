@@ -1,6 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1">
   <context>
+    <name>AboutDialog</name>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/about_dialog.py" line="79" />
+      <source>About…</source>
+      <translation type="unfinished">Acerca de…</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/about_dialog.py" line="106" />
+      <source>Developers</source>
+      <translation type="unfinished">Desarrolladores</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/about_dialog.py" line="122" />
+      <source>&lt;p&gt;&lt;b&gt;License&lt;/b&gt;&lt;br&gt;GNU GPL v3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Technologies used&lt;/b&gt;&lt;br&gt;Python, PyQt6, SQLAlchemy, Alembic, Qt Linguist&lt;/p&gt;&lt;p&gt;Desktop application to record the intake, diagnosis, repair and delivery of equipment in a technical service workshop, with customers, orders, budgets, payments, printable documents, user accounts and a local SQLite database.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Repository&lt;/b&gt;&lt;br&gt;&lt;a href="https://github.com/wachin/LucioTech-Service-Manager"&gt;https://github.com/wachin/LucioTech-Service-Manager&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Jipijapa, Manabí, Ecuador&lt;/p&gt;</source>
+      <translation type="unfinished">&lt;p&gt;&lt;b&gt;Licencia&lt;/b&gt;&lt;br&gt;GNU GPL v3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Tecnologías usadas&lt;/b&gt;&lt;br&gt;Python, PyQt6, SQLAlchemy, Alembic, Qt Linguist&lt;/p&gt;&lt;p&gt;Aplicación de escritorio para registrar la recepción, el diagnóstico, la reparación y la entrega de equipos de un taller de servicio técnico, con clientes, órdenes, presupuestos, pagos, documentos imprimibles, cuentas de usuario y una base de datos SQLite local.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Repositorio&lt;/b&gt;&lt;br&gt;&lt;a href="https://github.com/wachin/LucioTech-Service-Manager"&gt;https://github.com/wachin/LucioTech-Service-Manager&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Jipijapa, Manabí, Ecuador&lt;/p&gt;</translation>
+    </message>
+  </context>
+  <context>
     <name>BudgetLineDialog</name>
     <message>
       <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="78" />
@@ -51,106 +69,106 @@
       <translation type="unfinished">Presupuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="199" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="201" />
       <source>Totals</source>
       <translation type="unfinished">Totales</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="203" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="207" />
       <source>Subtotal</source>
       <translation type="unfinished">Subtotal</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="204" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="208" />
       <source>Discount</source>
       <translation type="unfinished">Descuento</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="306" />
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="209" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="313" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="213" />
       <source>Tax</source>
       <translation type="unfinished">IVA</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="210" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="214" />
       <source>Deposit (reception)</source>
       <translation type="unfinished">Anticipo (recepción)</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="211" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="215" />
       <source>Payments received</source>
       <translation type="unfinished">Pagos recibidos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="214" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="218" />
       <source>Total</source>
       <translation type="unfinished">Total</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="215" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="219" />
       <source>Outstanding balance</source>
       <translation type="unfinished">Saldo pendiente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="218" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="222" />
       <source>Record payment</source>
       <translation type="unfinished">Registrar pago</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="432" />
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="220" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="439" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="224" />
       <source>Void payment</source>
       <translation type="unfinished">Anular pago</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="223" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="227" />
       <source>Payments</source>
       <translation type="unfinished">Pagos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="452" />
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="253" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="459" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="257" />
       <source>The order no longer exists.</source>
       <translation type="unfinished">La orden ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="298" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="305" />
       <source>Voided</source>
       <translation type="unfinished">Anulado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="298" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="305" />
       <source>Current</source>
       <translation type="unfinished">Vigente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="306" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="313" />
       <source>Tax (disabled)</source>
       <translation type="unfinished">IVA (desactivado)</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="383" />
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="362" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="390" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="369" />
       <source>Select a line.</source>
       <translation type="unfinished">Seleccione una línea.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="428" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="435" />
       <source>Select a payment.</source>
       <translation type="unfinished">Seleccione un pago.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="433" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="440" />
       <source>Reason for voiding (optional):</source>
       <translation type="unfinished">Motivo de la anulación (opcional):</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="463" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="470" />
       <source>Could not save. Please try again.</source>
       <translation type="unfinished">No se pudo guardar. Intente de nuevo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="467" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="474" />
       <source>Saved.</source>
       <translation type="unfinished">Guardado.</translation>
     </message>
@@ -158,49 +176,49 @@
   <context>
     <name>ChangePasswordDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="251" />
-      <source>Change my password</source>
-      <translation type="unfinished">Cambiar mi contraseña</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="262" />
-      <source>Current password</source>
-      <translation type="unfinished">Contraseña actual</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="263" />
-      <source>New password</source>
-      <translation type="unfinished">Contraseña nueva</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="264" />
-      <source>Repeat the new password</source>
-      <translation type="unfinished">Repetir la nueva</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="285" />
-      <source>The two new passwords do not match.</source>
-      <translation type="unfinished">Las dos contraseñas nuevas no coinciden.</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="291" />
-      <source>The user no longer exists.</source>
-      <translation type="unfinished">El usuario ya no existe.</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="299" />
-      <source>The password could not be changed. Please try again.</source>
-      <translation type="unfinished">No se pudo cambiar la contraseña. Intente de nuevo.</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="410" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="315" />
       <source>Change your password</source>
       <translation>Cambie su contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="435" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="315" />
+      <source>Change my password</source>
+      <translation type="unfinished">Cambiar mi contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="327" />
+      <source>Current password</source>
+      <translation type="unfinished">Contraseña actual</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="328" />
+      <source>New password</source>
+      <translation type="unfinished">Contraseña nueva</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="329" />
+      <source>Repeat the new password</source>
+      <translation type="unfinished">Repetir la nueva</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="344" />
       <source>An administrator reset your password. Choose a new one to continue.</source>
       <translation>Un administrador restableció su contraseña. Elija una nueva para continuar.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="358" />
+      <source>The two new passwords do not match.</source>
+      <translation type="unfinished">Las dos contraseñas nuevas no coinciden.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="364" />
+      <source>The user no longer exists.</source>
+      <translation type="unfinished">El usuario ya no existe.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="372" />
+      <source>The password could not be changed. Please try again.</source>
+      <translation type="unfinished">No se pudo cambiar la contraseña. Intente de nuevo.</translation>
     </message>
   </context>
   <context>
@@ -549,57 +567,57 @@ Do you want to save anyway?</source>
   <context>
     <name>FirstUserDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="162" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="223" />
       <source>Create the first user</source>
       <translation type="unfinished">Crear el primer usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="165" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="226" />
       <source>Welcome to %1</source>
       <translation type="unfinished">Bienvenido a %1</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="172" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="233" />
       <source>There is no account on this computer yet. Create the workshop administrator account: it will appear on the documents you print and it can add the other technicians later from File ▸ Users.</source>
       <translation type="unfinished">Todavía no hay ninguna cuenta en este equipo. Cree la del administrador del taller: será la que aparezca en los documentos que imprima y la que podrá añadir a los demás técnicos después, desde Archivo ▸ Usuarios.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="181" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="242" />
       <source>First and last name, as it should be printed</source>
       <translation type="unfinished">Nombre y apellido, como debe salir impreso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="183" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="244" />
       <source>Used to sign in; no spaces or accents</source>
       <translation type="unfinished">Para entrar; sin espacios ni tildes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="190" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="251" />
       <source>Full name</source>
       <translation type="unfinished">Nombre completo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="191" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="252" />
       <source>User</source>
       <translation type="unfinished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="192" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="253" />
       <source>Password</source>
       <translation type="unfinished">Contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="193" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="254" />
       <source>Repeat password</source>
       <translation type="unfinished">Repetir contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="216" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="277" />
       <source>The two passwords do not match.</source>
       <translation type="unfinished">Las dos contraseñas no coinciden.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="234" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="295" />
       <source>The user could not be created. Please try again.</source>
       <translation type="unfinished">No se pudo crear el usuario. Intente de nuevo.</translation>
     </message>
@@ -655,66 +673,72 @@ Do you want to save anyway?</source>
   <context>
     <name>LoginDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="103" />
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="60" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="100" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="66" />
       <source>Sign in</source>
       <translation type="unfinished">Entrar</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="70" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="76" />
       <source>Choose your user and enter your password to open the workshop.</source>
       <translation type="unfinished">Elija su usuario y escriba su contraseña para abrir el taller.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="95" />
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="88" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="92" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="85" />
       <source>Password</source>
       <translation type="unfinished">Contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="90" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="87" />
       <source>Show password</source>
       <translation type="unfinished">Mostrar contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="94" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="91" />
       <source>User</source>
       <translation type="unfinished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="106" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="103" />
       <source>Quit</source>
       <translation type="unfinished">Salir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="111" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="105" />
       <source>New user…</source>
       <translation type="unfinished">Nuevo usuario…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="129" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="158" />
       <source>There is no active user to sign in.</source>
       <translation type="unfinished">No hay ningún usuario activo para entrar.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="132" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="161" />
       <source>Enter your password.</source>
       <translation type="unfinished">Escriba la contraseña.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="139" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="168" />
       <source>Incorrect user or password.</source>
       <translation type="unfinished">Usuario o contraseña incorrectos.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="147" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="200" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="179" />
       <source>Could not check the credentials. Please try again.</source>
       <translation type="unfinished">No se pudo comprobar el acceso. Intente de nuevo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="180" />
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="184" />
       <source>You must choose a new password before continuing.</source>
       <translation>Debe elegir una contraseña nueva para continuar.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/login_dialog.py" line="193" />
+      <source>The user no longer exists.</source>
+      <translation type="unfinished">El usuario ya no existe.</translation>
     </message>
   </context>
   <context>
@@ -785,57 +809,67 @@ Do you want to save anyway?</source>
       <translation type="unfinished">El título de la nota es obligatorio.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="107" />
+      <location filename="../src/luciotech/services/user_service.py" line="112" />
       <source>The user name must have at least {count} characters.</source>
       <translation type="unfinished">El nombre de usuario debe tener al menos {count} caracteres.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="113" />
+      <location filename="../src/luciotech/services/user_service.py" line="118" />
       <source>The user name cannot be longer than {count} characters.</source>
       <translation type="unfinished">El nombre de usuario no puede pasar de {count} caracteres.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="119" />
+      <location filename="../src/luciotech/services/user_service.py" line="124" />
       <source>The user name may only contain unaccented letters, digits, dot, hyphen and underscore.</source>
       <translation type="unfinished">El nombre de usuario solo puede llevar letras sin tilde, números, punto, guion y guion bajo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="131" />
+      <location filename="../src/luciotech/services/user_service.py" line="136" />
       <source>The password must have at least {count} characters.</source>
       <translation type="unfinished">La contraseña debe tener al menos {count} caracteres.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="137" />
+      <location filename="../src/luciotech/services/user_service.py" line="142" />
       <source>The password cannot be longer than {count} characters.</source>
       <translation type="unfinished">La contraseña no puede pasar de {count} caracteres.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="147" />
+      <location filename="../src/luciotech/services/user_service.py" line="152" />
       <source>The full name cannot be empty.</source>
       <translation type="unfinished">El nombre completo no puede estar vacío.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="151" />
+      <location filename="../src/luciotech/services/user_service.py" line="156" />
       <source>The full name cannot be longer than 120 characters.</source>
       <translation type="unfinished">El nombre completo no puede pasar de 120 caracteres.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="214" />
+      <location filename="../src/luciotech/services/user_service.py" line="254" />
       <source>A user with that sign-in name already exists.</source>
       <translation type="unfinished">Ya existe un usuario con ese nombre de acceso.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="278" />
+      <location filename="../src/luciotech/services/user_service.py" line="340" />
+      <source>Enter your own password to reset another administrator's password.</source>
+      <translation>Escriba su propia contraseña para restablecer la de otro administrador.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/services/user_service.py" line="350" />
+      <source>Your password is not correct.</source>
+      <translation>Su contraseña no es correcta.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/services/user_service.py" line="385" />
       <source>The current password is not correct.</source>
       <translation type="unfinished">La contraseña actual no es correcta.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="323" />
+      <location filename="../src/luciotech/services/user_service.py" line="467" />
       <source>At least one active administrator must remain.</source>
       <translation type="unfinished">Debe quedar al menos un administrador activo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/services/user_service.py" line="333" />
+      <location filename="../src/luciotech/services/user_service.py" line="477" />
       <source>Users have already been created on this computer.</source>
       <translation type="unfinished">Ya hay usuarios creados en este equipo.</translation>
     </message>
@@ -910,440 +944,440 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Datos de cliente no válidos.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="238" />
+      <location filename="../src/luciotech/ui/labels.py" line="297" />
       <source>Received</source>
       <translation type="unfinished">Recibido</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="239" />
+      <location filename="../src/luciotech/ui/labels.py" line="298" />
       <source>Pending diagnosis</source>
       <translation type="unfinished">Pendientes de diagnóstico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="240" />
+      <location filename="../src/luciotech/ui/labels.py" line="299" />
       <source>Diagnosed</source>
       <translation type="unfinished">Diagnosticado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="241" />
+      <location filename="../src/luciotech/ui/labels.py" line="300" />
       <source>Awaiting approval</source>
       <translation type="unfinished">Esperando aprobación</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="242" />
+      <location filename="../src/luciotech/ui/labels.py" line="301" />
       <source>Waiting for parts</source>
       <translation type="unfinished">Esperando repuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="243" />
+      <location filename="../src/luciotech/ui/labels.py" line="302" />
       <source>Under repair</source>
       <translation type="unfinished">En reparación</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="244" />
+      <location filename="../src/luciotech/ui/labels.py" line="303" />
       <source>Repaired</source>
       <translation type="unfinished">Reparado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="245" />
+      <location filename="../src/luciotech/ui/labels.py" line="304" />
       <source>Ready for delivery</source>
       <translation type="unfinished">Listos para entregar</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="246" />
+      <location filename="../src/luciotech/ui/labels.py" line="305" />
       <source>Delivered</source>
       <translation type="unfinished">Entregado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="247" />
+      <location filename="../src/luciotech/ui/labels.py" line="306" />
       <source>Not repairable</source>
       <translation type="unfinished">No reparable</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="248" />
+      <location filename="../src/luciotech/ui/labels.py" line="307" />
       <source>Cancelled</source>
       <translation type="unfinished">Cancelado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="249" />
+      <location filename="../src/luciotech/ui/labels.py" line="308" />
       <source>Low</source>
       <translation type="unfinished">Baja</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="250" />
+      <location filename="../src/luciotech/ui/labels.py" line="309" />
       <source>Normal</source>
       <translation type="unfinished">Normal</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="251" />
+      <location filename="../src/luciotech/ui/labels.py" line="310" />
       <source>High</source>
       <translation type="unfinished">Alta</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="252" />
+      <location filename="../src/luciotech/ui/labels.py" line="311" />
       <source>Urgent</source>
       <translation type="unfinished">Urgente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="253" />
+      <location filename="../src/luciotech/ui/labels.py" line="312" />
       <source>Condition on arrival</source>
       <translation type="unfinished">Estado al recibir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="356" />
-      <location filename="../src/luciotech/ui/documents.py" line="285" />
-      <location filename="../src/luciotech/ui/documents.py" line="218" />
-      <location filename="../src/luciotech/ui/documents.py" line="161" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="669" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="611" />
-      <location filename="../src/luciotech/ui/labels.py" line="254" />
+      <location filename="../src/luciotech/ui/documents.py" line="363" />
+      <location filename="../src/luciotech/ui/documents.py" line="289" />
+      <location filename="../src/luciotech/ui/documents.py" line="222" />
+      <location filename="../src/luciotech/ui/documents.py" line="162" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="676" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="615" />
+      <location filename="../src/luciotech/ui/labels.py" line="313" />
       <source>Serial number</source>
       <translation type="unfinished">Número de serie</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="255" />
+      <location filename="../src/luciotech/ui/labels.py" line="314" />
       <source>Accessories</source>
       <translation type="unfinished">Accesorios</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="256" />
+      <location filename="../src/luciotech/ui/labels.py" line="315" />
       <source>Physical damage</source>
       <translation type="unfinished">Daño físico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="257" />
+      <location filename="../src/luciotech/ui/labels.py" line="316" />
       <source>Repair in progress</source>
       <translation type="unfinished">Proceso de reparación</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="258" />
+      <location filename="../src/luciotech/ui/labels.py" line="317" />
       <source>Repaired equipment</source>
       <translation type="unfinished">Equipo reparado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="259" />
+      <location filename="../src/luciotech/ui/labels.py" line="318" />
       <source>Other</source>
       <translation type="unfinished">Otro</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="676" />
-      <location filename="../src/luciotech/ui/labels.py" line="260" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="683" />
+      <location filename="../src/luciotech/ui/labels.py" line="319" />
       <source>Deposit</source>
       <translation type="unfinished">Anticipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="261" />
+      <location filename="../src/luciotech/ui/labels.py" line="320" />
       <source>Part payment</source>
       <translation type="unfinished">Abono</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="262" />
+      <location filename="../src/luciotech/ui/labels.py" line="321" />
       <source>Final payment</source>
       <translation type="unfinished">Pago final</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="263" />
+      <location filename="../src/luciotech/ui/labels.py" line="322" />
       <source>Refund</source>
       <translation type="unfinished">Reembolso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="264" />
+      <location filename="../src/luciotech/ui/labels.py" line="323" />
       <source>Cash</source>
       <translation type="unfinished">Efectivo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="265" />
+      <location filename="../src/luciotech/ui/labels.py" line="324" />
       <source>Bank transfer</source>
       <translation type="unfinished">Transferencia bancaria</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="266" />
+      <location filename="../src/luciotech/ui/labels.py" line="325" />
       <source>Card</source>
       <translation type="unfinished">Tarjeta</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="267" />
+      <location filename="../src/luciotech/ui/labels.py" line="326" />
       <source>Bank deposit</source>
       <translation type="unfinished">Depósito</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="268" />
+      <location filename="../src/luciotech/ui/labels.py" line="327" />
       <source>Administrator</source>
       <translation type="unfinished">Administrador</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="269" />
+      <location filename="../src/luciotech/ui/labels.py" line="328" />
       <source>Technician</source>
       <translation type="unfinished">Técnico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="300" />
+      <location filename="../src/luciotech/ui/labels.py" line="329" />
       <source>User created</source>
-      <translation>Alta de usuario</translation>
+      <translation type="unfinished">Alta de usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="301" />
+      <location filename="../src/luciotech/ui/labels.py" line="330" />
       <source>Details changed</source>
-      <translation>Datos modificados</translation>
+      <translation type="unfinished">Datos modificados</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="302" />
+      <location filename="../src/luciotech/ui/labels.py" line="331" />
       <source>Role changed</source>
-      <translation>Cambio de rol</translation>
+      <translation type="unfinished">Cambio de rol</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="303" />
+      <location filename="../src/luciotech/ui/labels.py" line="332" />
       <source>Password changed</source>
-      <translation>Contraseña cambiada</translation>
+      <translation type="unfinished">Contraseña cambiada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="304" />
+      <location filename="../src/luciotech/ui/labels.py" line="333" />
       <source>Password reset</source>
-      <translation>Contraseña restablecida</translation>
+      <translation type="unfinished">Contraseña restablecida</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="305" />
+      <location filename="../src/luciotech/ui/labels.py" line="334" />
       <source>Account activated</source>
-      <translation>Cuenta activada</translation>
+      <translation type="unfinished">Cuenta activada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="306" />
+      <location filename="../src/luciotech/ui/labels.py" line="335" />
       <source>Account deactivated</source>
-      <translation>Cuenta desactivada</translation>
+      <translation type="unfinished">Cuenta desactivada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="270" />
+      <location filename="../src/luciotech/ui/labels.py" line="336" />
       <source>Diagnosis</source>
       <translation type="unfinished">Diagnóstico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="271" />
+      <location filename="../src/luciotech/ui/labels.py" line="337" />
       <source>Labour</source>
       <translation type="unfinished">Mano de obra</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="272" />
+      <location filename="../src/luciotech/ui/labels.py" line="338" />
       <source>Part</source>
       <translation type="unfinished">Repuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="273" />
+      <location filename="../src/luciotech/ui/labels.py" line="339" />
       <source>Accessory</source>
       <translation type="unfinished">Accesorio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="274" />
+      <location filename="../src/luciotech/ui/labels.py" line="340" />
       <source>Service</source>
       <translation type="unfinished">Servicio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="275" />
+      <location filename="../src/luciotech/ui/labels.py" line="341" />
       <source>Call to customer</source>
       <translation type="unfinished">Llamada al cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="276" />
+      <location filename="../src/luciotech/ui/labels.py" line="342" />
       <source>Message sent</source>
       <translation type="unfinished">Mensaje enviado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="277" />
+      <location filename="../src/luciotech/ui/labels.py" line="343" />
       <source>Budget approved</source>
       <translation type="unfinished">Presupuesto aprobado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="278" />
+      <location filename="../src/luciotech/ui/labels.py" line="344" />
       <source>Budget rejected</source>
       <translation type="unfinished">Presupuesto rechazado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="279" />
+      <location filename="../src/luciotech/ui/labels.py" line="345" />
       <source>Part requested</source>
       <translation type="unfinished">Repuesto solicitado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="280" />
+      <location filename="../src/luciotech/ui/labels.py" line="346" />
       <source>Part received</source>
       <translation type="unfinished">Repuesto recibido</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="281" />
+      <location filename="../src/luciotech/ui/labels.py" line="347" />
       <source>Diagnosis updated</source>
       <translation type="unfinished">Diagnóstico actualizado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="282" />
+      <location filename="../src/luciotech/ui/labels.py" line="348" />
       <source>Payment received</source>
       <translation type="unfinished">Pago recibido</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="283" />
+      <location filename="../src/luciotech/ui/labels.py" line="349" />
       <source>Payment voided</source>
       <translation type="unfinished">Pago anulado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="284" />
+      <location filename="../src/luciotech/ui/labels.py" line="350" />
       <source>Equipment delivered</source>
       <translation type="unfinished">Equipo entregado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="285" />
+      <location filename="../src/luciotech/ui/labels.py" line="351" />
       <source>Internal note</source>
       <translation type="unfinished">Nota interna</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="286" />
+      <location filename="../src/luciotech/ui/labels.py" line="352" />
       <source>Order deleted</source>
       <translation type="unfinished">Orden eliminada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="287" />
+      <location filename="../src/luciotech/ui/labels.py" line="353" />
       <source>Order restored</source>
       <translation type="unfinished">Orden restaurada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="288" />
+      <location filename="../src/luciotech/ui/labels.py" line="354" />
       <source>State change</source>
       <translation type="unfinished">Cambio de estado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="289" />
+      <location filename="../src/luciotech/ui/labels.py" line="355" />
       <source>Equipment delivered to the customer</source>
       <translation type="unfinished">Equipo entregado al cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="290" />
+      <location filename="../src/luciotech/ui/labels.py" line="356" />
       <source>Laptop</source>
       <translation type="unfinished">Laptop</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="291" />
+      <location filename="../src/luciotech/ui/labels.py" line="357" />
       <source>Desktop computer</source>
       <translation type="unfinished">Computadora de escritorio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="292" />
+      <location filename="../src/luciotech/ui/labels.py" line="358" />
       <source>Printer</source>
       <translation type="unfinished">Impresora</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="293" />
+      <location filename="../src/luciotech/ui/labels.py" line="359" />
       <source>Security camera</source>
       <translation type="unfinished">Cámara de seguridad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="294" />
+      <location filename="../src/luciotech/ui/labels.py" line="360" />
       <source>DVR</source>
       <translation type="unfinished">DVR</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="295" />
+      <location filename="../src/luciotech/ui/labels.py" line="361" />
       <source>NVR</source>
       <translation type="unfinished">NVR</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="296" />
+      <location filename="../src/luciotech/ui/labels.py" line="362" />
       <source>Monitor</source>
       <translation type="unfinished">Monitor</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="297" />
+      <location filename="../src/luciotech/ui/labels.py" line="363" />
       <source>Router</source>
       <translation type="unfinished">Router</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="299" />
-      <location filename="../src/luciotech/ui/labels.py" line="298" />
+      <location filename="../src/luciotech/ui/labels.py" line="365" />
+      <location filename="../src/luciotech/ui/labels.py" line="364" />
       <source>Power supply</source>
       <translation type="unfinished">Fuente de poder</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="300" />
+      <location filename="../src/luciotech/ui/labels.py" line="366" />
       <source>Adapter</source>
       <translation type="unfinished">Adaptador</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="301" />
+      <location filename="../src/luciotech/ui/labels.py" line="367" />
       <source>Cable</source>
       <translation type="unfinished">Cable</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="302" />
+      <location filename="../src/luciotech/ui/labels.py" line="368" />
       <source>Hard drive</source>
       <translation type="unfinished">Disco duro</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="303" />
+      <location filename="../src/luciotech/ui/labels.py" line="369" />
       <source>Remote control</source>
       <translation type="unfinished">Control remoto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="304" />
+      <location filename="../src/luciotech/ui/labels.py" line="370" />
       <source>Antenna</source>
       <translation type="unfinished">Antena</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="305" />
+      <location filename="../src/luciotech/ui/labels.py" line="371" />
       <source>Charger</source>
       <translation type="unfinished">Cargador</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="306" />
+      <location filename="../src/luciotech/ui/labels.py" line="372" />
       <source>Battery</source>
       <translation type="unfinished">Batería</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="307" />
+      <location filename="../src/luciotech/ui/labels.py" line="373" />
       <source>Bag</source>
       <translation type="unfinished">Bolso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="308" />
+      <location filename="../src/luciotech/ui/labels.py" line="374" />
       <source>USB drive</source>
       <translation type="unfinished">Memoria USB</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="309" />
+      <location filename="../src/luciotech/ui/labels.py" line="375" />
       <source>Power cable</source>
       <translation type="unfinished">Cable de corriente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="310" />
+      <location filename="../src/luciotech/ui/labels.py" line="376" />
       <source>Keyboard</source>
       <translation type="unfinished">Teclado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="311" />
+      <location filename="../src/luciotech/ui/labels.py" line="377" />
       <source>Speakers</source>
       <translation type="unfinished">Parlantes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="312" />
+      <location filename="../src/luciotech/ui/labels.py" line="378" />
       <source>Wi-Fi adapter</source>
       <translation type="unfinished">Adaptador Wi-Fi</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="313" />
+      <location filename="../src/luciotech/ui/labels.py" line="379" />
       <source>USB cable</source>
       <translation type="unfinished">Cable USB</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="314" />
+      <location filename="../src/luciotech/ui/labels.py" line="380" />
       <source>Cartridges</source>
       <translation type="unfinished">Cartuchos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="315" />
+      <location filename="../src/luciotech/ui/labels.py" line="381" />
       <source>Ink bottles</source>
       <translation type="unfinished">Botellas de tinta</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="316" />
+      <location filename="../src/luciotech/ui/labels.py" line="382" />
       <source>Trays</source>
       <translation type="unfinished">Bandejas</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/labels.py" line="317" />
+      <location filename="../src/luciotech/ui/labels.py" line="383" />
       <source>Order created</source>
       <translation type="unfinished">Orden creada</translation>
     </message>
@@ -1375,221 +1409,221 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Página {page} de {pages}</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="341" />
-      <location filename="../src/luciotech/ui/documents.py" line="270" />
-      <location filename="../src/luciotech/ui/documents.py" line="203" />
-      <location filename="../src/luciotech/ui/documents.py" line="145" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="581" />
+      <location filename="../src/luciotech/ui/documents.py" line="348" />
+      <location filename="../src/luciotech/ui/documents.py" line="274" />
+      <location filename="../src/luciotech/ui/documents.py" line="207" />
+      <location filename="../src/luciotech/ui/documents.py" line="146" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="585" />
       <source>Name</source>
       <translation type="unfinished">Nombre</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="342" />
-      <location filename="../src/luciotech/ui/documents.py" line="271" />
-      <location filename="../src/luciotech/ui/documents.py" line="204" />
-      <location filename="../src/luciotech/ui/documents.py" line="146" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="582" />
+      <location filename="../src/luciotech/ui/documents.py" line="349" />
+      <location filename="../src/luciotech/ui/documents.py" line="275" />
+      <location filename="../src/luciotech/ui/documents.py" line="208" />
+      <location filename="../src/luciotech/ui/documents.py" line="147" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="586" />
       <source>ID number</source>
       <translation type="unfinished">Identificación</translation>
     </message>
     <message>
       <location filename="../src/luciotech/ui/validation_texts.py" line="96" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="583" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="587" />
       <source>Primary phone</source>
       <translation type="unfinished">Teléfono principal</translation>
     </message>
     <message>
       <location filename="../src/luciotech/ui/validation_texts.py" line="97" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="585" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="589" />
       <source>Secondary phone</source>
       <translation type="unfinished">Teléfono secundario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="148" />
+      <location filename="../src/luciotech/ui/documents.py" line="149" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="98" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="588" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="592" />
       <source>Email</source>
-      <translation type="unfinished">Correo electrónico</translation>
+      <translation type="unfinished">Correo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="589" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="593" />
       <source>Address</source>
       <translation type="unfinished">Dirección</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="590" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="594" />
       <source>Notes</source>
-      <translation type="unfinished">Notas</translation>
+      <translation type="unfinished">Observaciones</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="591" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="595" />
       <source>Other orders</source>
       <translation type="unfinished">Otras órdenes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="593" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="597" />
       <source>Total outstanding balance</source>
       <translation type="unfinished">Saldo pendiente total</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="657" />
-      <location filename="../src/luciotech/ui/documents.py" line="416" />
-      <location filename="../src/luciotech/ui/documents.py" line="352" />
-      <location filename="../src/luciotech/ui/documents.py" line="281" />
-      <location filename="../src/luciotech/ui/documents.py" line="214" />
-      <location filename="../src/luciotech/ui/documents.py" line="157" />
+      <location filename="../src/luciotech/ui/documents.py" line="664" />
+      <location filename="../src/luciotech/ui/documents.py" line="423" />
+      <location filename="../src/luciotech/ui/documents.py" line="359" />
+      <location filename="../src/luciotech/ui/documents.py" line="285" />
+      <location filename="../src/luciotech/ui/documents.py" line="218" />
+      <location filename="../src/luciotech/ui/documents.py" line="158" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="107" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="606" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="610" />
       <source>Type</source>
       <translation type="unfinished">Tipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="609" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="613" />
       <source>Brand</source>
       <translation type="unfinished">Marca</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="610" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="614" />
       <source>Model</source>
       <translation type="unfinished">Modelo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="162" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="612" />
+      <location filename="../src/luciotech/ui/documents.py" line="163" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="616" />
       <source>Colour</source>
       <translation type="unfinished">Color</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="163" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="613" />
+      <location filename="../src/luciotech/ui/documents.py" line="164" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="617" />
       <source>Operating system</source>
       <translation type="unfinished">Sistema operativo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="614" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="618" />
       <source>Password or PIN</source>
       <translation type="unfinished">Contraseña o PIN</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="287" />
-      <location filename="../src/luciotech/ui/documents.py" line="164" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="615" />
+      <location filename="../src/luciotech/ui/documents.py" line="292" />
+      <location filename="../src/luciotech/ui/documents.py" line="166" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="620" />
       <source>Accessories received</source>
       <translation type="unfinished">Accesorios recibidos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="165" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="616" />
+      <location filename="../src/luciotech/ui/documents.py" line="169" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="623" />
       <source>Physical condition</source>
       <translation type="unfinished">Estado físico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="298" />
-      <location filename="../src/luciotech/ui/documents.py" line="219" />
-      <location filename="../src/luciotech/ui/documents.py" line="177" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="674" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="617" />
+      <location filename="../src/luciotech/ui/documents.py" line="305" />
+      <location filename="../src/luciotech/ui/documents.py" line="223" />
+      <location filename="../src/luciotech/ui/documents.py" line="181" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="681" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="624" />
       <source>Reported problem</source>
       <translation type="unfinished">Problema reportado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="180" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="618" />
+      <location filename="../src/luciotech/ui/documents.py" line="184" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="625" />
       <source>Intake notes</source>
       <translation type="unfinished">Observaciones de ingreso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="657" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="664" />
       <source>Order number</source>
       <translation type="unfinished">Número de orden</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="657" />
-      <location filename="../src/luciotech/ui/documents.py" line="406" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="658" />
+      <location filename="../src/luciotech/ui/documents.py" line="664" />
+      <location filename="../src/luciotech/ui/documents.py" line="413" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="665" />
       <source>Status</source>
       <translation type="unfinished">Estado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="659" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="666" />
       <source>Priority</source>
       <translation type="unfinished">Prioridad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="392" />
-      <location filename="../src/luciotech/ui/documents.py" line="339" />
-      <location filename="../src/luciotech/ui/documents.py" line="268" />
-      <location filename="../src/luciotech/ui/documents.py" line="201" />
-      <location filename="../src/luciotech/ui/documents.py" line="143" />
+      <location filename="../src/luciotech/ui/documents.py" line="399" />
+      <location filename="../src/luciotech/ui/documents.py" line="346" />
+      <location filename="../src/luciotech/ui/documents.py" line="272" />
+      <location filename="../src/luciotech/ui/documents.py" line="205" />
+      <location filename="../src/luciotech/ui/documents.py" line="144" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="99" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="661" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="668" />
       <source>Customer</source>
       <translation type="unfinished">Cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="394" />
-      <location filename="../src/luciotech/ui/documents.py" line="349" />
-      <location filename="../src/luciotech/ui/documents.py" line="278" />
-      <location filename="../src/luciotech/ui/documents.py" line="211" />
+      <location filename="../src/luciotech/ui/documents.py" line="401" />
+      <location filename="../src/luciotech/ui/documents.py" line="356" />
+      <location filename="../src/luciotech/ui/documents.py" line="282" />
+      <location filename="../src/luciotech/ui/documents.py" line="215" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="109" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="665" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="672" />
       <source>Equipment</source>
       <translation type="unfinished">Equipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="398" />
-      <location filename="../src/luciotech/ui/documents.py" line="330" />
-      <location filename="../src/luciotech/ui/documents.py" line="295" />
-      <location filename="../src/luciotech/ui/documents.py" line="173" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="670" />
+      <location filename="../src/luciotech/ui/documents.py" line="405" />
+      <location filename="../src/luciotech/ui/documents.py" line="337" />
+      <location filename="../src/luciotech/ui/documents.py" line="302" />
+      <location filename="../src/luciotech/ui/documents.py" line="177" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="677" />
       <source>Received on</source>
       <translation type="unfinished">Fecha de ingreso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="671" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="678" />
       <source>Estimated date</source>
       <translation type="unfinished">Fecha estimada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="331" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="672" />
+      <location filename="../src/luciotech/ui/documents.py" line="338" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="679" />
       <source>Delivery date</source>
       <translation type="unfinished">Fecha de entrega</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="333" />
-      <location filename="../src/luciotech/ui/documents.py" line="297" />
-      <location filename="../src/luciotech/ui/documents.py" line="175" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="673" />
+      <location filename="../src/luciotech/ui/documents.py" line="340" />
+      <location filename="../src/luciotech/ui/documents.py" line="304" />
+      <location filename="../src/luciotech/ui/documents.py" line="179" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="680" />
       <source>Technician in charge</source>
       <translation type="unfinished">Técnico responsable</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="619" />
-      <location filename="../src/luciotech/ui/documents.py" line="617" />
-      <location filename="../src/luciotech/ui/documents.py" line="609" />
-      <location filename="../src/luciotech/ui/documents.py" line="591" />
-      <location filename="../src/luciotech/ui/documents.py" line="582" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="675" />
+      <location filename="../src/luciotech/ui/documents.py" line="626" />
+      <location filename="../src/luciotech/ui/documents.py" line="624" />
+      <location filename="../src/luciotech/ui/documents.py" line="616" />
+      <location filename="../src/luciotech/ui/documents.py" line="598" />
+      <location filename="../src/luciotech/ui/documents.py" line="589" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="682" />
       <source>Total</source>
       <translation type="unfinished">Total</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="617" />
-      <location filename="../src/luciotech/ui/documents.py" line="615" />
-      <location filename="../src/luciotech/ui/documents.py" line="592" />
-      <location filename="../src/luciotech/ui/documents.py" line="586" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="677" />
+      <location filename="../src/luciotech/ui/documents.py" line="624" />
+      <location filename="../src/luciotech/ui/documents.py" line="622" />
+      <location filename="../src/luciotech/ui/documents.py" line="599" />
+      <location filename="../src/luciotech/ui/documents.py" line="593" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="684" />
       <source>Outstanding balance</source>
       <translation type="unfinished">Saldo pendiente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="501" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="508" />
       <source>The line no longer exists.</source>
       <translation type="unfinished">La línea ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="508" />
+      <location filename="../src/luciotech/ui/dialogs/budget_payments_tab.py" line="515" />
       <source>The payment no longer exists.</source>
       <translation type="unfinished">El pago ya no existe.</translation>
     </message>
@@ -1714,22 +1748,22 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Tipo de equipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="625" />
-      <location filename="../src/luciotech/ui/documents.py" line="573" />
+      <location filename="../src/luciotech/ui/documents.py" line="632" />
+      <location filename="../src/luciotech/ui/documents.py" line="580" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="101" />
       <source>Diagnosis cost</source>
       <translation type="unfinished">Costo de diagnóstico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="612" />
-      <location filename="../src/luciotech/ui/documents.py" line="583" />
+      <location filename="../src/luciotech/ui/documents.py" line="619" />
+      <location filename="../src/luciotech/ui/documents.py" line="590" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="102" />
       <source>Deposit received</source>
       <translation type="unfinished">Anticipo recibido</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="606" />
-      <location filename="../src/luciotech/ui/documents.py" line="579" />
+      <location filename="../src/luciotech/ui/documents.py" line="613" />
+      <location filename="../src/luciotech/ui/documents.py" line="586" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="103" />
       <source>Discount</source>
       <translation type="unfinished">Descuento</translation>
@@ -1740,7 +1774,7 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Cantidad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="229" />
+      <location filename="../src/luciotech/ui/documents.py" line="233" />
       <location filename="../src/luciotech/ui/validation_texts.py" line="105" />
       <source>Unit price</source>
       <translation type="unfinished">Precio unitario</translation>
@@ -1756,332 +1790,332 @@ Do you want to save anyway?</source>
       <translation type="unfinished">Fecha estimada de entrega</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="131" />
+      <location filename="../src/luciotech/ui/documents.py" line="132" />
       <source>Unknown document: {kind}</source>
       <translation type="unfinished">Documento desconocido: {kind}</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="343" />
-      <location filename="../src/luciotech/ui/documents.py" line="272" />
-      <location filename="../src/luciotech/ui/documents.py" line="205" />
-      <location filename="../src/luciotech/ui/documents.py" line="147" />
+      <location filename="../src/luciotech/ui/documents.py" line="350" />
+      <location filename="../src/luciotech/ui/documents.py" line="276" />
+      <location filename="../src/luciotech/ui/documents.py" line="209" />
+      <location filename="../src/luciotech/ui/documents.py" line="148" />
       <source>Phone</source>
       <translation type="unfinished">Teléfono</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="154" />
+      <location filename="../src/luciotech/ui/documents.py" line="155" />
       <source>Equipment received</source>
       <translation type="unfinished">Equipo recibido</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="355" />
-      <location filename="../src/luciotech/ui/documents.py" line="284" />
-      <location filename="../src/luciotech/ui/documents.py" line="217" />
-      <location filename="../src/luciotech/ui/documents.py" line="160" />
+      <location filename="../src/luciotech/ui/documents.py" line="362" />
+      <location filename="../src/luciotech/ui/documents.py" line="288" />
+      <location filename="../src/luciotech/ui/documents.py" line="221" />
+      <location filename="../src/luciotech/ui/documents.py" line="161" />
       <source>Brand and model</source>
       <translation type="unfinished">Marca y modelo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="171" />
+      <location filename="../src/luciotech/ui/documents.py" line="175" />
       <source>Reception</source>
       <translation type="unfinished">Recepción</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="174" />
+      <location filename="../src/luciotech/ui/documents.py" line="178" />
       <source>Estimated delivery</source>
       <translation type="unfinished">Entrega estimada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="380" />
-      <location filename="../src/luciotech/ui/documents.py" line="315" />
-      <location filename="../src/luciotech/ui/documents.py" line="187" />
+      <location filename="../src/luciotech/ui/documents.py" line="387" />
+      <location filename="../src/luciotech/ui/documents.py" line="322" />
+      <location filename="../src/luciotech/ui/documents.py" line="191" />
       <source>Customer signature</source>
       <translation type="unfinished">Firma del cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="380" />
-      <location filename="../src/luciotech/ui/documents.py" line="187" />
+      <location filename="../src/luciotech/ui/documents.py" line="387" />
+      <location filename="../src/luciotech/ui/documents.py" line="191" />
       <source>Workshop signature</source>
       <translation type="unfinished">Firma del taller</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="237" />
-      <location filename="../src/luciotech/ui/documents.py" line="228" />
+      <location filename="../src/luciotech/ui/documents.py" line="241" />
+      <location filename="../src/luciotech/ui/documents.py" line="232" />
       <source>Budget details</source>
       <translation type="unfinished">Detalle del presupuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="229" />
+      <location filename="../src/luciotech/ui/documents.py" line="233" />
       <source>Item</source>
       <translation type="unfinished">Concepto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="229" />
+      <location filename="../src/luciotech/ui/documents.py" line="233" />
       <source>Qty.</source>
       <translation type="unfinished">Cant.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="657" />
-      <location filename="../src/luciotech/ui/documents.py" line="229" />
+      <location filename="../src/luciotech/ui/documents.py" line="664" />
+      <location filename="../src/luciotech/ui/documents.py" line="233" />
       <source>Amount</source>
       <translation type="unfinished">Importe</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="244" />
+      <location filename="../src/luciotech/ui/documents.py" line="248" />
       <source>Budget valid for {days} days from {date}. Work starts once approved.</source>
       <translation type="unfinished">Presupuesto válido por {days} días desde el {date}. El trabajo se inicia una vez aprobado.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="251" />
+      <location filename="../src/luciotech/ui/documents.py" line="255" />
       <source>Customer approval</source>
       <translation type="unfinished">Aprobación del cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="252" />
+      <location filename="../src/luciotech/ui/documents.py" line="256" />
       <source>Name: {signature}   Date: ______________</source>
       <translation type="unfinished">Nombre: {signature}   Fecha: ______________</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="253" />
+      <location filename="../src/luciotech/ui/documents.py" line="257" />
       <source>Signature: {signature}</source>
       <translation type="unfinished">Firma: {signature}</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="286" />
+      <location filename="../src/luciotech/ui/documents.py" line="290" />
       <source>Physical condition on arrival</source>
       <translation type="unfinished">Estado físico al recibir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="390" />
-      <location filename="../src/luciotech/ui/documents.py" line="328" />
-      <location filename="../src/luciotech/ui/documents.py" line="293" />
+      <location filename="../src/luciotech/ui/documents.py" line="397" />
+      <location filename="../src/luciotech/ui/documents.py" line="335" />
+      <location filename="../src/luciotech/ui/documents.py" line="300" />
       <source>Order</source>
       <translation type="unfinished">Orden</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="399" />
-      <location filename="../src/luciotech/ui/documents.py" line="296" />
+      <location filename="../src/luciotech/ui/documents.py" line="406" />
+      <location filename="../src/luciotech/ui/documents.py" line="303" />
       <source>Current status</source>
       <translation type="unfinished">Estado actual</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="302" />
+      <location filename="../src/luciotech/ui/documents.py" line="309" />
       <source>Technical diagnosis</source>
       <translation type="unfinished">Diagnóstico técnico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="360" />
-      <location filename="../src/luciotech/ui/documents.py" line="303" />
+      <location filename="../src/luciotech/ui/documents.py" line="367" />
+      <location filename="../src/luciotech/ui/documents.py" line="310" />
       <source>Work performed</source>
       <translation type="unfinished">Trabajo realizado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="304" />
+      <location filename="../src/luciotech/ui/documents.py" line="311" />
       <source>Parts used</source>
       <translation type="unfinished">Repuestos utilizados</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="305" />
+      <location filename="../src/luciotech/ui/documents.py" line="312" />
       <source>Recommendations</source>
       <translation type="unfinished">Recomendaciones</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="307" />
+      <location filename="../src/luciotech/ui/documents.py" line="314" />
       <source>Photographs of the equipment on arrival</source>
       <translation type="unfinished">Fotografías del equipo al recibir</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="310" />
+      <location filename="../src/luciotech/ui/documents.py" line="317" />
       <source>Photographs of the repaired equipment</source>
       <translation type="unfinished">Fotografías del equipo reparado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="365" />
-      <location filename="../src/luciotech/ui/documents.py" line="313" />
-      <location filename="../src/luciotech/ui/documents.py" line="313" />
+      <location filename="../src/luciotech/ui/documents.py" line="372" />
+      <location filename="../src/luciotech/ui/documents.py" line="320" />
+      <location filename="../src/luciotech/ui/documents.py" line="320" />
       <source>Warranty</source>
       <translation type="unfinished">Garantía</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="315" />
+      <location filename="../src/luciotech/ui/documents.py" line="322" />
       <source>Technician signature</source>
       <translation type="unfinished">Firma del técnico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="332" />
+      <location filename="../src/luciotech/ui/documents.py" line="339" />
       <source>Final status</source>
       <translation type="unfinished">Estado final</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="367" />
+      <location filename="../src/luciotech/ui/documents.py" line="374" />
       <source>Coverage</source>
       <translation type="unfinished">Cobertura</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="369" />
+      <location filename="../src/luciotech/ui/documents.py" line="376" />
       <source>Scope</source>
       <translation type="unfinished">Alcance</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="370" />
+      <location filename="../src/luciotech/ui/documents.py" line="377" />
       <source>Covers only the work performed and the parts invoiced.</source>
       <translation type="unfinished">Cubre únicamente el trabajo realizado y los repuestos facturados.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="377" />
+      <location filename="../src/luciotech/ui/documents.py" line="384" />
       <source>Declaration of conformity</source>
       <translation type="unfinished">Declaración de conformidad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="378" />
+      <location filename="../src/luciotech/ui/documents.py" line="385" />
       <source>I received the equipment in the condition described, tested and working, and I accept the warranty coverage stated above.</source>
       <translation type="unfinished">Recibí el equipo en las condiciones descritas, probado y funcionando, y acepto el alcance de la garantía indicada.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="406" />
+      <location filename="../src/luciotech/ui/documents.py" line="413" />
       <source>Event</source>
       <translation type="unfinished">Evento</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="423" />
-      <location filename="../src/luciotech/ui/documents.py" line="415" />
+      <location filename="../src/luciotech/ui/documents.py" line="430" />
+      <location filename="../src/luciotech/ui/documents.py" line="422" />
       <source>Movements</source>
       <translation type="unfinished">Movimientos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="657" />
-      <location filename="../src/luciotech/ui/documents.py" line="416" />
+      <location filename="../src/luciotech/ui/documents.py" line="664" />
+      <location filename="../src/luciotech/ui/documents.py" line="423" />
       <source>Date</source>
       <translation type="unfinished">Fecha</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="416" />
+      <location filename="../src/luciotech/ui/documents.py" line="423" />
       <source>Detail</source>
       <translation type="unfinished">Detalle</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="416" />
+      <location filename="../src/luciotech/ui/documents.py" line="423" />
       <source>User</source>
       <translation type="unfinished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="478" />
+      <location filename="../src/luciotech/ui/documents.py" line="485" />
       <source>The order no longer exists.</source>
       <translation type="unfinished">La orden ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="534" />
+      <location filename="../src/luciotech/ui/documents.py" line="541" />
       <source>Generated on {date}</source>
       <translation type="unfinished">Generado el {date}</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="536" />
+      <location filename="../src/luciotech/ui/documents.py" line="543" />
       <source>{footer} by {user}</source>
       <translation type="unfinished">{footer} por {user}</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="576" />
+      <location filename="../src/luciotech/ui/documents.py" line="583" />
       <source>Budget lines</source>
       <translation type="unfinished">Líneas de presupuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="604" />
-      <location filename="../src/luciotech/ui/documents.py" line="577" />
+      <location filename="../src/luciotech/ui/documents.py" line="611" />
+      <location filename="../src/luciotech/ui/documents.py" line="584" />
       <source>Subtotal</source>
       <translation type="unfinished">Subtotal</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="608" />
-      <location filename="../src/luciotech/ui/documents.py" line="581" />
+      <location filename="../src/luciotech/ui/documents.py" line="615" />
+      <location filename="../src/luciotech/ui/documents.py" line="588" />
       <source>Tax ({percent}%)</source>
       <translation type="unfinished">IVA ({percent}%)</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="654" />
-      <location filename="../src/luciotech/ui/documents.py" line="614" />
-      <location filename="../src/luciotech/ui/documents.py" line="585" />
+      <location filename="../src/luciotech/ui/documents.py" line="661" />
+      <location filename="../src/luciotech/ui/documents.py" line="621" />
+      <location filename="../src/luciotech/ui/documents.py" line="592" />
       <source>Payments received</source>
       <translation type="unfinished">Pagos recibidos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="588" />
+      <location filename="../src/luciotech/ui/documents.py" line="595" />
       <source>Values</source>
       <translation type="unfinished">Valores</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="619" />
-      <location filename="../src/luciotech/ui/documents.py" line="617" />
+      <location filename="../src/luciotech/ui/documents.py" line="626" />
+      <location filename="../src/luciotech/ui/documents.py" line="624" />
       <source>Amounts</source>
       <translation type="unfinished">Importes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="649" />
+      <location filename="../src/luciotech/ui/documents.py" line="656" />
       <source>Voided</source>
       <translation type="unfinished">Anulado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="649" />
+      <location filename="../src/luciotech/ui/documents.py" line="656" />
       <source>Current</source>
       <translation type="unfinished">Vigente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="656" />
-      <location filename="../src/luciotech/ui/documents.py" line="654" />
+      <location filename="../src/luciotech/ui/documents.py" line="663" />
+      <location filename="../src/luciotech/ui/documents.py" line="661" />
       <source>Payments</source>
       <translation type="unfinished">Pagos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="657" />
+      <location filename="../src/luciotech/ui/documents.py" line="664" />
       <source>Method</source>
       <translation type="unfinished">Método</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="679" />
+      <location filename="../src/luciotech/ui/documents.py" line="686" />
       <source>No warranty recorded</source>
       <translation type="unfinished">Sin garantía registrada</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="680" />
+      <location filename="../src/luciotech/ui/documents.py" line="687" />
       <source>{days} days</source>
       <translation type="unfinished">{days} días</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="762" />
+      <location filename="../src/luciotech/ui/documents.py" line="769" />
       <source>Photographs of the equipment</source>
       <translation type="unfinished">Fotografías del equipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="826" />
+      <location filename="../src/luciotech/ui/documents.py" line="838" />
       <source>Terms and conditions</source>
       <translation type="unfinished">Términos y condiciones</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="829" />
+      <location filename="../src/luciotech/ui/documents.py" line="841" />
       <source>Warranty conditions</source>
       <translation type="unfinished">Condiciones de garantía</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="849" />
+      <location filename="../src/luciotech/ui/documents.py" line="861" />
       <source>Reception receipt</source>
       <translation type="unfinished">Comprobante de recepción</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="850" />
+      <location filename="../src/luciotech/ui/documents.py" line="862" />
       <source>Budget</source>
       <translation type="unfinished">Presupuesto</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="851" />
+      <location filename="../src/luciotech/ui/documents.py" line="863" />
       <source>Technical report</source>
       <translation type="unfinished">Informe técnico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="852" />
+      <location filename="../src/luciotech/ui/documents.py" line="864" />
       <source>Delivery receipt</source>
       <translation type="unfinished">Comprobante de entrega</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/documents.py" line="853" />
+      <location filename="../src/luciotech/ui/documents.py" line="865" />
       <source>Full history</source>
       <translation type="unfinished">Historial completo</translation>
     </message>
@@ -2089,69 +2123,79 @@ Do you want to save anyway?</source>
   <context>
     <name>MainWindow</name>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="54" />
+      <location filename="../src/luciotech/ui/main_window.py" line="79" />
       <source>Home</source>
       <translation type="unfinished">Inicio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="55" />
+      <location filename="../src/luciotech/ui/main_window.py" line="80" />
       <source>Orders</source>
       <translation type="unfinished">Órdenes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="56" />
+      <location filename="../src/luciotech/ui/main_window.py" line="81" />
       <source>Customers</source>
       <translation type="unfinished">Clientes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="57" />
+      <location filename="../src/luciotech/ui/main_window.py" line="82" />
       <source>Equipment</source>
       <translation type="unfinished">Equipos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="58" />
+      <location filename="../src/luciotech/ui/main_window.py" line="83" />
       <source>Trash</source>
       <translation type="unfinished">Papelera</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="106" />
+      <location filename="../src/luciotech/ui/main_window.py" line="144" />
       <source>Signed in: %1 · %2</source>
       <translation type="unfinished">Sesión: %1 · %2</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="111" />
+      <location filename="../src/luciotech/ui/main_window.py" line="149" />
       <source>This name appears in the order history and in the footer of the documents you print.</source>
       <translation type="unfinished">Este nombre aparece en el historial de las órdenes y en el pie de los documentos que imprima.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="119" />
+      <location filename="../src/luciotech/ui/main_window.py" line="157" />
       <source>&amp;File</source>
       <translation type="unfinished">&amp;Archivo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="121" />
+      <location filename="../src/luciotech/ui/main_window.py" line="159" />
       <source>Change &amp;my password…</source>
       <translation type="unfinished">Cambiar &amp;mi contraseña…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="125" />
+      <location filename="../src/luciotech/ui/main_window.py" line="163" />
       <source>&amp;Settings…</source>
       <translation type="unfinished">&amp;Configuración…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="128" />
+      <location filename="../src/luciotech/ui/main_window.py" line="166" />
       <source>&amp;Users…</source>
       <translation type="unfinished">&amp;Usuarios…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="133" />
+      <location filename="../src/luciotech/ui/main_window.py" line="171" />
       <source>&amp;Sign out</source>
       <translation type="unfinished">&amp;Cerrar sesión</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/main_window.py" line="137" />
+      <location filename="../src/luciotech/ui/main_window.py" line="175" />
       <source>&amp;Quit</source>
       <translation type="unfinished">&amp;Salir</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="180" />
+      <source>&amp;Help</source>
+      <translation type="unfinished">&amp;Ayuda</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/main_window.py" line="181" />
+      <source>&amp;About…</source>
+      <translation type="unfinished">&amp;Acerca de…</translation>
     </message>
   </context>
   <context>
@@ -2270,198 +2314,198 @@ Do you want to save anyway?</source>
   <context>
     <name>OrderDetailDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="105" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="106" />
       <source>Service order</source>
       <translation type="unfinished">Orden de servicio</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="113" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="114" />
       <source>Change comment (optional)</source>
       <translation type="unfinished">Comentario del cambio (opcional)</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="114" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="115" />
       <source>Change status</source>
       <translation type="unfinished">Cambiar estado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="118" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="119" />
       <source>Note title</source>
       <translation type="unfinished">Título de la nota</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="120" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="121" />
       <source>Detail (optional)</source>
       <translation type="unfinished">Detalle (opcional)</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="121" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="122" />
       <source>Add note</source>
       <translation type="unfinished">Añadir nota</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="153" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="154" />
       <source>Actions</source>
       <translation type="unfinished">Acciones</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="168" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="169" />
       <source>Next step</source>
       <translation type="unfinished">Siguiente paso</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="321" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="177" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="325" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="178" />
       <source>Show password</source>
       <translation type="unfinished">Mostrar contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="303" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="187" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="307" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="188" />
       <source>Order</source>
       <translation type="unfinished">Orden</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="188" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="189" />
       <source>Customer</source>
       <translation type="unfinished">Cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="190" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="191" />
       <source>Equipment</source>
       <translation type="unfinished">Equipo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="205" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="206" />
       <source>Technical diagnosis</source>
       <translation type="unfinished">Diagnóstico técnico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="205" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="206" />
       <source>Diagnosis</source>
       <translation type="unfinished">Diagnóstico</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="208" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="209" />
       <source>Work performed</source>
       <translation type="unfinished">Trabajo realizado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="208" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="209" />
       <source>Repair</source>
       <translation type="unfinished">Reparación</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="211" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="212" />
       <source>Customer recommendations</source>
       <translation type="unfinished">Recomendaciones al cliente</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="212" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="213" />
       <source>Recommendations</source>
       <translation type="unfinished">Recomendaciones</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="216" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="217" />
       <source>Photographs</source>
       <translation type="unfinished">Fotografías</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="223" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="224" />
       <source>Summary</source>
       <translation type="unfinished">Resumen</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="224" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="225" />
       <source>Work</source>
       <translation type="unfinished">Trabajo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="225" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="229" />
       <source>Money</source>
       <translation type="unfinished">Dinero</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="233" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="237" />
       <source>History</source>
       <translation type="unfinished">Historial</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="239" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="243" />
       <source>Documents…</source>
       <translation type="unfinished">Documentos…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="241" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="245" />
       <source>Print or save the order documents as PDF</source>
       <translation type="unfinished">Imprimir o guardar en PDF los documentos de la orden</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="244" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="248" />
       <source>Delete order</source>
       <translation type="unfinished">Eliminar orden</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="247" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="251" />
       <source>Save texts</source>
       <translation type="unfinished">Guardar textos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="549" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="428" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="371" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="301" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="553" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="432" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="375" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="305" />
       <source>The order no longer exists.</source>
       <translation type="unfinished">La orden ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="321" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="325" />
       <source>Hide password</source>
       <translation type="unfinished">Ocultar contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="442" />
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="358" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="446" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="362" />
       <source>Saved.</source>
       <translation type="unfinished">Guardado.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="376" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="380" />
       <source>The texts could not be saved: %1</source>
       <translation type="unfinished">No se pudieron guardar los textos: %1</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="383" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="387" />
       <source>Texts saved.</source>
       <translation type="unfinished">Textos guardados.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="383" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="387" />
       <source>Changes saved automatically.</source>
       <translation type="unfinished">Cambios guardados automáticamente.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="400" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="404" />
       <source>The clinical texts could not be saved. Close anyway?</source>
       <translation type="unfinished">No se pudieron guardar los textos clínicos. ¿Cerrar de todos modos?</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="439" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="443" />
       <source>Could not save. Please try again.</source>
       <translation type="unfinished">No se pudo guardar. Intente de nuevo.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="501" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="505" />
       <source>Mark the order as delivered?</source>
       <translation type="unfinished">¿Marcar la orden como entregada?</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="522" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="526" />
       <source>Preview: {document}.</source>
       <translation type="unfinished">Vista previa: {document}.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="536" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="540" />
       <source>The order will be sent to the trash and will no longer appear in the list. You can restore it from the Trash tab.
 
 Do you want to continue?</source>
@@ -2470,7 +2514,7 @@ Do you want to continue?</source>
 ¿Desea continuar?</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="557" />
+      <location filename="../src/luciotech/ui/dialogs/order_detail_dialog.py" line="561" />
       <source>The order could not be deleted. Please try again.</source>
       <translation type="unfinished">No se pudo eliminar. Intente de nuevo.</translation>
     </message>
@@ -3059,32 +3103,47 @@ Do you want to continue?</source>
   <context>
     <name>SetPasswordDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="322" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="416" />
       <source>Change password</source>
       <translation type="unfinished">Cambiar contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="331" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="441" />
+      <source>Your password</source>
+      <translation>Su contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="442" />
       <source>New password</source>
       <translation type="unfinished">Contraseña nueva</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="332" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="443" />
       <source>Repeat the new password</source>
       <translation type="unfinished">Repetir la nueva</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="353" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="458" />
+      <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
+      <translation>Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="467" />
+      <source>This change is recorded in the account log under your name.</source>
+      <translation>Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="481" />
       <source>The two passwords do not match.</source>
       <translation type="unfinished">Las dos contraseñas no coinciden.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="359" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="487" />
       <source>The user no longer exists.</source>
       <translation type="unfinished">El usuario ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="367" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="503" />
       <source>The password could not be changed. Please try again.</source>
       <translation type="unfinished">No se pudo cambiar la contraseña. Intente de nuevo.</translation>
     </message>
@@ -3258,69 +3317,108 @@ Do you want to continue?</source>
     </message>
   </context>
   <context>
+    <name>UnlockDialog</name>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="53" />
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="46" />
+      <source>Session locked</source>
+      <translation>Sesión bloqueada</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="60" />
+      <source>The session was locked after %1 minutes without activity.</source>
+      <translation>La sesión se bloqueó tras %1 minutos sin actividad.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="67" />
+      <source>Enter the password of %1 to continue.</source>
+      <translation>Escriba la contraseña de %1 para continuar.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="74" />
+      <source>Password</source>
+      <translation>Contraseña</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="82" />
+      <source>Unlock</source>
+      <translation>Desbloquear</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="108" />
+      <source>Incorrect password.</source>
+      <translation>Contraseña incorrecta.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/unlock_dialog.py" line="114" />
+      <source>The password could not be checked. Please try again.</source>
+      <translation>No se pudo comprobar la contraseña. Intente de nuevo.</translation>
+    </message>
+  </context>
+  <context>
     <name>UserFormDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="61" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="84" />
       <source>Edit user</source>
       <translation type="unfinished">Editar usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="61" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="84" />
       <source>New user</source>
       <translation type="unfinished">Nuevo usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="66" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="89" />
       <source>As it should appear on documents</source>
       <translation type="unfinished">Como debe salir en los documentos</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="68" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="91" />
       <source>Used to sign in; no spaces or accents</source>
       <translation type="unfinished">Para entrar; sin espacios ni tildes</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="78" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="106" />
       <source>Full name</source>
       <translation type="unfinished">Nombre completo</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="79" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="107" />
       <source>User</source>
       <translation type="unfinished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="80" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="108" />
       <source>Role</source>
       <translation type="unfinished">Rol</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="82" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="110" />
       <source>Password</source>
       <translation type="unfinished">Contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="83" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="111" />
       <source>Repeat password</source>
       <translation type="unfinished">Repetir contraseña</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="113" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="141" />
       <source>The user name cannot be changed once created.</source>
       <translation type="unfinished">El nombre de usuario no se puede cambiar una vez creado.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="121" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="149" />
       <source>The two passwords do not match.</source>
       <translation type="unfinished">Las dos contraseñas no coinciden.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="136" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="170" />
       <source>The user no longer exists.</source>
       <translation type="unfinished">El usuario ya no existe.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="146" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="184" />
       <source>The user could not be saved. Please try again.</source>
       <translation type="unfinished">No se pudo guardar el usuario. Intente de nuevo.</translation>
     </message>
@@ -3328,158 +3426,97 @@ Do you want to continue?</source>
   <context>
     <name>UsersDialog</name>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="163" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="280" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="201" />
       <source>Users</source>
       <translation type="unfinished">Usuarios</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="184" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="222" />
       <source>New user…</source>
       <translation type="unfinished">Nuevo usuario…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="186" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="224" />
       <source>Edit…</source>
       <translation type="unfinished">Editar…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="188" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="226" />
       <source>Change password…</source>
       <translation type="unfinished">Cambiar contraseña…</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="260" />
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="255" />
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="190" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="346" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="341" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="228" />
       <source>Deactivate</source>
       <translation type="unfinished">Desactivar</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="201" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="239" />
       <source>The full name appears in the order history and in the footer of the documents printed by each user.</source>
       <translation type="unfinished">El nombre completo es el que aparece en el historial de las órdenes y en el pie de los documentos que imprime cada usuario.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="230" />
-      <source>Active</source>
-      <translation type="unfinished">Activo</translation>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="266" />
+      <source>This log records who created, changed, disabled or reset the password of each account.</source>
+      <translation>Esta bitácora registra quién creó, modificó, desactivó o restableció la contraseña de cada cuenta.</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="230" />
-      <source>Deactivated</source>
-      <translation type="unfinished">Desactivado</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="231" />
-      <source>Never</source>
-      <translation type="unfinished">Nunca</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="260" />
-      <source>Activate</source>
-      <translation type="unfinished">Activar</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="289" />
-      <source>You cannot deactivate the account you are working with.</source>
-      <translation type="unfinished">No puede desactivar la cuenta con la que está trabajando.</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="304" />
-      <source>The status could not be changed. Please try again.</source>
-      <translation type="unfinished">No se pudo cambiar el estado. Intente de nuevo.</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="250" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="281" />
       <source>Activity</source>
       <translation>Actividad</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="305" />
+      <source>Active</source>
+      <translation type="unfinished">Activo</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="305" />
+      <source>Deactivated</source>
+      <translation type="unfinished">Desactivado</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="306" />
+      <source>Never</source>
+      <translation type="unfinished">Nunca</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="346" />
+      <source>Activate</source>
+      <translation type="unfinished">Activar</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="380" />
+      <source>You cannot deactivate the account you are working with.</source>
+      <translation type="unfinished">No puede desactivar la cuenta con la que está trabajando.</translation>
+    </message>
+    <message>
+      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="395" />
+      <source>The status could not be changed. Please try again.</source>
+      <translation type="unfinished">No se pudo cambiar el estado. Intente de nuevo.</translation>
+    </message>
+    <message>
       <source>Date</source>
-      <translation>Fecha</translation>
+      <translation type="vanished">Fecha</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
       <source>User</source>
-      <translation>Usuario</translation>
+      <translation type="vanished">Usuario</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
       <source>Action</source>
-      <translation>Acción</translation>
+      <translation type="vanished">Acción</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
       <source>Affected user</source>
-      <translation>Usuario afectado</translation>
+      <translation type="vanished">Usuario afectado</translation>
     </message>
     <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="35" />
       <source>Details</source>
-      <translation>Detalle</translation>
-    </message>
-    <message>
-      <location filename="../src/luciotech/ui/dialogs/users_dialog.py" line="238" />
-      <source>This log records who created, changed, disabled or reset the password of each account.</source>
-      <translation>Esta bitácora registra quién creó, modificó, desactivó o restableció la contraseña de cada cuenta.</translation>
-    </message>
-  </context>
-  <context>
-    <name>UnlockDialog</name>
-    <message>
-      <source>Session locked</source>
-      <translation>Sesión bloqueada</translation>
-    </message>
-    <message>
-      <source>The session was locked after %1 minutes without activity.</source>
-      <translation>La sesión se bloqueó tras %1 minutos sin actividad.</translation>
-    </message>
-    <message>
-      <source>Enter the password of %1 to continue.</source>
-      <translation>Escriba la contraseña de %1 para continuar.</translation>
-    </message>
-    <message>
-      <source>Password</source>
-      <translation>Contraseña</translation>
-    </message>
-    <message>
-      <source>Unlock</source>
-      <translation>Desbloquear</translation>
-    </message>
-    <message>
-      <source>Incorrect password.</source>
-      <translation>Contraseña incorrecta.</translation>
-    </message>
-    <message>
-      <source>The password could not be checked. Please try again.</source>
-      <translation>No se pudo comprobar la contraseña. Intente de nuevo.</translation>
-    </message>
-  </context>
-  <context>
-    <name>SetPasswordDialog</name>
-    <message>
-      <source>Your password</source>
-      <translation>Su contraseña</translation>
-    </message>
-    <message>
-      <source>You are changing the password of another administrator: enter your own password to confirm it.</source>
-      <translation>Está cambiando la contraseña de otro administrador: escriba su propia contraseña para confirmarlo.</translation>
-    </message>
-    <message>
-      <source>This change is recorded in the account log under your name.</source>
-      <translation>Este cambio queda registrado en la bitácora de cuentas con su nombre.</translation>
-    </message>
-  </context>
-  <context>
-    <name>LucioTech</name>
-    <message>
-      <source>Enter your own password to reset another administrator's password.</source>
-      <translation>Escriba su propia contraseña para restablecer la de otro administrador.</translation>
-    </message>
-    <message>
-      <source>Your password is not correct.</source>
-      <translation>Su contraseña no es correcta.</translation>
+      <translation type="vanished">Detalle</translation>
     </message>
   </context>
 </TS>

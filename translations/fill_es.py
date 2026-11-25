@@ -617,6 +617,33 @@ ES: dict[str, str] = {
     "The status could not be changed. Please try again.": (
         "No se pudo cambiar el estado. Intente de nuevo."
     ),
+    "About…": "Acerca de…",
+    "Developers": "Desarrolladores",
+    "&Help": "&Ayuda",
+    "&About…": "&Acerca de…",
+    "<p><b>License</b><br>GNU GPL v3</p>"
+    "<p><b>Technologies used</b><br>Python, PyQt6, SQLAlchemy, Alembic, "
+    "Qt Linguist</p>"
+    "<p>Desktop application to record the intake, diagnosis, repair and "
+    "delivery of equipment in a technical service workshop, with customers, "
+    "orders, budgets, payments, printable documents, user accounts and a "
+    "local SQLite database.</p>"
+    '<p><b>Repository</b><br><a href="https://github.com/wachin/'
+    'LucioTech-Service-Manager">https://github.com/wachin/'
+    "LucioTech-Service-Manager</a></p>"
+    "<p>Jipijapa, Manabí, Ecuador</p>": (
+        "<p><b>Licencia</b><br>GNU GPL v3</p>"
+        "<p><b>Tecnologías usadas</b><br>Python, PyQt6, SQLAlchemy, Alembic, "
+        "Qt Linguist</p>"
+        "<p>Aplicación de escritorio para registrar la recepción, el diagnóstico, la "
+        "reparación y la entrega de equipos de un taller de servicio técnico, con "
+        "clientes, órdenes, presupuestos, pagos, documentos imprimibles, cuentas de "
+        "usuario y una base de datos SQLite local.</p>"
+        '<p><b>Repositorio</b><br><a href="https://github.com/wachin/'
+        'LucioTech-Service-Manager">https://github.com/wachin/'
+        "LucioTech-Service-Manager</a></p>"
+        "<p>Jipijapa, Manabí, Ecuador</p>"
+    ),
 }
 
 # Diferencias por contexto: la misma palabra significa una cosa en cada pantalla.

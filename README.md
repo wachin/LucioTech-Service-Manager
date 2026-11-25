@@ -542,7 +542,8 @@ Remove-Item "$env:TEMP/luciotech-prueba.sqlite3" -ErrorAction SilentlyContinue
 8. **Settings:** with an administrator account, **Archivo ▸ Configuración…** opens three tabs. Edit the workshop header and the IVA in **Taller**, the paper, margins, budget validity, retention period and equipment types in **Documentos**, and — most importantly — the whole **terms and conditions** and the **warranty wording** in **Términos y garantía**, together with the warranty days new orders receive (and that older orders without their own days fall back to). Type a few lines, press **Guardar**, then open **Documentos…** on any order: the new text is on the reception receipt, the budget, the technical report and the delivery receipt. See [Settings and editable legal texts](#settings-and-editable-legal-texts).
 9. **Papelera (Trash):** the fifth tab lists the orders that were deleted. Deleting is *logical*: the row stays in the database with `activo = False` and a deletion date, so nothing is lost. Select a row and click **Restaurar** to bring the order back to the active list; **Abrir** (or a double-click) shows its details in read-only fashion, where the delete button is disabled. The **Órdenes** list never shows deleted orders, and the trash never shows active ones.
 10. **Shortcuts:** `F5` refreshes every screen, `Ctrl+U` opens the user list (administrators only) and `Ctrl+Q` quits.
-11. **Restart:** close the application, open it again with the same database and check that the data is still there.
+11. **Credits:** **Ayuda ▸ Acerca de…** opens the about window with the two developers of the program (photo, name, email and Facebook), the GPL v3 license, the technologies used, a short description, the repository and the workshop location.
+12. **Restart:** close the application, open it again with the same database and check that the data is still there.
 
 ### Not implemented yet
 
